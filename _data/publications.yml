@@ -3,7 +3,7 @@
 #
 # To add a paper, copy an entry, paste it at the top of its type, and edit it.
 #   type:    journal | conference | workshop | chapter | abstract | report
-#   status:  to-appear   (shown under "To Appear"; delete this line once it is published)
+#   status:  to-appear   (the entry stays hidden on the site; delete this line once it is published)
 #   url:     link to the published version (a DOI link is best)
 #   code / project:  optional links
 #   note:    optional short note, e.g. "Equal contribution"
@@ -11,7 +11,7 @@
 # the site sorts each section by year, newest first.
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ── Most recent (entries with "status: to-appear" are listed under To Appear) ──
+# ── Most recent (entries with "status: to-appear" are hidden until published) ──
 - title: "SegSTRONG-C: Segmenting Surgical Tools Robustly On Non-adversarial Generated 'Corruptions', an EndoVis'24 Challenge"
   authors: "SegSTRONG-C Challenge Consortium, including Eungjoo Lee"
   venue: "IEEE Transactions on Medical Imaging"
@@ -125,13 +125,6 @@
   year: 2025
   type: journal
   url: https://doi.org/10.1109/ACCESS.2025.3553087
-
-- title: "Machine Learning-Based Hand Pose Generation Using a Haptic Controller"
-  authors: "Jongin Choi, Jaehong Lee, Daniel Oh, Eungjoo Lee"
-  venue: "Electronics"
-  year: 2024
-  type: journal
-  url: https://doi.org/10.3390/electronics13101970
 
 - title: "Development of a Modular Real-Time Shared-Control System for a Smart Wheelchair"
   authors: "Vaishanth Ramaraj, Atharva Paralikar, Eungjoo Lee, Syed Muhammad Anwar, Reza Monfaredi"

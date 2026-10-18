@@ -124,7 +124,7 @@ figcaption a:hover{text-decoration:underline}
 
 /* research page */
 .r-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;align-items:start}
-.r-text{display:grid;gap:18px;align-content:start;max-width:66ch}
+.r-text{display:grid;gap:18px;align-content:start;max-width:72ch}
 .topics{display:grid;gap:6px}
 .topics li{padding-left:20px;position:relative}
 .topics li::before{content:"";position:absolute;left:0;top:.8em;width:9px;height:1px;background:var(--muted)}
@@ -229,3 +229,24 @@ figcaption a:hover{text-decoration:underline}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}a{transition:none}}
 @media print{.masthead,.filters,.foot,.menu{display:none}}
+
+/* header name: full on wide screens, short below 1100px */
+.brand-name{white-space:nowrap}
+.bn-short{display:none}
+@media (max-width:1100px){.bn-long{display:none}.bn-short{display:inline}}
+
+/* below 1060px every section stacks its title above the content, so text uses the full width */
+@media (max-width:1060px){
+  .sec{grid-template-columns:1fr;row-gap:18px}
+  .sec.stack .sec-title,.sec.stack .sec-body{grid-column:1}
+  .hero,.page-head,.empty{padding-left:0}
+  .pi{grid-template-columns:minmax(0,1fr) 170px}
+}
+
+/* quiet sections (Teaching, Resources): no rules between rows, spacing does the work */
+.sec.quiet{border-top:0;padding-block:24px}
+.sec.quiet+.sec.quiet{padding-top:8px}
+.page-head+.sec.quiet{border-top:1px solid var(--rule);padding-top:40px}
+.sec.quiet .rows li{border-top:0;padding-block:6px}
+.sec.quiet .rows li:first-child{padding-top:0}
+.sec.quiet .item+.item{border-top:0;padding-top:12px}

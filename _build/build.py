@@ -18,16 +18,16 @@ def load(name):
     with open(os.path.join(ROOT, '_data', name + '.yml'), encoding='utf-8') as f:
         return yaml.safe_load(f)
 
-SITE, PUBS, PEOPLE = load('site'), load('publications'), load('people')
+SITE, PEOPLE = load('site'), load('people')
+PUBS = [p for p in load('publications') if p.get('status') != 'to-appear']   # accepted papers stay hidden until published
 RESEARCH, SERVICE, TEACH = load('research'), load('service'), load('teaching')
 BY_TITLE = {p['title'].strip(): p for p in PUBS}
 OWNER = 'Eungjoo Lee'
 
 NAV = [('index', 'Home'), ('research', 'Research'), ('publications', 'Publications'),
        ('people', 'People'), ('teaching', 'Teaching'), ('resources', 'Resources')]
-PUB_SECTIONS = [('to-appear', 'To Appear'), ('journal', 'Journal Articles'), ('conference', 'Conference Papers'),
-                ('workshop', 'Workshop Papers'), ('chapter', 'Book Chapters'), ('abstract', 'Abstracts'),
-                ('report', 'Technical Reports')]
+PUB_SECTIONS = [('chapter', 'Book Chapters'), ('journal', 'Journal Articles'), ('conference', 'Conference Papers'),
+                ('workshop', 'Workshop Papers'), ('abstract', 'Abstracts'), ('report', 'Technical Reports')]
 ROLES = [('phd', 'Ph.D. Students'), ('ms', 'M.S. Students'), ('postbac', 'Post-Baccalaureate Researchers'),
          ('undergrad', 'Undergraduate Researchers'), ('collaborator', 'Affiliated Collaborators')]
 ALUMNI_GROUPS = [('phd', 'Ph.D.'), ('ms', 'M.S.'), ('undergrad', 'Undergraduate'), ('visitor', 'Visitors')]
@@ -116,7 +116,7 @@ def header(active):
                     for k, n in NAV)
     return (f'<header class="masthead"><div class="masthead-in">'
             f'<a class="brand" href="{href("index")}"><span class="mark" role="img" aria-label="VSI"></span>'
-            f'<span class="brand-name">{e(SITE["lab_name"])}</span></a>'
+            f'<span class="brand-name"><span class="bn-long">{e(SITE["lab_name"])}</span><span class="bn-short">VSI Lab</span></span></a>'
             f'<button class="menu" type="button" aria-expanded="false" aria-controls="nav">Menu</button>'
             f'<nav id="nav" class="nav" aria-label="Main">{items}</nav></div></header>')
 
@@ -183,10 +183,7 @@ def page_publications():
     chips = ['<button type="button" class="chip" data-cat="" aria-pressed="true">All</button>']
     groups = []
     for key, label in PUB_SECTIONS:
-        if key == 'to-appear':
-            items = [p for p in PUBS if p.get('status') == 'to-appear']
-        else:
-            items = [p for p in PUBS if p.get('type') == key and p.get('status') != 'to-appear']
+        items = [p for p in PUBS if p.get('type') == key]
         if not items:
             continue
         items.sort(key=lambda p: -int(p['year']))
@@ -225,15 +222,15 @@ def page_teaching():
                       f'<p class="item-meta">{e(c["detail"])}</p></div>' for c in TEACH['courses'])
     advising = ''.join(f'<li><span class="row-k">{e(a["year"])}</span><span>{e(a["text"])}</span></li>' for a in TEACH['advising'])
     return (page_head('Teaching', 'Courses and research advising.')
-            + section('Courses', courses)
-            + section('Independent Study and Research Advising', f'<ul class="rows">{advising}</ul>'))
+            + section('Courses', courses, cls='quiet')
+            + section('Independent Study and Research Advising', f'<ul class="rows">{advising}</ul>', cls='quiet'))
 
 def page_resources():
     return (page_head('Resources', 'Datasets, benchmarks, and software from the lab.')
             + section('Datasets and Benchmarks', '<p>We are preparing datasets and benchmarks in surgical video, ultrasound imaging, '
-                      'visual question answering, and multiview and egocentric perception. Release details will be posted here.</p>')
-            + section('Code', f'<p>Public repositories that accompany our papers are on {ext(SITE["github"], "GitHub")}.</p>')
-            + section('Lab Wiki', f'<p>Onboarding, compute, and lab practices for members are on the {ext(SITE["wiki"], "lab wiki")}.</p>'))
+                      'visual question answering, and multiview and egocentric perception. Release details will be posted here.</p>', cls='quiet')
+            + section('Code', f'<p>Public repositories that accompany our papers are on {ext(SITE["github"], "GitHub")}.</p>', cls='quiet')
+            + section('Lab Wiki', f'<p>Onboarding, compute, and lab practices for members are on the {ext(SITE["wiki"], "lab wiki")}.</p>', cls='quiet'))
 
 PAGES = [('index', 'Home', page_home), ('research', 'Research', page_research), ('publications', 'Publications', page_publications),
          ('people', 'People', page_people), ('teaching', 'Teaching', page_teaching), ('resources', 'Resources', page_resources)]

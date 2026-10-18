@@ -215,10 +215,16 @@ def page_people():
     out.append(section('Alumni', f'<div class="al-grid">{al}</div>', 'alumni'))
     return ''.join(out)
 
+def keep_codes(text):
+    """Keep course codes such as (ECE 599) on one line."""
+    import re
+    return re.sub(r'\(([^)]*)\)', lambda m: '(' + m.group(1).replace(' ', '&nbsp;') + ')', text)
+
+
 def page_teaching():
     courses = ''.join(f'<div class="item"><p class="item-code">{e(c["code"])}</p><h3 class="item-title">{e(c["title"])}</h3>'
                       f'<p class="item-meta">{e(c["detail"])}</p></div>' for c in TEACH['courses'])
-    advising = ''.join(f'<li><span class="row-k">{e(a["year"])}</span><span>{e(a["text"])}</span></li>' for a in TEACH['advising'])
+    advising = ''.join(f'<li><span class="row-k">{e(a["year"])}</span><span>{keep_codes(e(a["text"]))}</span></li>' for a in TEACH['advising'])
     return (page_head('Teaching', 'Courses and research advising.')
             + section('Courses', courses, cls='quiet')
             + section('Independent Study and Research Advising', f'<ul class="rows">{advising}</ul>', cls='quiet ruled'))

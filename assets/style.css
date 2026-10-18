@@ -299,3 +299,6 @@ figcaption a:hover{text-decoration:underline}
 
 /* Teaching and Resources: text uses the full content width instead of a 64-character measure */
 .sec.quiet .sec-body>p,.sec.quiet .item{max-width:none;text-wrap:pretty}
+
+/* Teaching: advising rows sit a step below the courses */
+.sec.quiet.ruled .rows li>span:last-child{font-size:var(--fs-5)}

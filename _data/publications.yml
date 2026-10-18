@@ -32,7 +32,7 @@
   venue: "Signal, Image and Video Processing"
   year: 2026
   type: journal
-  url: https://arxiv.org/abs/2512.21792
+  url: https://doi.org/10.1007/s11760-026-05636-4
 
 - title: "Hypoxia Induces Adaptive Lymphangiogenesis via Cd74 and Vegfr3 to Modulate Pulmonary Hypertension"
   authors: "M. Elizabeth Moss, Timothy Klouda, Yan Li, Yu Liu, Meng Tan, Yunhye Kim, Yuan Hao, Wen Tian, Mark R. Nicolls, Joseph C. Wu, Richard Bucala, Hong Chen, Eungjoo Lee, Karin Tran-Lundmark, Benjamin Raby, Ke Yuan"
@@ -226,11 +226,12 @@
   venue: "IEEE International Conference on Automatic Face and Gesture Recognition (FG)"
   year: 2025
   type: conference
-  url: https://arxiv.org/abs/2505.22677
+  url: https://doi.org/10.1109/FG61629.2025.11099184
 
 - title: "SLRBC: Self-Supervised Learning for Red Blood Cell Segmentation and Classification with a Biased Contrastive Loss"
   authors: "Yicheng Leng, Eungjoo Lee"
   venue: "SPIE Medical Imaging"
+  url: https://doi.org/10.1117/12.3047367
   year: 2025
   type: conference
 
@@ -239,7 +240,7 @@
   venue: "IEEE International Symposium on Biomedical Imaging (ISBI)"
   year: 2025
   type: conference
-  url: https://arxiv.org/abs/2501.16346
+  url: https://ieeexplore.ieee.org/document/10981292
 
 - title: "Lightweight TransUNet with Knowledge Distillation for Efficient Medical Image Segmentation"
   authors: "Husain Al Yusuf, Jayant Biradar, Eungjoo Lee"
@@ -280,6 +281,7 @@
 - title: "Multi-Scale Attention Network for Diabetic Foot Ulcer Segmentation Using Self-Supervised Learning"
   authors: "Aravind Shrenivas Murali, Marino Chuquilín, Eungjoo Lee"
   venue: "Diabetic Foot Ulcers Grand Challenge, Springer Nature"
+  url: https://doi.org/10.1007/978-3-031-80871-5_7
   year: 2024
   type: conference
 

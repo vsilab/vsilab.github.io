@@ -121,14 +121,15 @@ def header(active):
             f'<nav id="nav" class="nav" aria-label="Main">{items}</nav></div></header>')
 
 def footer():
-    pi = SITE['pi']
+    """Centered footer: lab name, affiliation, address, contact. Logo and profile links live in the header and PI section."""
+    addr = ', '.join(f'<span class="nw">{e(x)}</span>' for x in SITE['address'])
     return (f'<footer class="foot"><div class="foot-in">'
-            f'<div class="foot-lab"><span class="mark" role="img" aria-label="VSI"></span>'
-            f'<p>{e(SITE["lab_name"])}<br>School of Electrical, Computing, and Software Engineering<br>University of Arizona</p></div>'
-            f'<p>{"<br>".join(e(x) for x in SITE["address"])}</p>'
-            f'<p><a href="mailto:{e(SITE["email"])}">{e(SITE["email"])}</a><br>{e(SITE["phone"])}</p>'
-            f'<p>{ext(pi["scholar"], "Google Scholar")}<br>{ext(SITE["github"], "GitHub")}<br>{ext(SITE["wiki"], "Lab wiki")}</p>'
-            f'</div><p class="foot-copy">© 2026 {e(SITE["lab_name"])}, University of Arizona</p></footer>')
+            f'<p class="foot-name">{e(SITE["lab_name"])}</p>'
+            f'<p><span class="nw">School of Electrical, Computing, and Software Engineering</span>, <span class="nw">University of Arizona</span></p>'
+            f'<p>{addr}</p>'
+            f'<p class="foot-contact"><a href="mailto:{e(SITE["email"])}">{e(SITE["email"])}</a><span>{e(SITE["phone"])}</span></p>'
+            f'<p class="foot-copy">© 2026 {e(SITE["lab_name"])}, University of Arizona</p>'
+            f'</div></footer>')
 
 # ───────────────────────── pages ─────────────────────────
 def page_home():

@@ -302,3 +302,12 @@ figcaption a:hover{text-decoration:underline}
 
 /* Teaching: advising rows sit a step below the courses */
 .sec.quiet.ruled .rows li>span:last-child{font-size:var(--fs-5)}
+
+/* footer: one centered block (name, affiliation, address, contact) */
+.foot-in{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.foot-in p{margin:0;text-wrap:balance}
+.foot-name{color:var(--ink);font-size:var(--fs-3);margin-bottom:6px !important}
+.foot-contact{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 28px;margin-top:8px !important}
+.foot-in .foot-copy{margin-top:26px !important;padding:0}
+@media (max-width:760px){.foot-in{gap:6px}}
+.foot .nw{white-space:nowrap}

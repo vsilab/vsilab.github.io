@@ -2,13 +2,13 @@
 
 Source for the Vision Systems and Intelligence Lab website, University of Arizona.
 
-All content lives in plain text files in `_data/`. You edit those files directly on github.com. On every commit GitHub rebuilds the site and publishes it within a minute or two. You do not need to install anything.
+All content lives in plain text files in `_data/`. You edit those files directly on github.com. On every commit a GitHub Action regenerates the HTML pages (`index.html`, `research.html`, …) and commits them, and GitHub Pages publishes them within a minute or two. You do not need to install anything. Do not edit the `.html` files by hand; they are overwritten.
 
 ## One-time setup
 
 1. Create a repository (for example `vsi-lab/vsi-lab.github.io`) and upload everything in this folder.
-2. In the repository, open **Settings → Pages** and set **Source** to **GitHub Actions**.
-3. Open the **Actions** tab and confirm that "Build and deploy site" finishes with a green check.
+2. In the repository, open **Settings → Pages** and set **Source** to **Deploy from a branch**, branch **main**, folder **/ (root)** (the default).
+3. Open the **Actions** tab and confirm that "Build site" finishes with a green check.
 
 ## Everyday updates
 
@@ -42,10 +42,10 @@ Every file explains its own fields at the top.
 
 ```
 pip install pyyaml
-python3 _build/build.py
+python3 _build/build.py --in-place
 ```
 
-Then open `_site/index.html`.
+Then open `index.html`.
 
 ## Image credits (home-page overview figures)
 

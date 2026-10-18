@@ -1,15 +1,15 @@
-# Rebuilds and publishes the website every time something is committed to main.
-name: Build and deploy site
+# Regenerates the HTML pages from _data/ whenever something is committed to main,
+# and commits the updated pages. GitHub Pages then publishes the main branch.
+name: Build site
 on:
   push:
     branches: [main]
+    paths-ignore: ['*.html']
   workflow_dispatch:
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 concurrency:
-  group: pages
+  group: build-site
   cancel-in-progress: true
 jobs:
   build:
@@ -20,16 +20,10 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pyyaml
-      - run: python3 _build/build.py
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - run: python3 _build/build.py --in-place
+      - name: Commit regenerated pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A *.html .nojekyll
+          if git diff --cached --quiet; then echo "Pages already up to date"; else git commit -m "Rebuild pages" && git push; fi

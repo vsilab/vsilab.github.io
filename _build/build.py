@@ -2,10 +2,10 @@
 """Builds the VSI Lab website from the YAML files in _data/ into _site/.
 
 You normally never run this yourself: GitHub runs it on every commit
-(.github/workflows/deploy.yml). To preview on your own computer:
+(.github/workflows/deploy.yml) and commits the updated pages. To preview on your own computer:
 
     pip install pyyaml
-    python3 _build/build.py          # then open _site/index.html
+    python3 _build/build.py --in-place   # then open index.html
 """
 import html, os, shutil, sys
 import yaml
@@ -241,12 +241,17 @@ PAGES = [('index', 'Home', page_home), ('research', 'Research', page_research), 
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
          '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">')
 
-def build_site():
-    global MODE
+def build_site(in_place=False):
+    """Writes the pages. in_place=True writes them to the repository root next to assets/ (what GitHub
+    Pages serves when it deploys from the main branch); otherwise to _site/ with a copy of assets/."""
+    global MODE, OUT
     MODE = 'site'
-    if os.path.exists(OUT):
-        shutil.rmtree(OUT)
-    shutil.copytree(os.path.join(ROOT, 'assets'), os.path.join(OUT, 'assets'))
+    if in_place:
+        OUT = ROOT
+    else:
+        if os.path.exists(OUT):
+            shutil.rmtree(OUT)
+        shutil.copytree(os.path.join(ROOT, 'assets'), os.path.join(OUT, 'assets'))
     open(os.path.join(OUT, '.nojekyll'), 'w').close()
     desc = SITE['intro'].strip().split('. ')[0] + '.'
     for key, name, fn in PAGES:
@@ -285,7 +290,8 @@ def build_preview(path):
 ''')
 
 if __name__ == '__main__':
-    build_site()
-    if len(sys.argv) > 1:
-        build_preview(sys.argv[1])
+    args = [a for a in sys.argv[1:] if a != '--in-place']
+    build_site(in_place='--in-place' in sys.argv)
+    if args:
+        build_preview(args[0])
     print('Built', OUT)

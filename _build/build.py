@@ -232,8 +232,8 @@ def page_teaching():
 
 def page_resources():
     return (page_head('Resources', 'Datasets, benchmarks, and software from the lab.')
-            + section('Datasets and Benchmarks', '<p>We are preparing datasets and benchmarks in surgical video, ultrasound imaging, '
-                      'visual question answering, and multiview and egocentric perception. Release details will be posted here.</p>', cls='quiet')
+            + section('Datasets and Benchmarks', '<p>We are preparing datasets and benchmarks in surgical video, visual question answering, '
+                      'ultrasound imaging, and multiview and egocentric perception. Release details will be posted here.</p>', cls='quiet')
             + section('Code', f'<p>Public repositories that accompany our papers are on {ext(SITE["github"], "GitHub")}.</p>', cls='quiet')
             + section('Lab Wiki', f'<p>Onboarding, compute, and lab practices for members are on the {ext(SITE["wiki"], "lab wiki")}.</p>', cls='quiet'))
 

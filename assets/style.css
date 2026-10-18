@@ -311,3 +311,10 @@ figcaption a:hover{text-decoration:underline}
 .foot-in .foot-copy{margin-top:26px !important;padding:0}
 @media (max-width:760px){.foot-in{gap:6px}}
 .foot .nw{white-space:nowrap}
+
+/* alumni: a step smaller and tighter than current members */
+.al-grid{gap:28px 48px}
+.al-group{gap:10px}
+.alumni{gap:9px}
+.alumni li{font-size:14px;line-height:1.35}
+.al-name{font-size:15.5px}

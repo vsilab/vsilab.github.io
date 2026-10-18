@@ -8,12 +8,12 @@ window.vsiFigError=function(img){if(img.dataset.fallback){img.src=img.dataset.fa
   }
   // publications: category chips + search
   function initPubs(root){
-    var q=root.querySelector('#pub-q'); if(!q) return;
+    var q=root.querySelector('#pub-q'); if(!q&&!root.querySelector('.chip')) return;
     var chips=[].slice.call(root.querySelectorAll('.chip')), groups=[].slice.call(root.querySelectorAll('.pub-group'));
     var empty=root.querySelector('#pub-empty');
     var cat='';
     function apply(){
-      var s=q.value.trim().toLowerCase(), n=0;
+      var s=q?q.value.trim().toLowerCase():'', n=0;
       groups.forEach(function(g){
         var inCat=!cat||g.id===cat, k=0;
         [].forEach.call(g.querySelectorAll('.pub'),function(it){var ok=inCat&&(!s||it.dataset.search.indexOf(s)>-1);it.hidden=!ok;if(ok)k++;});
@@ -22,7 +22,7 @@ window.vsiFigError=function(img){if(img.dataset.fallback){img.src=img.dataset.fa
       empty.hidden=n>0;
     }
     chips.forEach(function(c){c.addEventListener('click',function(){cat=c.dataset.cat;chips.forEach(function(x){x.setAttribute('aria-pressed',String(x===c));});apply();});});
-    q.addEventListener('input',apply); apply();
+    if(q) q.addEventListener('input',apply); apply();
   }
   initPubs(d);
   // single-file preview router

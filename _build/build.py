@@ -191,10 +191,8 @@ def page_publications():
         groups.append(section(e(label), f'<ol class="pubs">{"".join(pub_item(p) for p in items)}</ol>', key, 'pub-group'))
     head = (f'<section class="page-head"><h1>Publications</h1><p>Titles link to the published version or preprint where one is available. '
             f'A complete record is on {ext(SITE["pi"]["scholar"], "Google Scholar")}.</p>'
-            f'<div class="filters"><div class="chips" role="group" aria-label="Category">{"".join(chips)}</div>'
-            f'<label class="search"><span class="visually-hidden">Search publications</span>'
-            f'<input id="pub-q" type="search" placeholder="Search by title, author, or venue" autocomplete="off"></label></div></section>')
-    return head + ''.join(groups) + '<p class="empty" id="pub-empty" hidden>No publications match this search.</p>'
+            f'<div class="filters"><div class="chips" role="group" aria-label="Category">{"".join(chips)}</div></div></section>')
+    return head + ''.join(groups) + '<p class="empty" id="pub-empty" hidden>No publications in this category.</p>'
 
 def page_people():
     out = [page_head('People', 'Students, researchers, and collaborators in the lab.')]

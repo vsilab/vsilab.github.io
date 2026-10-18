@@ -1,0 +1,475 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# PUBLICATIONS
+#
+# To add a paper, copy an entry, paste it at the top of its type, and edit it.
+#   type:    journal | conference | workshop | chapter | abstract | report
+#   status:  to-appear   (shown under "To Appear"; delete this line once it is published)
+#   url:     link to the published version (a DOI link is best)
+#   code / project:  optional links
+#   note:    optional short note, e.g. "Equal contribution"
+# Your own name is set in bold automatically. Order inside the file does not matter;
+# the site sorts each section by year, newest first.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Most recent (entries with "status: to-appear" are listed under To Appear) ──
+- title: "SegSTRONG-C: Segmenting Surgical Tools Robustly On Non-adversarial Generated 'Corruptions', an EndoVis'24 Challenge"
+  authors: "SegSTRONG-C Challenge Consortium, including Eungjoo Lee"
+  venue: "IEEE Transactions on Medical Imaging"
+  year: 2026
+  type: journal
+  url: https://arxiv.org/abs/2407.11906
+
+- title: "BCG-Former: Toward Pareto-Efficient Hyperspectral Image Classification via Band-Contextual Gating"
+  authors: "Gaurav Sharma, Eungjoo Lee"
+  venue: "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing"
+  year: 2026
+  type: journal
+  code: https://github.com/vsi-lab/BCGFormer
+  url: https://ieeexplore.ieee.org/document/11735068
+
+- title: "AI for Mycetoma Diagnosis in Histopathological Images: The MICCAI 2024 Challenge"
+  authors: "MICCAI Challenge Consortium, including Eungjoo Lee"
+  venue: "Signal, Image and Video Processing"
+  year: 2026
+  type: journal
+  url: https://arxiv.org/abs/2512.21792
+
+- title: "Hypoxia Induces Adaptive Lymphangiogenesis via Cd74 and Vegfr3 to Modulate Pulmonary Hypertension"
+  authors: "M. Elizabeth Moss, Timothy Klouda, Yan Li, Yu Liu, Meng Tan, Yunhye Kim, Yuan Hao, Wen Tian, Mark R. Nicolls, Joseph C. Wu, Richard Bucala, Hong Chen, Eungjoo Lee, Karin Tran-Lundmark, Benjamin Raby, Ke Yuan"
+  venue: "Circulation Research"
+  year: 2026
+  type: journal
+  url: https://doi.org/10.1161/CIRCRESAHA.126.326822
+
+- title: "RL-OCT: Reinforcement Learning with Domain-Specific Rewards for Per Retinal Layer Diagnostic Accuracy in Ophthalmic VLM"
+  authors: "Ahammed Sakir Nabil, Husain Al Yusuf, Tania Haghighi, Sadia Siraz, Eungjoo Lee, Minhaj Nur Alam"
+  venue: "SPIE Photonics West, BiOS"
+  year: 2027
+  type: conference
+  status: to-appear
+
+- title: "Segmentation Reliability under Developmental Distribution Shift in Volumetric Zebrafish Imaging"
+  authors: "Puneeth Samarla, Juhyun Lee, Eungjoo Lee"
+  venue: "SPIE Photonics West, BiOS"
+  year: 2027
+  type: conference
+  status: to-appear
+
+- title: "Prototype-Based Self-Supervised Distillation for Generalizable Medical Imaging Representation Learning"
+  authors: "Soyoun Bang, Jeongwoo Ju, Sanjar Karshiev, Jiuk Hong, Eungjoo Lee, Heechul Jung"
+  venue: "Asian Conference on Computer Vision (ACCV)"
+  year: 2026
+  type: conference
+  status: to-appear
+
+- title: "Bandit-Based Adaptive Inference for Vision Transformers under Distribution Shift"
+  authors: "Seok-Ju Hahn, Byeongwoo An, Eungjoo Lee"
+  venue: "Asilomar Conference on Signals, Systems, and Computers"
+  year: 2026
+  type: conference
+  status: to-appear
+
+# ── Book chapters ────────────────────────────────────────────────────────────
+- title: "AI and Cancer Research"
+  authors: "Eungjoo Lee, Vivek Kumar Singh, Md Mostafa Kamal Sarker, Krishna Saveri Vydyula, Laura J. Brattain"
+  venue: "Cancer Research Guidance for Clinicians and Researchers, Springer Nature"
+  year: 2026
+  type: chapter
+  url: https://doi.org/10.1007/978-3-032-19175-5_13
+
+# ── Journal articles ─────────────────────────────────────────────────────────
+- title: "Artificial Intelligence for Detection and Staging of Alzheimer's Disease Using Retinal Images"
+  authors: "Meet Panjwani, Jonathan M. Holmes, Su-Hsun Liu, Eungjoo Lee, Steven Rapcsak, Abel Harris, Igor Kozak"
+  venue: "Cochrane Database of Systematic Reviews (review protocol)"
+  year: 2026
+  type: journal
+  url: https://doi.org/10.1002/14651858.CD016358
+
+- title: "Prediction of Response to Spinal Cord Stimulation Using Machine Learning Based on Radiomics and Patient-Reported Outcomes"
+  authors: "Eungjoo Lee, Meghan L. Edgerton, Barbara Buccilli, Ilknur Telkes, Tessa Harland, Julie G. Pilitsis"
+  venue: "Neurosurgery"
+  year: 2026
+  type: journal
+  url: https://doi.org/10.1227/neu.0000000000003715
+
+- title: "Application of Deep Learning for Advanced Detection and Quantification of Drusen in Nonexudative AMD From Retinal Multispectral Imaging"
+  authors: "Igor Kozak, Stephen H. Sinclair, Emily Zhang, Felipe Murati, Eungjoo Lee, Andrii Stepura, Ankita Dey, Nick Ribaric"
+  venue: "Translational Vision Science and Technology"
+  year: 2025
+  type: journal
+  url: https://doi.org/10.1167/tvst.14.11.35
+
+- title: "RAMPSeg: A Robust Calibration-Free Image Segmentation Method for Reliable Melt Pool Analysis in Laser Powder Bed Fusion"
+  authors: "Nazmul Hasan, Eungjoo Lee, Andrew Wessman, Mohammed Shafae"
+  venue: "Journal of Intelligent Manufacturing"
+  year: 2025
+  type: journal
+
+- title: "Investigating Machine Learning Algorithms to Classify Label-Free Images of Pancreatic Neuroendocrine Neoplasms"
+  authors: "Noelle Daigle, Shuyuan Guan, Suzann Duan, Thomas G. Knapp, et al., including Eungjoo Lee"
+  venue: "Biophotonics Discovery"
+  year: 2025
+  type: journal
+  url: https://doi.org/10.1117/1.BIOS.2.4.045001
+
+- title: "Efficient Hyperspectral Image Classification Using Discrete Cosine Transform on Limited-Resource Systems"
+  authors: "Eungjoo Lee, Lei Pan, Zhu Li, Shuvra S. Bhattacharyya"
+  venue: "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing"
+  year: 2025
+  type: journal
+  url: https://doi.org/10.1109/JSTARS.2025.3605271
+
+- title: "Deep Learning-Based Medical Object Detection: A Survey"
+  authors: "Mohammadreza Saraei, Mehrshad Lalinia, Eungjoo Lee"
+  venue: "IEEE Access"
+  year: 2025
+  type: journal
+  url: https://doi.org/10.1109/ACCESS.2025.3553087
+
+- title: "Machine Learning-Based Hand Pose Generation Using a Haptic Controller"
+  authors: "Jongin Choi, Jaehong Lee, Daniel Oh, Eungjoo Lee"
+  venue: "Electronics"
+  year: 2024
+  type: journal
+  url: https://doi.org/10.3390/electronics13101970
+
+- title: "Development of a Modular Real-Time Shared-Control System for a Smart Wheelchair"
+  authors: "Vaishanth Ramaraj, Atharva Paralikar, Eungjoo Lee, Syed Muhammad Anwar, Reza Monfaredi"
+  venue: "Journal of Signal Processing Systems"
+  year: 2024
+  type: journal
+  url: https://doi.org/10.1007/s11265-022-01828-6
+
+- title: "Evaluation of a Novel MRI-Safe Needle Guidance Toolkit for Streamlined Arthrography Procedures: Cadaver Study"
+  authors: "Reza Monfaredi, Pavel Yarmolenko, Eungjoo Lee, Kevin Cleary, Karun Sharma"
+  venue: "Scientific Reports"
+  year: 2023
+  type: journal
+  url: https://doi.org/10.1038/s41598-023-45063-w
+
+- title: "Comparative Validation of Machine Learning Algorithms for Surgical Workflow and Skill Analysis with the HeiChole Benchmark"
+  authors: "Martin Wagner, Beat-Peter Müller-Stich, et al., including Eungjoo Lee"
+  venue: "Medical Image Analysis"
+  year: 2023
+  type: journal
+  url: https://doi.org/10.1016/j.media.2023.102770
+
+- title: "Toward Robust Partial-Image Based Template Matching Techniques for MRI-Guided Interventions"
+  authors: "Eungjoo Lee, Setareh Farzinfard, Pavel Yarmolenko, Kevin Cleary, Reza Monfaredi"
+  venue: "Journal of Digital Imaging"
+  year: 2023
+  type: journal
+  url: https://doi.org/10.1007/s10278-022-00716-6
+
+- title: "HIFA-LPR: High-Frequency Augmented License Plate Recognition in Low-Quality Legacy Conditions via Gradual End-to-End Learning"
+  authors: "Sung Jin Lee, Jun Seok Yun, Eungjoo Lee, Seok Bong Yoo"
+  venue: "Mathematics"
+  year: 2022
+  type: journal
+  url: https://doi.org/10.3390/math10091569
+
+- title: "Rapid Quality Assessment of Nonrigid Image Registration Based on Supervised Learning"
+  authors: "Eungjoo Lee, William Plishker, Nobuhiko Hata, Paul B. Shyn, Stuart G. Silverman, Shuvra S. Bhattacharyya, Raj Shekhar"
+  venue: "Journal of Digital Imaging"
+  year: 2021
+  type: journal
+  url: https://doi.org/10.1007/s10278-021-00523-5
+
+- title: "Real-Time Neuron Detection and Neural Signal Extraction Platform for Miniature Calcium Imaging"
+  authors: "Yaesop Lee, Jing Xie, Eungjoo Lee, Srijesh Sudarsanan, Da-ting Lin, Rong Chen, Shuvra S. Bhattacharyya"
+  venue: "Frontiers in Computational Neuroscience"
+  year: 2020
+  type: journal
+  url: https://doi.org/10.3389/fncom.2020.00043
+
+- title: "Deep Super-Resolution Imaging Technology: Toward Optical Super-Vision"
+  authors: "Seok Bong Yoo, Eungjoo Lee"
+  venue: "IEEE Consumer Electronics Magazine"
+  year: 2020
+  type: journal
+  url: https://doi.org/10.1109/mce.2020.2988442
+
+- title: "Weakly Supervised Segmentation for Real-Time Surgical Tool Tracking"
+  authors: "Eungjoo Lee, William Plishker, Xinyang Liu, Shuvra S. Bhattacharyya, Raj Shekhar"
+  venue: "IET Healthcare Technology Letters"
+  year: 2019
+  type: journal
+  url: https://doi.org/10.1049/htl.2019.0083
+
+# ── Conference papers ────────────────────────────────────────────────────────
+- title: "FedTTA: Enabling Robust Federated Test-Time Adaptation in Adverse Weather for Distributed Surveillance"
+  authors: "Hunmin Lee, Tanya Evita George, Eungjoo Lee"
+  venue: "SPIE Real-Time Image Processing and Deep Learning"
+  year: 2026
+  type: conference
+  code: https://github.com/vsi-lab/federated-tta
+
+- title: "RVO-MIS: Robust Visual Odometry for Minimally Invasive Surgery"
+  authors: "Zhuo Wang, Chiang-Heng Chien, Eungjoo Lee"
+  venue: "Medical Imaging with Deep Learning (MIDL)"
+  year: 2026
+  type: conference
+  url: https://proceedings.mlr.press/v315/wang26b.html
+  code: https://github.com/vsi-lab/RVOMIS
+  project: https://cho-wang001.github.io/rvomis/
+
+- title: "Mitigating Domain Shift in Concept Bottleneck Models for Diabetic Retinopathy Grading via Learnable Concept Projection"
+  authors: "Yunyoung Lee, Eungjoo Lee"
+  venue: "SPIE Medical Imaging"
+  year: 2026
+  type: conference
+  url: https://doi.org/10.1117/12.3088213
+
+- title: "A Contactless Gaze-to-Reaction-Time Pipeline for Screening-Oriented Visual Field Assessment"
+  authors: "Puneeth Samarla, Anjani Bollapragada, Paul Chong, Eungjoo Lee"
+  venue: "SPIE Medical Imaging"
+  year: 2026
+  type: conference
+  url: https://spie.org/medical-imaging/presentation/A-contactless-gaze-to-reaction-time-pipeline-for-screening-oriented/13928-39
+  code: https://github.com/vsi-lab/eye-movement-perimetry
+
+- title: "Using Cross-Domain Detection Loss to Infer Multi-Scale Information for Improved Tiny Head Tracking"
+  authors: "Jisu Kim, Alex Mattingly, Eungjoo Lee, Benjamin Riggan"
+  venue: "IEEE International Conference on Automatic Face and Gesture Recognition (FG)"
+  year: 2025
+  type: conference
+  url: https://arxiv.org/abs/2505.22677
+
+- title: "SLRBC: Self-Supervised Learning for Red Blood Cell Segmentation and Classification with a Biased Contrastive Loss"
+  authors: "Yicheng Leng, Eungjoo Lee"
+  venue: "SPIE Medical Imaging"
+  year: 2025
+  type: conference
+
+- title: "Self-Supervised Graph Transformer with Contrastive Learning for Brain Connectivity Analysis towards Improving Autism Detection"
+  authors: "Yicheng Leng, Syed Muhammad Anwar, Islem Rekik, Sen He, Eungjoo Lee"
+  venue: "IEEE International Symposium on Biomedical Imaging (ISBI)"
+  year: 2025
+  type: conference
+  url: https://arxiv.org/abs/2501.16346
+
+- title: "Lightweight TransUNet with Knowledge Distillation for Efficient Medical Image Segmentation"
+  authors: "Husain Al Yusuf, Jayant Biradar, Eungjoo Lee"
+  venue: "SPIE Defense + Commercial Sensing"
+  year: 2025
+  type: conference
+  url: https://doi.org/10.1117/12.3054578
+
+- title: "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"
+  authors: "Jiayi Zhang, Yuchen Tian, Bofan Song, Eungjoo Lee"
+  venue: "IEEE International Symposium on Biomedical Imaging (ISBI)"
+  year: 2025
+  type: conference
+  url: https://doi.org/10.1109/ISBI60581.2025.10981235
+
+- title: "Child FER: Domain-Agnostic Facial Expression Recognition in Children Using a Secondary Image Diffusion Model"
+  authors: "Eungi Lee, Eungjoo Lee, Syed Muhammad Anwar, Seok Bong Yoo"
+  venue: "IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)"
+  year: 2024
+  type: conference
+  note: "Equal contribution"
+  url: https://doi.org/10.1109/icassp48485.2024.10446891
+
+- title: "Exploring Action Recognition in Endoscopy Video Datasets"
+  authors: "Yuchen Tian, Sidike Paheding, Ehsan Azimi, Eungjoo Lee"
+  venue: "SPIE Real-Time Image Processing and Deep Learning"
+  year: 2024
+  type: conference
+  url: https://doi.org/10.1117/12.3014345
+
+- title: "Hyperspectral Image Classification with Retentive Network"
+  authors: "Sidike Paheding, Nusrat Zahana, Abel A. Reyes, Ernesto Martinez Jr, Eungjoo Lee"
+  venue: "SPIE Pattern Recognition and Prediction XXXV"
+  year: 2024
+  type: conference
+  url: https://doi.org/10.1117/12.3013356
+
+- title: "Multi-Scale Attention Network for Diabetic Foot Ulcer Segmentation Using Self-Supervised Learning"
+  authors: "Aravind Shrenivas Murali, Marino Chuquilín, Eungjoo Lee"
+  venue: "Diabetic Foot Ulcers Grand Challenge, Springer Nature"
+  year: 2024
+  type: conference
+
+- title: "Automated Segmentation of Nucleus in Scattering-based Light Sheet Microscopy Images"
+  authors: "Yongjun Kim, Jingwei Zhao, Ameer Nessaee, Eungjoo Lee, Brooke Liang, Michelle Khan, Eric Yang, Dongkyun Kang"
+  venue: "Optica Biophotonics Congress: Biomedical Optics"
+  year: 2024
+  type: conference
+  url: https://doi.org/10.1364/MICROSCOPY.2024.MTu4A.2
+
+- title: "EADTC: An Approach to Interpretable and Accurate Crime Prediction"
+  authors: "Yujunrong Ma, Kiminori Nakamura, Eungjoo Lee, Shuvra S. Bhattacharyya"
+  venue: "IEEE International Conference on Systems, Man, and Cybernetics (SMC)"
+  year: 2022
+  type: conference
+  url: https://doi.org/10.1109/smc53654.2022.9945130
+
+- title: "Real-Time Face Tracking Based on a Configurable Ensemble of Detectors"
+  authors: "Eungjoo Lee, Alexander Mattingly, Heesung Kwon, Benjamin Riggan, Shuvra S. Bhattacharyya"
+  venue: "IEEE Asilomar Conference on Signals, Systems, and Computers"
+  year: 2022
+  type: conference
+  note: "Equal contribution"
+  url: https://doi.org/10.1109/IEEECONF56349.2022.10051958
+
+- title: "Object Detection on Resource-Constrained Platforms Using a Configurable Ensemble of Detectors"
+  authors: "Eungjoo Lee, Alex Mattingly, Jing Xie, Heesung Kwon, Shuvra S. Bhattacharyya"
+  venue: "SPIE Real-Time Image Processing and Deep Learning"
+  year: 2022
+  type: conference
+  note: "Equal contribution"
+  url: https://doi.org/10.1117/12.2618342
+
+- title: "Archangel Dataset: UAV-Based Imagery with Position and Pose Metadata"
+  authors: "Yaesop Lee, Eungjoo Lee, Damon M. Conover, Yi-Ting Shen, Heesung Kwon, Shuvra S. Bhattacharyya, Jason Hill, Kenneth Evensen"
+  venue: "SPIE Artificial Intelligence and Machine Learning for Multi-Domain Operations Applications IV"
+  year: 2022
+  type: conference
+  url: https://doi.org/10.1117/12.2618636
+
+- title: "Recognition of Facial Expression Using Spatial Transformation Network and Convolutional Neural Network"
+  authors: "Jieun Kim, Eungjoo Lee, Deokwoo Lee"
+  venue: "SPIE Pattern Recognition and Tracking XXXIII"
+  year: 2022
+  type: conference
+  url: https://doi.org/10.1117/12.2634030
+
+- title: "Self-Supervised Pre-Training Improves Fundus Image Classification for Diabetic Retinopathy"
+  authors: "Joohyung Lee, Eungjoo Lee"
+  venue: "SPIE Real-Time Image Processing and Deep Learning"
+  year: 2022
+  type: conference
+  note: "Equal contribution"
+  url: https://doi.org/10.1117/12.2632901
+
+- title: "DCT-Based Hyperspectral Image Classification on Resource-Constrained Platforms"
+  authors: "Eungjoo Lee, Yi-Ting Shen, Lei Pan, Zhu Li, Shuvra S. Bhattacharyya"
+  venue: "IEEE Workshop on Hyperspectral Imaging and Signal Processing (WHISPERS)"
+  year: 2021
+  type: conference
+  url: https://doi.org/10.1109/whispers52202.2021.9483973
+
+- title: "Validation of Object Detection in UAV-Based Images Using Synthetic Data"
+  authors: "Eungjoo Lee, Damon M. Conover, Shuvra S. Bhattacharyya, Heesung Kwon, Jason Hill, Kenneth Evensen"
+  venue: "SPIE Artificial Intelligence and Machine Learning for Multi-Domain Operations Applications III"
+  year: 2021
+  type: conference
+  url: https://doi.org/10.1117/12.2586860
+
+- title: "MRI-Compatible Needle Guidance Toolkit That Streamlines Arthrography Procedures: Phantom Accuracy Study"
+  authors: "Reza Monfaredi, Pavel Yarmolenko, Eungjoo Lee, Viktoriya Beskin, Kevin Cleary, Karun Sharma"
+  venue: "SPIE Medical Imaging: Image-Guided Procedures, Robotic Interventions, and Modeling"
+  year: 2020
+  type: conference
+  url: https://doi.org/10.1117/12.2550654
+
+- title: "Hyperspectral Video Processing on Resource-Constrained Platforms"
+  authors: "Honglei Li, Lei Pan, Eungjoo Lee, Zhu Li, Matthew J. Hoffman, Anthony Vodacek, Shuvra S. Bhattacharyya"
+  venue: "IEEE Workshop on Hyperspectral Imaging and Signal Processing (WHISPERS)"
+  year: 2019
+  type: conference
+  url: https://doi.org/10.1109/WHISPERS.2019.8921138
+
+- title: "Segmentation of Surgical Instruments in Laparoscopic Videos: Training Dataset Generation and Deep-Learning-Based Framework"
+  authors: "Eungjoo Lee, William Plishker, Xinyang Liu, Timothy Kane, Shuvra S. Bhattacharyya, Raj Shekhar"
+  venue: "SPIE Medical Imaging: Image-Guided Procedures, Robotic Interventions, and Modeling"
+  year: 2019
+  type: conference
+  url: https://doi.org/10.1117/12.2512994
+
+# ── Workshop papers ──────────────────────────────────────────────────────────
+- title: "Abdominal Ultrasound Similarity Analysis for Quantitative Longitudinal Liver Fibrosis Staging"
+  authors: "Eungjoo Lee, Vivek K. Singh, Elham Y. Kalafi, Peng Guo, Arinc Ozturk, Theodore T. Pierce, Brian A. Telfer, Anthony E. Samir, Laura J. Brattain"
+  venue: "Workshop on Clinical Image-Based Procedures (CLIP), Springer LNCS"
+  year: 2024
+  type: workshop
+  url: https://doi.org/10.1007/978-3-031-73083-2_8
+
+- title: "Exploiting Simplified Depth Estimation for Stereo-Based 2D Object Detection"
+  authors: "Yaesop Lee, Hyungtae Lee, Eungjoo Lee, Heesung Kwon, Shuvra S. Bhattacharyya"
+  venue: "IEEE Applied Imagery Pattern Recognition Workshop (AIPR)"
+  year: 2022
+  type: workshop
+  url: https://doi.org/10.1109/aipr57179.2022.10092234
+
+# ── Abstracts ────────────────────────────────────────────────────────────────
+- title: "DR.GRPO: Diabetic Retinopathy Grading through Group Relative Policy Optimization"
+  authors: "Haewon Hwang, Igor Kozak, Eungjoo Lee"
+  venue: "Society for AI in Vision and Ophthalmology (SAIVO) Annual Meeting"
+  year: 2026
+  type: abstract
+
+- title: "Efficient MoE-Enhanced Vision Transformer with Adaptive Token Sampling for Cross-Scanner OCT Classification"
+  authors: "Hansol Ko, Igor Kozak, Eungjoo Lee"
+  venue: "SAIVO Annual Meeting"
+  year: 2026
+  type: abstract
+
+- title: "From Fundus to Diagnosis: End-to-End Binocular-Monocular Framework for Ocular Disease Classification with Evidence-Based Reasoning"
+  authors: "Jekyung Lee, Igor Kozak, Eungjoo Lee"
+  venue: "SAIVO Annual Meeting"
+  year: 2026
+  type: abstract
+
+- title: "Class-Aware Channel Pruning with Resource-Aware Optimization for Efficient Retinal OCT Classification"
+  authors: "Minju Hyun, Igor Kozak, Eungjoo Lee"
+  venue: "SAIVO Annual Meeting"
+  year: 2026
+  type: abstract
+
+- title: "Establishing a Pilot Benchmark for Epiretinal Membrane and Instrument Segmentation in Intraoperative Retinal Surgery Video"
+  authors: "Alexander M. Thompson, Saurav Verma, Parker Sorge, Felipe Murati, Avery Sears, Igor Kozak, Eungjoo Lee"
+  venue: "ARVO Annual Meeting"
+  year: 2026
+  type: abstract
+
+- title: "Chronic Kidney Disease Detection from Retinal Fundus Images Using the RETFound Foundation Model"
+  authors: "Eungjoo Lee, Rishabh Bhattad, Felipe Murati, Igor Kozak"
+  venue: "ARVO Annual Meeting"
+  year: 2026
+  type: abstract
+
+- title: "Transformer-Based Segmentation of Retina and Choroid in Ophthalmic Ultrasound"
+  authors: "Saurav Verma, Eungjoo Lee, Felipe Murati, Igor Kozak"
+  venue: "ARVO Annual Meeting"
+  year: 2026
+  type: abstract
+
+- title: "Antelligence: LLM-Powered Swarm Simulation with Biomedical Extensions"
+  authors: "Eshaan Mathakari, Kashyap Nadendla, Tanya Evita George, Zenith Mesa, Eungjoo Lee"
+  venue: "IEEE EMBS International Conference on Body Sensor Networks (BSN)"
+  year: 2025
+  type: abstract
+
+- title: "SREndo: Leveraging Super-Resolution Techniques on Endoscopic Datasets for Enhanced Surgical Procedures"
+  authors: "Eungjoo Lee, Seok Bong Yoo"
+  venue: "Arizona Photonics Days"
+  year: 2024
+  type: abstract
+
+- title: "Best Practices for Surgical Data Challenges Tailored to Artificial Intelligence"
+  authors: "Jennifer Eckhoff, Quenzheng Li, et al., including Eungjoo Lee"
+  venue: "European Association for Endoscopic Surgery (EAES) Annual Meeting"
+  year: 2023
+  type: abstract
+
+- title: "AI-SCD: A Deep Learning Approach for Skin-to-Liver Capsule Distance Measurement to Optimize Shear Wave Elastography Performance"
+  authors: "A. Ali, S. Hegde, T. T. Pierce, E. Cheah, P. Guo, Eungjoo Lee, F. Heidari, A. Ozturk, K. Pope, A. R. Shih, J. Misdraji, A. E. Samir"
+  venue: "Radiological Society of North America (RSNA) Annual Meeting"
+  year: 2023
+  type: abstract
+
+# ── Technical reports ────────────────────────────────────────────────────────
+- title: "National Institute of Justice's Recidivism Forecasting Challenge: Research Paper, Group MNLB"
+  authors: "Yujunrong Ma, Kiminori Nakamura, Eungjoo Lee, Shuvra S. Bhattacharyya"
+  venue: "National Institute of Justice"
+  year: 2022
+  type: report
+  url: https://www.ojp.gov/pdffiles1/nij/grants/305046.pdf
+
+- title: "Synthetic Dataset Generation and Adaptation for Human Detection"
+  authors: "Jie Yan, Eungjoo Lee, Damon Conover, Heesung Kwon"
+  venue: "U.S. Army Research Laboratory, ARL-TR-9112"
+  year: 2020
+  type: report
+  url: https://apps.dtic.mil/sti/pdfs/AD1115446.pdf

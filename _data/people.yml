@@ -1,0 +1,170 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# PEOPLE
+#
+# New member:   add an entry under "members". Put a photo in assets/people/
+#               (portrait, about 4:5) and write its file name after "photo:".
+#               Leave "photo:" empty to show initials until a photo arrives.
+# Graduation:   cut the entry from "members", paste it under "alumni",
+#               set "group", "years" and "now" (current position), and delete "photo".
+#
+# role:  phd | ms | postbac | undergrad | collaborator
+# group: phd | ms | undergrad | visitor
+# ─────────────────────────────────────────────────────────────────────────────
+
+members:
+  - name: Hansol Ko
+    role: phd
+    program: Electrical, Computing, and Software Engineering
+    photo: hansol-ko.jpg
+  - name: Husain Al Yusuf
+    role: phd
+    program: Electrical, Computing, and Software Engineering
+    photo: husain-al-yusuf.jpg
+  - name: Jiakai Du
+    role: phd
+    program: Management Information Systems
+    note: Co-advised with Dr. Yong Ge
+    photo: jiakai-du.jpg
+  - name: Yicheng Leng
+    role: phd
+    program: Electrical, Computing, and Software Engineering
+    photo: yicheng-leng.jpg
+  - name: Zhuo Wang
+    role: phd
+    program: Electrical, Computing, and Software Engineering
+    photo: zhuo-wang.jpg
+
+  - name: Manglam Srivastav
+    role: ms
+    program: Information Science
+    photo: manglam-srivastav.jpg
+  - name: Samarla Krishna
+    role: ms
+    program: Information Science
+    photo: samarla-krishna.jpg
+  - name: Wonhee Koh
+    role: ms
+    program: Electrical, Computing, and Software Engineering
+    photo: wonhee-koh.jpg
+
+  - name: Minh Le
+    role: postbac
+    program: Biology
+    photo: minh-le.jpg
+  - name: Jaime Nicole Toomer
+    role: postbac
+    program: Physiology and Medical Sciences
+    photo: jaime-toomer.jpg
+
+  - name: Advith Natarajan
+    role: undergrad
+    program: EECS, UC Berkeley
+    photo: advith-natarajan.jpg
+  - name: Anay Somani
+    role: undergrad
+    program: Computer Science
+    photo: anay-somani.jpg
+  - name: Ameya Madhugiri
+    role: undergrad
+    program: Computer Science
+    photo: ameya-madhugiri.jpg
+  - name: Cameron DeBough
+    role: undergrad
+    program: Computer Science
+    photo: cameron-debough.jpg
+  - name: Emma Razi
+    role: undergrad
+    program: Ecology and Evolutionary Biology, Honors College
+    photo: emma-razi.jpg
+  - name: Kaya Graham
+    role: undergrad
+    program: Aerospace and Mechanical Engineering, Honors College
+    photo: kaya-graham.jpg
+  - name: Kimberly Becerra
+    role: undergrad
+    program: Ecology and Evolutionary Biology, Honors College
+    photo: kimberly-becerra.jpg
+  - name: Murali Ganji
+    role: undergrad
+    program: Computer Science
+    photo: murali-karthik-ganji.jpg
+  - name: Parker Sorge
+    role: undergrad
+    program: Biomedical Engineering, Honors College
+    photo: parker-sorge.jpg
+  - name: Siddhartha Singh
+    role: undergrad
+    program: Computer Science
+    photo: siddhartha-singh.jpg
+
+  - name: Meet Panjwani
+    role: collaborator
+    program: Biostatistician, Ophthalmology and Vision Science
+    photo: meet-panjwani.jpg
+
+alumni:
+  - name: Gaurav Sharma
+    group: phd
+    years: Information Science, 2024–2026
+    now: ORISE Research Fellow, U.S. Food and Drug Administration
+
+  - name: Sharad Talekar
+    group: ms
+    years: Information Science, 2026
+    now: Senior Infrastructure Engineer, Evollabs
+  - name: Abhimanyu Pandey
+    group: ms
+    years: Information Science, 2025–2026
+    now: Software Engineer, Aztra AI
+  - name: Saurav Verma
+    group: ms
+    years: Information Science, 2025
+    now: Principal Engineer, Cboe Global Markets
+  - name: Kyeonghee Kim
+    group: ms
+    years: Statistics and Data Science, 2025
+    now: Lecturer, Pima Community College
+  - name: Libin George
+    group: ms
+    years: Information Science, 2024–2025
+    now: Senior Machine Learning Engineer, PayPal
+
+  - name: Tae Cooper
+    group: undergrad
+    years: Electrical and Computer Engineering, 2024–2026
+    now: Harvard SEAS summer program, 2026
+  - name: Kory Smith
+    group: undergrad
+    years: Computer Science, 2026
+    now: Raytheon
+  - name: Kai Rivera Legaspi
+    group: undergrad
+    years: Neuroscience and Cognitive Science, 2026
+    now: Pre-medical studies
+  - name: Sophia Ly
+    group: undergrad
+    years: Computer Science, 2025
+    now: Amazon, summer 2025
+  - name: Aidan Javier Roig
+    group: undergrad
+    years: Systems and Industrial Engineering, 2024–2025
+    now: IBM
+
+  - name: Jungah Ha
+    group: visitor
+    years: Visiting Scholar, 2025
+    now: Senior Researcher, Korea Institute of Civil Engineering
+  - name: Nick Valverde
+    group: visitor
+    years: NSF QODED Program, summer 2025
+    now: Quantum Computing Data Analyst, State Farm
+  - name: Hamza Syed Zaidi
+    group: visitor
+    years: Biomedical Engineering, Arizona State University, summer 2025
+  - name: Seonghyun Kim
+    group: visitor
+    years: Exchange student, Seoul National University, 2024–2025
+  - name: Jaehong Lee
+    group: undergrad
+    years: Computer Science, Boston University, 2023
+    now: M.S. program, Purdue University

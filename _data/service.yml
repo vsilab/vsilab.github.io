@@ -1,0 +1,46 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# ACADEMIC AND PROFESSIONAL SERVICE (home page)
+# Each group is a heading; each item has a name, a role, and years.
+# ─────────────────────────────────────────────────────────────────────────────
+
+groups:
+  - title: Editorial
+    items:
+      - { name: Scientific Reports, role: "Editorial Board Member, Nature Portfolio", years: "2023–" }
+      - { name: Journal of Signal Processing Systems, role: "Associate Editor, Springer", years: "2023–" }
+      - { name: IEIE Transactions on Smart Processing and Computing, role: Associate Editor, years: "2026–" }
+      - { name: Journal of Signal Processing Systems, role: "Guest Editor, Springer", years: "2023" }
+
+  - title: Grant and fellowship review
+    items:
+      - { name: National Institutes of Health, role: "Early Career Reviewer, Center for Scientific Review, Special Emphasis Panel on Biodata Management and Computational Modeling", years: "2026" }
+      - { name: Mitacs Accelerate, role: Research Proposal Reviewer, years: "2025–2026" }
+      - { name: National Science Foundation, role: CSGrad4US Fellowship Reviewer, years: "2025" }
+
+  - title: Advisory roles
+    items:
+      - { name: "NSF IUSE: Ethical Thinking and Case Analysis in AI Education", role: External Advisory Board Member, years: "2025–2028" }
+      - { name: "Brain and Body Imaging Center, University of Arizona", role: Scientific Advisory Committee, years: "2023–" }
+
+  - title: Honors
+    items:
+      - { name: Ralph E. Powe Junior Faculty Enhancement Award, role: Oak Ridge Associated Universities, years: "2025" }
+      - { name: NSF I-Corps, role: "Entrepreneurial and Technical Lead, Desert and Pacific Region Hub", years: "2024" }
+      - { name: NIJ Recidivism Forecasting Challenge, role: "Third Place, U.S. Department of Justice", years: "2021" }
+
+  - title: Conference organization
+    items:
+      - { name: IEEE ISBI, role: Technical Program Committee, years: "2026–2027" }
+      - { name: AAAI, role: Program Committee, years: "2025–2027" }
+      - { name: SPIE Defense + Security, role: Program Committee, years: "2025–2027" }
+      - { name: CVPR, role: Program Committee, years: "2026" }
+      - { name: "Asilomar Conference on Signals, Systems, and Computers", role: Special Session Organizer, years: "2026" }
+      - { name: Hamlyn Symposium on Medical Robotics, role: Workshop Organizer, years: "2025" }
+      - { name: IEEE-EMBS Body Sensor Networks, role: "Workshop Organizer and Technical Program Committee", years: "2025" }
+      - { name: IEEE ISBI, role: Session Chair, years: "2025" }
+      - { name: European Conference on Artificial Intelligence, role: Program Committee, years: "2024–2025" }
+      - { name: SPIE Real-Time Image Processing and Deep Learning, role: Session Chair, years: "2024" }
+
+reviewer:
+  journals: [Nature Machine Intelligence, Medical Image Analysis, Pattern Recognition, IEEE TPAMI, IEEE TMI, IEEE JBHI, IEEE TMC, IEEE TC]
+  conferences: [CVPR, NeurIPS, ICML, ICLR, ECCV, MICCAI, AAAI, AISTATS, IPCAI, ISBI, ICIP, ICPR, ICASSP, WACV, ACCV]

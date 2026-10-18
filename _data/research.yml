@@ -1,0 +1,62 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# RESEARCH DIRECTIONS (home page and Research page)
+#
+# figure:  overview illustration shown on the home page (file in assets/figures/).
+#          The three overview figures are drawn by _build/figures/make_figures.py.
+# papers:  two or three related papers, copied exactly from the titles in
+#          publications.yml, in the order to show them. Venue and year are added automatically.
+#
+# collaborations: partner groups listed at the bottom of the Research page
+# ─────────────────────────────────────────────────────────────────────────────
+
+directions:
+  - id: multimodal
+    title: Multimodal Perception and Decision Systems
+    summary: Multimodal models that combine images, video, audio, and text, and decide when the visual evidence is sufficient to act. Robots look again before acting, and clinical models defer when uncertain.
+    topics:
+      - Vision-language models and multimodal perception
+      - Reliable multimodal reasoning under uncertainty in adaptive decision-making
+      - Human-centered perception and decision support
+      - Vision-language models for robot perception under partial observability
+    figure: overview-multimodal.svg
+    figure_alt: Image, video, audio, and text inputs with the parts the model attends to for a text query highlighted; a decision map that refers, keeps routine care, or defers to a clinician by predicted risk and uncertainty; and a real robot that observes a covered container, removes the cover, re-observes, and grasps the target
+    papers:
+      - "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"
+      - "Using Cross-Domain Detection Loss to Infer Multi-Scale Information for Improved Tiny Head Tracking"
+      - "Child FER: Domain-Agnostic Facial Expression Recognition in Children Using a Secondary Image Diffusion Model"
+
+  - id: medical
+    title: Medical Image and Video Understanding
+    summary: Ophthalmic imaging, surgical video, human movement, and brain connectivity. We interpret retinal scans, estimate camera motion inside the body, track human pose over time, and build tools that assist clinicians during a procedure.
+    topics:
+      - Foundation and self-supervised models for medical image interpretation
+      - Ophthalmic AI for retinal imaging and clinical decision support
+      - Surgical AI for workflow understanding and intelligent assistance
+      - Human pose estimation and motion analysis from video
+      - Graph learning on brain connectivity
+    figure: overview-medical.svg
+    figure_alt: Retinal vessel map computed from a fundus photograph, retinal layer boundaries in OCT, brain regions on an MNI template with their connectivity matrix, endoscope camera motion, and human pose keypoints across video frames
+    papers:
+      - "SegSTRONG-C: Segmenting Surgical Tools Robustly On Non-adversarial Generated 'Corruptions', an EndoVis'24 Challenge"
+      - "RVO-MIS: Robust Visual Odometry for Minimally Invasive Surgery"
+      - "Self-Supervised Graph Transformer with Contrastive Learning for Brain Connectivity Analysis towards Improving Autism Detection"
+
+  - id: reliable
+    title: Reliable and Efficient AI Systems
+    summary: Models that hold up under distribution shift and still run on the hardware available at the bedside or in the field. We study test-time adaptation and knowledge distillation toward this goal.
+    topics:
+      - Reliability under distribution and domain shift, including test-time adaptation
+      - Knowledge distillation and compact models for resource-constrained deployment
+      - Efficient adaptation of foundation models, with simulation and synthetic data
+    figure: overview-reliable.svg
+    figure_alt: A shift between training and deployment data, accuracy kept under shift by test-time adaptation, and a small student model distilled from a large teacher that keeps most of its accuracy with less compute
+    papers:
+      - "Efficient Hyperspectral Image Classification Using Discrete Cosine Transform on Limited-Resource Systems"
+      - "BCG-Former: Toward Pareto-Efficient Hyperspectral Image Classification via Band-Contextual Gating"
+      - "Prototype-Based Self-Supervised Distillation for Generalizable Medical Imaging Representation Learning"
+
+collaborations:
+  - Department of Ophthalmology and Vision Science, University of Arizona
+  - Division of Cardiothoracic Surgery and Department of Emergency Medicine, University of Arizona College of Medicine, Tucson
+  - Wyant College of Optical Sciences, University of Arizona
+  - Schepens Eye Research Institute of Massachusetts Eye and Ear, Harvard Medical School

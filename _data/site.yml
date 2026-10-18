@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# SITE-WIDE SETTINGS (header, footer, PI section)
+# ─────────────────────────────────────────────────────────────────────────────
+
+lab_name: Vision Systems and Intelligence Lab
+statement: Reliable decisions from limited visual evidence.
+intro: >
+  The Vision Systems and Intelligence Laboratory at the University of Arizona builds vision systems
+  that make reliable decisions with limited information and limited compute. We study how machines
+  use images, video, and multimodal data to perceive, reason, and act, with applications in surgical
+  and ophthalmic imaging, robotics, and intelligent sensing.
+
+pi:
+  name: Eungjoo Lee, Ph.D.
+  photo: eungjoo-lee.jpg
+  titles:
+    - Assistant Professor, School of Electrical, Computing, and Software Engineering
+    - Division Chief of Ophthalmic AI, Department of Ophthalmology and Vision Science
+    - Director, Vision Systems and Intelligence Laboratory
+  bio:
+    - >
+      Eungjoo Lee is an Assistant Professor in the School of Electrical, Computing, and Software
+      Engineering at the University of Arizona and Division Chief of Ophthalmic AI in the Department of
+      Ophthalmology and Vision Science. In summer 2026 he was a Visiting Researcher at the Schepens Eye
+      Research Institute of Massachusetts Eye and Ear, Harvard Medical School. Before joining Arizona he
+      was a postdoctoral research fellow in the Department of Radiology at Massachusetts General Hospital
+      and Harvard Medical School, affiliated with the Martinos Center for Biomedical Imaging.
+    - >
+      He received his Ph.D. in Electrical and Computer Engineering from the University of Maryland,
+      College Park. He is affiliated with the Arizona Center for Telemedicine and Digital Health,
+      the BIO5 Institute, the University of Arizona Cancer Center, and the Center for Semiconductor
+      Manufacturing.
+  # Put a PDF at assets/cv.pdf and write its path here to show a CV link. Leave empty to hide it.
+  cv:
+  scholar: https://scholar.google.com/citations?user=cyxDfeIAAAAJ&hl=en
+  orcid: https://orcid.org/0000-0001-6386-8470
+
+email: eungjoolee@arizona.edu
+phone: (520) 621-2474
+address:
+  - 1230 East Speedway Boulevard
+  - ECE Suite 557
+  - Tucson, Arizona 85719
+github: https://github.com/vsi-lab
+wiki: https://vsi-lab.github.io/wiki/
+
+# Short note shown under the opening statement on the home page
+join: >
+  Prospective Ph.D., M.S., and undergraduate researchers and visiting scholars are welcome to
+  email a CV and a short note on their research interests.

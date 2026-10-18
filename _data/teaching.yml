@@ -1,0 +1,19 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# TEACHING AND MENTORING
+# ─────────────────────────────────────────────────────────────────────────────
+
+courses:
+  - code: ECE 696B
+    title: Applications of Machine Learning in Image and Video Processing
+    detail: Graduate course developed for the department, Spring 2025 and 2026
+  - code: ENGR 102B
+    title: Introduction to Engineering, Honors Section
+    detail: Undergraduate honors course, Fall 2023 to 2026
+
+advising:
+  - year: "2026"
+    text: Honors Independent Study (ECE 299H), Honors Thesis (NROS 498H, ECOL 498H), Independent Study (ECE 599)
+  - year: "2025"
+    text: Honors Thesis (NROS 498H), Independent Study (ECE 599), Directed Research (ECE 492)
+  - year: "2024"
+    text: Independent Study (ECE 599), Directed Research (ECE 392)

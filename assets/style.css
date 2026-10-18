@@ -142,7 +142,7 @@ figcaption a:hover{text-decoration:underline}
 .search{flex:0 1 320px}
 .search input{width:100%;font:400 var(--fs-5) var(--face);color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--muted);border-radius:0;padding:6px 0}
 .search input::placeholder{color:var(--muted)}
-.pubs{display:grid;gap:26px}
+.pubs{display:grid;gap:20px}
 .pub{display:grid;grid-template-columns:52px minmax(0,1fr);gap:18px}
 .pub-year{font-size:var(--fs-5);color:var(--muted);line-height:1.75;font-variant-numeric:tabular-nums lining-nums}
 .pub-body{display:grid;gap:2px;min-width:0}
@@ -151,7 +151,7 @@ figcaption a:hover{text-decoration:underline}
 .pub-title a:hover{text-decoration-color:var(--ink)}
 .pub-meta{font-size:var(--fs-5);color:var(--muted);line-height:1.45}
 .pub-meta b{font-weight:500;color:var(--ink)}
-.pub-links{display:flex;flex-wrap:wrap;gap:4px 22px;font-size:var(--fs-5);margin-top:4px}
+.pub-links{display:flex;flex-wrap:wrap;gap:4px 22px;font-size:var(--fs-5);margin-top:2px}
 .empty{padding-block:40px;color:var(--muted);padding-left:calc(var(--title-col) + var(--gap))}
 
 /* people */

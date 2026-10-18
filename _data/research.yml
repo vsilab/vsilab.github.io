@@ -53,7 +53,6 @@ directions:
     papers:
       - "Efficient Hyperspectral Image Classification Using Discrete Cosine Transform on Limited-Resource Systems"
       - "BCG-Former: Toward Pareto-Efficient Hyperspectral Image Classification via Band-Contextual Gating"
-      - "Lightweight TransUNet with Knowledge Distillation for Efficient Medical Image Segmentation"
 
 collaborations:
   - Department of Ophthalmology and Vision Science, University of Arizona

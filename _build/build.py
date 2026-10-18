@@ -223,7 +223,7 @@ def page_teaching():
     advising = ''.join(f'<li><span class="row-k">{e(a["year"])}</span><span>{e(a["text"])}</span></li>' for a in TEACH['advising'])
     return (page_head('Teaching', 'Courses and research advising.')
             + section('Courses', courses, cls='quiet')
-            + section('Independent Study and Research Advising', f'<ul class="rows">{advising}</ul>', cls='quiet'))
+            + section('Independent Study and Research Advising', f'<ul class="rows">{advising}</ul>', cls='quiet ruled'))
 
 def page_resources():
     return (page_head('Resources', 'Datasets, benchmarks, and software from the lab.')

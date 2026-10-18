@@ -250,3 +250,8 @@ figcaption a:hover{text-decoration:underline}
 .sec.quiet .rows li{border-top:0;padding-block:6px}
 .sec.quiet .rows li:first-child{padding-top:0}
 .sec.quiet .item+.item{border-top:0;padding-top:12px}
+
+/* page intros are one or two sentences: let them use the full width and avoid a lone last word */
+.page-head>p{max-width:none;text-wrap:pretty}
+.hero p{text-wrap:pretty}
+.sec.quiet.ruled,.sec.quiet+.sec.quiet.ruled{border-top:1px solid var(--rule);padding-top:32px;margin-top:20px}

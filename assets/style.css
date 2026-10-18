@@ -160,7 +160,10 @@ figcaption a:hover{text-decoration:underline}
 .portrait{aspect-ratio:4/5;max-width:100%;overflow:hidden;background:var(--rule);margin-bottom:12px}
 .portrait img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter .45s ease}
 .portrait:hover img,.person:hover .portrait img{filter:none}
-@media (hover:none){.portrait img{filter:none}}
+/* touch screens have no hover: site.js colors a portrait while it sits in the middle of the screen
+   (or when tapped). Without JS, touch screens simply show color. */
+@media (hover:none){html:not(.js) .portrait img{filter:none}}
+.portrait.on img{filter:none}
 .portrait.ph{display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--rule);color:var(--muted);font-size:30px;font-style:italic}
 .p-name{font-weight:500;line-height:1.35}
 .p-dept{font-size:var(--fs-5);color:var(--muted);line-height:1.4}
@@ -261,3 +264,34 @@ figcaption a:hover{text-decoration:underline}
 .people .portrait{max-width:150px}
 @media (max-width:1060px){.people{grid-template-columns:repeat(4,minmax(0,140px))}}
 @media (max-width:760px){.people{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 14px}}
+
+/* phones: desktop layout above is unchanged; these rules only apply at 760px and below */
+@media (max-width:760px){
+  body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  /* PI: photo first, then name and bio across the full width */
+  .pi{grid-template-columns:1fr;gap:22px}
+  .pi-photo{grid-row:1;width:160px}
+  .pi-text{max-width:none}
+  .pi-text p{text-wrap:pretty}
+  /* body copy: slightly larger leading for small screens */
+  .sec-body p,.hero p,.r-text p{line-height:1.62}
+  /* publications: one swipeable row of categories instead of four wrapped lines */
+  .page-head,.page-head>*{min-width:0}
+  .filters{flex-direction:column;align-items:stretch;gap:14px;min-width:0;max-width:100%}
+  .chips{flex-wrap:nowrap;overflow-x:auto;min-width:0;max-width:calc(100% + 36px);gap:0 22px;margin-inline:-18px;padding-inline:18px;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scroll-padding-inline:18px;
+    -webkit-mask-image:linear-gradient(to right,#000 82%,transparent);mask-image:linear-gradient(to right,#000 82%,transparent)}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;white-space:nowrap;scroll-snap-align:start;padding-block:10px}
+  .search{flex:none;width:100%}
+  .search input{font-size:16px} /* 16px keeps iOS from zooming on focus */
+  /* people: three portraits per row, names and departments set a step smaller */
+  .people{grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 14px}
+  .people .portrait{max-width:none}
+  .p-name{font-size:16px;line-height:1.25}
+  .p-dept{font-size:13.5px;line-height:1.35}
+  /* larger tap targets in the menu */
+  .nav a{padding-block:10px}
+  .portrait img{transition:filter .6s ease}
+}
+@media (max-width:380px){.people{grid-template-columns:repeat(2,minmax(0,1fr))}}

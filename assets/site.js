@@ -44,3 +44,16 @@ window.vsiFigError=function(img){if(img.dataset.fallback){img.src=img.dataset.fa
     show(location.hash);
   }
 })();
+// touch screens: portraits turn from black and white to color while they sit in the middle of the screen; a tap also toggles color
+(function(){
+  var d=document, mq=window.matchMedia&&window.matchMedia('(hover: none)');
+  if(!mq||!mq.matches) return;
+  var ps=[].slice.call(d.querySelectorAll('.portrait'));
+  if(!ps.length) return;
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('on',e.isIntersecting);});},
+      {rootMargin:'-30% 0px -30% 0px',threshold:0});
+    ps.forEach(function(p){io.observe(p);});
+  } else { ps.forEach(function(p){p.classList.add('on');}); }
+  ps.forEach(function(p){p.addEventListener('click',function(){p.classList.toggle('on');});});
+})();

@@ -238,6 +238,12 @@ PAGES = [('index', 'Home', page_home), ('research', 'Research', page_research), 
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
          '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">')
 
+def ver(name):
+    """Short content hash appended to asset URLs so phones and browsers fetch a changed file instead of a cached copy."""
+    import hashlib
+    with open(os.path.join(ROOT, 'assets', name), 'rb') as f: return hashlib.sha1(f.read()).hexdigest()[:8]
+
+
 def build_site(in_place=False):
     """Writes the pages. in_place=True writes them to the repository root next to assets/ (what GitHub
     Pages serves when it deploys from the main branch); otherwise to _site/ with a copy of assets/."""
@@ -258,12 +264,12 @@ def build_site(in_place=False):
 <title>{e(title)}</title><meta name="description" content="{e(desc)}">
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.png"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-{FONTS}<link rel="stylesheet" href="assets/style.css"></head>
+{FONTS}<link rel="stylesheet" href="assets/style.css?v={ver('style.css')}"></head>
 <body><a class="skip" href="#main">Skip to content</a>
 {header(key)}
 <main id="main" class="wrap">{fn()}</main>
 {footer()}
-<script src="assets/site.js"></script></body></html>
+<script src="assets/site.js?v={ver('site.js')}"></script></body></html>
 '''
         with open(os.path.join(OUT, 'index.html' if key == 'index' else key + '.html'), 'w', encoding='utf-8') as f:
             f.write(doc)

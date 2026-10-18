@@ -209,7 +209,7 @@ figcaption a:hover{text-decoration:underline}
   .foot-in{grid-template-columns:1fr 1fr}
 }
 @media (max-width:760px){
-  :root{--fs-1:30px;--fs-2:23px;--fs-4:17px;--gap:18px}
+  :root{--fs-1:28px;--fs-2:20px;--fs-3:17px;--fs-4:16.5px;--fs-5:14.5px;--gap:18px}
   .wrap,.masthead-in,.foot-in,.foot-copy{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
   .masthead-in{flex-wrap:wrap;min-height:60px;gap:0}
   .brand-name{font-size:11px;letter-spacing:.12em}
@@ -293,5 +293,6 @@ figcaption a:hover{text-decoration:underline}
   /* larger tap targets in the menu */
   .nav a{padding-block:10px}
   .portrait img{transition:filter .6s ease}
+  .sec.quiet .sec-title{font-size:19px}
 }
 @media (max-width:380px){.people{grid-template-columns:repeat(2,minmax(0,1fr))}}

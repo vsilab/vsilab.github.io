@@ -46,7 +46,7 @@ window.vsiFigError=function(img){if(img.dataset.fallback){img.src=img.dataset.fa
 })();
 // touch screens: portraits turn from black and white to color while they sit in the middle of the screen; a tap also toggles color
 (function(){
-  var d=document, mq=window.matchMedia&&window.matchMedia('(hover: none)');
+  var d=document, mq=window.matchMedia&&window.matchMedia('(hover: none), (pointer: coarse)');
   if(!mq||!mq.matches) return;
   var ps=[].slice.call(d.querySelectorAll('.portrait'));
   if(!ps.length) return;

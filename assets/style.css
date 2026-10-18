@@ -296,3 +296,6 @@ figcaption a:hover{text-decoration:underline}
   .sec.quiet .sec-title{font-size:19px}
 }
 @media (max-width:380px){.people{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Teaching and Resources: text uses the full content width instead of a 64-character measure */
+.sec.quiet .sec-body>p,.sec.quiet .item{max-width:none;text-wrap:pretty}

@@ -395,7 +395,7 @@ def fig_medical():
     mx0 = min(brain_r + 5.5, 158.0 - ms_)
     my0 = brain_cy - ms_ / 2
     ax.imshow(np.clip(C, -1, 1), cmap=div, vmin=-1, vmax=1, extent=(mx0, mx0 + ms_, my0, my0 + ms_), interpolation='nearest', zorder=2)
-    ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=INK, lw=0.6, zorder=3))
+    ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=RULE, lw=0.5, zorder=3))
     arrow(ax, (brain_r + 1.2, brain_cy), (mx0 - 1.0, brain_cy), head=8, lw=1.0)
     ax.text(bx0 + bw_ / 2, 68.5, 'Region graph', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
     ax.text(mx0 + ms_ / 2, 68.5, 'Connectivity\nmatrix', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top', linespacing=1.1)
@@ -464,7 +464,7 @@ def fig_reliable():
         A = np.exp(-((q[:, None] - q[None, :] - r.uniform(-0.3, 0.3)) / r.uniform(0.12, 0.3)) ** 2) + 0.15 * r.random((8, 8))
         ax.imshow(A / A.max(), cmap=amap, vmin=0, vmax=1, extent=(cx - size / 2, cx + size / 2, cy - size / 2, cy + size / 2),
                   interpolation='nearest', zorder=3)
-        ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=INK, lw=0.6, zorder=4))
+        ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=RULE, lw=0.5, zorder=4))
     head_y, cap_y, cy0 = 112.0, 68.5, 91.0
     def sub(xc, title, caption):
         ax.text(xc, head_y, title, fontsize=T_SMALL, color=INK, ha='center', va='baseline')
@@ -517,13 +517,9 @@ def fig_reliable():
     ax.imshow(shown, extent=(ix0, ix0 + iw, iy0, iy0 + ih), zorder=2)
     tw_, th_ = iw / gx, ih / gy
     for a in range(gx + 1):
-        ax.plot([ix0 + a * tw_] * 2, [iy0, iy0 + ih], color='white', lw=0.6, zorder=3)
+        ax.plot([ix0 + a * tw_] * 2, [iy0, iy0 + ih], color='white', lw=0.45, alpha=0.85, zorder=3)
     for b in range(gy + 1):
-        ax.plot([ix0, ix0 + iw], [iy0 + b * th_] * 2, color='white', lw=0.6, zorder=3)
-    for b in range(gy):
-        for a in range(gx):
-            if keep[b, a]:
-                ax.add_patch(Rectangle((ix0 + a * tw_, iy0 + ih - (b + 1) * th_), tw_, th_, fc='none', ec=BLUE, lw=0.7, zorder=4))
+        ax.plot([ix0, ix0 + iw], [iy0 + b * th_] * 2, color='white', lw=0.45, alpha=0.85, zorder=3)
     ax.text(ix0 + iw / 2, cy0 - 14.6, 'image tokens', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
     # the kept tokens, lined up as the shorter sequence the model processes
     kept = [(b, a) for b in range(gy) for a in range(gx) if keep[b, a]]
@@ -538,7 +534,6 @@ def fig_reliable():
         kh = kw * th_ / tw_
         x_ = kx0 + c_ * (kw + gap); y_ = ky_top - (r_ + 1) * kh - r_ * gap
         ax.imshow(photo[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_], extent=(x_, x_ + kw, y_, y_ + kh), zorder=3)
-        ax.add_patch(Rectangle((x_, y_), kw, kh, fc='none', ec=BLUE, lw=0.6, zorder=4))
     ax.text(kx0 + (cols * (kw + gap) - gap) / 2, cy0 - 14.6, 'kept tokens', fontsize=T_SMALL - 2.5, color=BLUE, ha='center', va='top')
     sub(119.0, 'Token pruning', 'fewer image tokens')
 

@@ -391,13 +391,14 @@ def fig_medical():
     rows_ = np.where((g_ > 0.06).any(axis=1))[0]
     brain_r = bx0 + (vis.max() + 1) / g_.shape[1] * bw_
     brain_cy = by0 + bh - (rows_.min() + rows_.max() + 1) / 2 / g_.shape[0] * bh
-    ms_ = 12.5
-    mx0, my0 = brain_r + 7.0, brain_cy - ms_ / 2
+    ms_ = 15.0
+    mx0 = min(brain_r + 5.5, 158.0 - ms_)
+    my0 = brain_cy - ms_ / 2
     ax.imshow(np.clip(C, -1, 1), cmap=div, vmin=-1, vmax=1, extent=(mx0, mx0 + ms_, my0, my0 + ms_), interpolation='nearest', zorder=2)
     ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=INK, lw=0.6, zorder=3))
     arrow(ax, (brain_r + 1.2, brain_cy), (mx0 - 1.0, brain_cy), head=8, lw=1.0)
     ax.text(bx0 + bw_ / 2, 68.5, 'Region graph', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
-    ax.text(mx0 + ms_ / 2, 68.5, 'Matrix', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
+    ax.text(mx0 + ms_ / 2, 68.5, 'Connectivity\nmatrix', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top', linespacing=1.1)
 
     ax = axb
     # human pose: keypoint skeletons across video frames (left)
@@ -461,7 +462,7 @@ def fig_reliable():
     ax.text(X(1.3), Y(1.21), 'shift', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
     ax.text(X(-1.85), Y(0.6), 'Training\ndata', fontsize=T_SMALL, color=BLUE, ha='center', linespacing=1.15)
     ax.text(X(5.25), Y(0.55), 'Deployment\ndata', fontsize=T_SMALL, color=AMBER_D, ha='center', linespacing=1.15)
-    ax.text(X(1.5), 73, 'Pixel intensity', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    ax.text(X(1.5), 73, 'Feature space', fontsize=T_SMALL, color=GREY, ha='center', va='top')
 
     ax = axb
     # test-time adaptation (conceptual): unlabeled deployment frames update the model before it predicts
@@ -503,7 +504,7 @@ def fig_reliable():
     arrow(ax, (ax0, ay), (ax1, ay), color=INK, lw=1.0, head=9)
     ax.text((ax0 + ax1) / 2, ay - 2.2, 'Inference cost per frame', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
     bxl = 121.0
-    ax.plot([bxl, bxl], [ay - 1.2, 49.0], color=TEAL, lw=1.2, ls=(0, (3, 2)))
+    ax.plot([bxl, bxl], [ay + 0.9, 49.0], color=TEAL, lw=1.2, ls=(0, (3, 2)), zorder=1)   # stops just above the axis
     ax.text(bxl, 50.0, 'real-time budget', fontsize=T_SMALL - 1.5, color=TEAL, ha='center', va='bottom')
     amap = LinearSegmentedColormap.from_list('a', ['#ffffff', BLUE_L, BLUE])
     rng_a = np.random.default_rng(7)

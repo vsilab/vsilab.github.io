@@ -21,8 +21,8 @@ directions:
     figure: overview-multimodal.svg
     figure_alt: Image, video, audio, and text inputs with the parts the model attends to for a text query highlighted; a decision map that refers, keeps routine care, or defers to a clinician by predicted risk and uncertainty; and a real robot that observes a covered container, removes the cover, re-observes, and grasps the target
     papers:
-      - "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"
       - "Prediction of Response to Spinal Cord Stimulation Using Machine Learning Based on Radiomics and Patient-Reported Outcomes"
+      - "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"
 
   - id: medical
     title: Medical Image and Video Understanding

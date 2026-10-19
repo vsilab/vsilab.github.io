@@ -267,7 +267,8 @@ def build_site(in_place=False):
         doc = f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{e(title)}</title><meta name="description" content="{e(desc)}">
-<meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:type" content="website">
+<meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:type" content="website"><meta property="og:site_name" content="{e(SITE["lab_name"])}"><meta property="og:url" content="https://vsilab.github.io/{"" if key == "index" else key + ".html"}">
+<meta property="og:image" content="https://vsilab.github.io/assets/og-image.png?v={ver('og-image.png')}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="{e(SITE["lab_name"])}, University of Arizona"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://vsilab.github.io/assets/og-image.png?v={ver('og-image.png')}">
 <link rel="icon" href="assets/favicon.png"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 {FONTS}<link rel="stylesheet" href="assets/style.css?v={ver('style.css')}"></head>
 <body><a class="skip" href="#main">Skip to content</a>

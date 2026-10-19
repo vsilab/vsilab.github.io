@@ -363,10 +363,16 @@ def fig_medical():
     C = np.where(g[:, None] == g[None, :], 0.6, 0.05) + rng.normal(0, 0.14, (n, n))
     C = (C + C.T) / 2; np.fill_diagonal(C, 1)
     div = LinearSegmentedColormap.from_list('d', [AMBER, '#f3d9b8', '#ffffff', '#b9cfe3', BLUE])
-    mx0, my0, ms_ = 144.0, 86.0, 11.5
+    # place the matrix level with the centre of the visible brain and start the arrow at the brain's right edge
+    vis = np.where((g_ > 0.06).any(axis=0))[0]
+    rows_ = np.where((g_ > 0.06).any(axis=1))[0]
+    brain_r = bx0 + (vis.max() + 1) / g_.shape[1] * bw_
+    brain_cy = by0 + bh - (rows_.min() + rows_.max() + 1) / 2 / g_.shape[0] * bh
+    ms_ = 12.5
+    mx0, my0 = brain_r + 7.0, brain_cy - ms_ / 2
     ax.imshow(np.clip(C, -1, 1), cmap=div, vmin=-1, vmax=1, extent=(mx0, mx0 + ms_, my0, my0 + ms_), interpolation='nearest', zorder=2)
     ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=INK, lw=0.6, zorder=3))
-    arrow(ax, (bx0 + bw_ + 0.6, my0 + ms_ / 2), (mx0 - 0.6, my0 + ms_ / 2), head=7, lw=0.9)
+    arrow(ax, (brain_r + 1.2, brain_cy), (mx0 - 1.0, brain_cy), head=8, lw=1.0)
     ax.text(bx0 + bw_ / 2, 68.5, 'Region graph', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
     ax.text(mx0 + ms_ / 2, 68.5, 'Matrix', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
 

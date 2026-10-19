@@ -26,14 +26,26 @@ plt.rcParams.update({
     'image.interpolation': 'antialiased',
 })
 
-# palette: neutral greys plus two restrained hues
-INK, GREY, MID, LIGHT, RULE = '#1f2328', '#6b7280', '#9aa1ab', '#f1f2f4', '#d5d9de'
-BLUE, BLUE_L = '#2b5c8a', '#dce7f1'
-AMBER, AMBER_L, AMBER_D = '#c97c2b', '#f6e7d4', '#9a5a16'
-TEAL, RED = '#3f8a83', '#a8423a'
+# palette: deep navy-black, white and greys, with a muted deep green where a second hue is needed.
+# Names are kept from the earlier palette so the drawing code reads the same.
+INK, GREY, MID, LIGHT, RULE = '#111418', '#5f6670', '#a0a6ae', '#f2f3f5', '#dde0e5'
+BLUE, BLUE_L = '#1b2a44', '#e7eaf0'          # deep navy
+AMBER, AMBER_L, AMBER_D = '#3e6a5a', '#e6eee9', '#2d5245'   # deep green
+TEAL, RED = '#7a828c', '#1b2a44'
 T_LABEL, T_SMALL, T_TITLE = 17.5, 16, 18.5
 
 W, H = 8.0, 7.0          # inches; drawing units are 160 x 140
+
+
+def mute(img, keep=0.35):
+    """Pulls a photo toward a cool monochrome so it sits with the restrained palette."""
+    rgb = img[..., :3].astype(float)
+    if rgb.max() > 1.5:
+        rgb = rgb / 255
+    g = rgb @ np.array([0.299, 0.587, 0.114])
+    warm = np.dstack([g * 0.98, g * 0.99, g * 1.02])     # neutral, slightly cool grey
+    out = np.clip(keep * rgb + (1 - keep) * warm, 0, 1)
+    return np.dstack([out, img[..., 3]]) if img.shape[-1] == 4 else out
 
 
 def canvas(lift=10):
@@ -47,8 +59,19 @@ def canvas(lift=10):
     return fig, axb, axt
 
 
-def panel(ax, x, y, title):
-    ax.text(x, y, title, fontsize=T_TITLE, fontweight=600, color=INK, va='baseline')
+def panel(ax, x, y, title, size=12.0, track=0.42):
+    """Panel title in uppercase with even letterspacing (track, in drawing units), like the site's minor headings."""
+    r = ax.figure.canvas.get_renderer()
+    inv = ax.transData.inverted()
+    cx = x
+    for ch in title.upper():
+        if ch == ' ':
+            cx += size * 0.16
+            continue
+        t = ax.text(cx, y, ch, fontsize=size, fontweight=500, color=INK, va='baseline')
+        bb = t.get_window_extent(renderer=r)
+        (x0, _), (x1, _) = inv.transform([[bb.x0, 0], [bb.x1, 0]])
+        cx += (x1 - x0) + track
 
 
 def arrow(ax, p, q, color=MID, lw=1.3, ls='-', rad=0.0, head=11, z=1):
@@ -58,6 +81,8 @@ def arrow(ax, p, q, color=MID, lw=1.3, ls='-', rad=0.0, head=11, z=1):
 
 def save(fig, name):
     path = os.path.join(OUT, name)
+    if os.environ.get('FIG_PNG'):                               # optional PNG preview for checking
+        fig.savefig(os.path.join(os.environ['FIG_PNG'], name.replace('.svg', '.png')), dpi=110, facecolor='white')
     fig.savefig(path, format='svg', dpi=220, facecolor='white')
     plt.close(fig)
     import re
@@ -177,7 +202,7 @@ def fig_multimodal():
         ax.text(x_, y_ - 1.2, label, fontsize=T_SMALL, color=INK, va='top')
 
     # image: CC0 photograph; attention shown as a spotlight on the cup
-    cof = data.coffee().astype(float) / 255
+    cof = mute(data.coffee().astype(float) / 255)
     h_ = int(cof.shape[1] * th / tw)
     crop = cof[40:40 + h_]
     yy_, xx_ = np.mgrid[0:crop.shape[0], 0:crop.shape[1]]
@@ -188,10 +213,10 @@ def fig_multimodal():
                heat, levels=[0.5], colors=['white'], linewidths=1.0, zorder=3)
     frame(*cells[0], 'Image')
     # video: four consecutive frames of one scene (a slow pan); bars show per-frame attention
-    rk = data.rocket()
+    rk = mute(data.rocket())
     fw = (tw - 3 * 0.8) / 4
     wts = [0.25, 0.45, 1.0, 0.6]
-    bar = 2.0
+    bar = 1.2
     ch = 400; cw = int(round(ch * fw / (th - bar)))
     for k in range(4):
         fx = cells[1][0] + k * (fw + 0.8)
@@ -201,7 +226,7 @@ def fig_multimodal():
         ax.add_patch(Rectangle((fx, cells[1][1]), fw, bar, fc=LIGHT, ec='none', zorder=2))
         ax.add_patch(Rectangle((fx, cells[1][1]), fw * wts[k], bar, fc=BLUE, ec='none', zorder=3))
         if wts[k] == max(wts):
-            ax.add_patch(Rectangle((fx, cells[1][1]), fw, th, fc='none', ec=BLUE, lw=1.4, zorder=7))
+            ax.add_patch(Rectangle((fx, cells[1][1]), fw, th, fc='none', ec=BLUE, lw=0.9, zorder=7))
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
     # audio: spectrogram; the attended segment stays bright
@@ -214,10 +239,10 @@ def fig_multimodal():
     frames_ = np.stack([sig[i_:i_ + win] * np.hanning(win) for i_ in range(0, len(sig) - win, hop)], 1)
     spec = 20 * np.log10(np.abs(np.fft.rfft(frames_, axis=0))[:90] + 1e-3)
     spec = np.clip((spec - spec.max() + 60) / 60, 0, 1)
-    rgb = plt.get_cmap('magma')(spec)[..., :3]
+    rgb = LinearSegmentedColormap.from_list('m', ['#f2f3f5', '#a0a6ae', '#33486b', '#111418'])(spec)[..., :3]
     tt = np.linspace(0, 1, spec.shape[1])
     on = (tt > 0.55) & (tt < 0.8)
-    rgb[:, ~on] = rgb[:, ~on] * 0.35 + 0.65 * np.array([0.93, 0.93, 0.94])
+    rgb[:, ~on] = rgb[:, ~on] * 0.35 + 0.65 * np.array([0.95, 0.953, 0.96])
     ax.imshow(rgb, origin='lower', aspect='auto', extent=(cells[2][0], cells[2][0] + tw, cells[2][1], cells[2][1] + th), zorder=2)
     ax.add_patch(Rectangle((cells[2][0] + 0.55 * tw, cells[2][1]), 0.25 * tw, th, fc='none', ec='white', lw=1.0, zorder=4))
     frame(*cells[2], 'Audio')
@@ -277,7 +302,7 @@ def fig_multimodal():
     py0 = 22.0
     for k, (lab_, sub_) in enumerate(steps):
         x_ = 4 + k * (pw + gap)
-        photo = plt.imread(os.path.join(os.path.dirname(__file__), 'sources', f'retrieval-{k + 1}.png'))
+        photo = mute(plt.imread(os.path.join(os.path.dirname(__file__), 'sources', f'retrieval-{k + 1}.png')), keep=0.55)
         ax.imshow(photo, extent=(x_, x_ + pw, py0, py0 + ph), zorder=2, interpolation='antialiased')
         ax.add_patch(Rectangle((x_, py0), pw, ph, fc='none', ec=RULE, lw=0.6, zorder=3))
         ax.text(x_ + pw / 2, py0 - 1.4, f"{('I', 'II', 'III', 'IV')[k]}. {lab_}", fontsize=T_SMALL, color=INK, ha='center', va='top', fontweight=600)
@@ -290,15 +315,21 @@ def fig_multimodal():
 # ───────────────────────── figure 2: medical image and video ─────────────────────────
 def fig_medical():
     fig, axb, ax = canvas()
-    panel(ax, 4, 123, 'Retinal vessels')
+    panel(ax, 4, 123, 'Retinal grading')
     panel(ax, 58, 123, 'Retinal layers')
     panel(ax, 110, 123, 'Brain connectivity')
     panel(axb, 4, 57, 'Human pose from video')
     panel(axb, 86, 57, 'Endoscope motion')
-    ax.imshow(real_fundus(600, vessel_half=True), extent=(8, 47, 72, 111), zorder=2)
-    ax.plot([27.5, 27.5], [72.5, 110.5], color='white', lw=1.0, ls=(0, (2.5, 2)), zorder=3)
-    ax.text(17.5, 68.5, 'Photo', fontsize=T_SMALL, color=GREY, ha='center', va='top')
-    ax.text(37.5, 68.5, 'Vessels', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    # fundus photograph and the five-level diabetic retinopathy severity scale it is graded on (no grade is claimed)
+    ax.imshow(real_fundus(600), extent=(10.5, 44.5, 79, 113), zorder=2)
+    arrow(ax, (27.5, 78.0), (27.5, 74.6), head=8, lw=1.0)
+    sx0, sx1, sy = 3.5, 51.5, 70.4
+    shades = ['#eef0f3', '#d2d8e1', '#a3afc0', '#5d6f8c', BLUE]
+    names = ['None', 'Mild', 'Mod.', 'Severe', 'PDR']
+    sw_ = (sx1 - sx0) / 5
+    for k, (c, nm) in enumerate(zip(shades, names)):
+        ax.add_patch(Rectangle((sx0 + k * sw_ + 0.2, sy), sw_ - 0.4, 3.0, fc=c, ec='none', zorder=2))
+        ax.text(sx0 + (k + 0.5) * sw_, sy - 1.0, nm, fontsize=T_SMALL - 3.5, color=GREY, ha='center', va='top')
     # retinal layers in OCT: right half shows the predicted layers as colored bands
     img, lines = oct_scan()
     img = img[::2, ::2]; lines = [l[::2] / 2 for l in lines]
@@ -307,10 +338,10 @@ def fig_medical():
     xs = np.linspace(ox0, ox1, img.shape[1])
     Yo = lambda ln: oy1 - ln / img.shape[0] * (oy1 - oy0)
     half = xs >= 79
-    band_cols = ['#4aa39b', '#3b6fa0', '#d9a25a', '#8f6bb0', '#c4574d']
+    band_cols = ['#1b2a44', '#3e6a5a', '#a0a6ae', '#33486b', '#5f6670']
     for k in range(5):
         top, bot = Yo(lines[k]), Yo(lines[k + 1])
-        ax.fill_between(xs[half], bot[half], top[half], color=band_cols[k], alpha=0.62, lw=0, zorder=3)
+        ax.fill_between(xs[half], bot[half], top[half], color=band_cols[k], alpha=0.55, lw=0, zorder=3)
     for k in range(6):
         ax.plot(xs[half], Yo(lines[k])[half], color='white', lw=0.7, zorder=4)
     ax.plot([79, 79], [oy0 + 0.5, oy1 - 0.5], color='white', lw=1.0, ls=(0, (2.5, 2)), zorder=5)
@@ -322,36 +353,51 @@ def fig_medical():
     mni = plt.imread(os.path.join(src, 'mni152-axial.png'))
     info = json.load(open(os.path.join(src, 'mni152-rois.json')))
     H_, W_ = info['shape']
-    bh = 34.0; bw_ = bh * W_ / H_
-    bx0, by0 = 107.0, 75.5
+    bh = 37.0; bw_ = bh * W_ / H_
+    bx0, by0 = 106.0, 73.5
     g_ = mni if mni.ndim == 2 else mni[..., 0]
-    rgba = np.dstack([g_, g_, g_, np.clip((g_ - 0.04) * 12, 0, 1)])     # transparent outside the head
-    ax.imshow(rgba, extent=(bx0, bx0 + bw_, by0, by0 + bh), zorder=2)
-    net_col = {'DefaultMode': BLUE, 'Visual': AMBER, 'Auditory': TEAL, 'FrontoParietal': '#7a5c99'}
+    rgba = np.dstack([g_, g_, g_, np.clip((g_ - 0.04) * 12, 0, 1) * 0.55])   # template drawn faintly under the graph
+    ax.imshow(rgba, extent=(bx0, bx0 + bw_, by0, by0 + bh), zorder=1)
+    net_col = {'DefaultMode': BLUE, 'Visual': AMBER, 'Auditory': TEAL, 'FrontoParietal': INK}
     order = ['DefaultMode', 'FrontoParietal', 'Auditory', 'Visual', 'Other']
     rois = info['rois']
-    for r in rois:
-        c = net_col.get(r['net'], '#c4574d')
-        px_ = bx0 + (r['i'] + 0.5) / W_ * bw_; py_ = by0 + (r['j'] + 0.5) / H_ * bh
-        ax.plot([px_], [py_], 'o', ms=3.4, mfc=c, mec='white', mew=0.6, zorder=4)
-    groups = [r['net'] if r['net'] in net_col else 'Other' for r in rois]
-    lab = np.array(sorted(range(len(groups)), key=lambda q: order.index(groups[q])))
-    g = np.array([order.index(groups[q]) for q in lab])
+    P_ = np.array([(bx0 + (r['i'] + 0.5) / W_ * bw_, by0 + (r['j'] + 0.5) / H_ * bh) for r in rois])
+    nets = [r['net'] if r['net'] in net_col else 'Other' for r in rois]
     rng = np.random.default_rng(11)
-    n = len(g)
+    n = len(rois)
+    # edges (illustrative): each region links to its nearest regions in the same network, plus a few links across networks
+    edges = set()
+    for a_ in range(n):
+        same = [b_ for b_ in range(n) if b_ != a_ and nets[b_] == nets[a_]]
+        same.sort(key=lambda b_: np.hypot(*(P_[a_] - P_[b_])))
+        for b_ in same[:2]:
+            edges.add((min(a_, b_), max(a_, b_)))
+    for a_, b_ in edges:
+        ax.plot(*zip(P_[a_], P_[b_]), color=net_col.get(nets[a_], MID), lw=1.0, alpha=0.8, zorder=2)
+    cross = [(a_, b_) for a_ in range(n) for b_ in range(a_ + 1, n) if nets[a_] != nets[b_] and np.hypot(*(P_[a_] - P_[b_])) < 9]
+    for k_ in rng.choice(len(cross), size=min(5, len(cross)), replace=False):
+        a_, b_ = cross[k_]
+        ax.plot(*zip(P_[a_], P_[b_]), color=MID, lw=0.7, ls=(0, (2, 1.5)), zorder=2)
+    for (px_, py_), nt in zip(P_, nets):
+        ax.plot([px_], [py_], 'o', ms=3.8, mfc=net_col.get(nt, MID), mec='white', mew=0.6, zorder=4)
+    # the same graph as a region-by-region matrix, drawn small
+    lab = np.array(sorted(range(n), key=lambda q: order.index(nets[q])))
+    g = np.array([order.index(nets[q]) for q in lab])
     C = np.where(g[:, None] == g[None, :], 0.6, 0.05) + rng.normal(0, 0.14, (n, n))
-    C[np.ix_(g == 0, g == 1)] -= 0.3; C[np.ix_(g == 1, g == 0)] -= 0.3
     C = (C + C.T) / 2; np.fill_diagonal(C, 1)
-    div = LinearSegmentedColormap.from_list('d', [AMBER, '#f3d9b8', '#ffffff', '#b9cfe3', BLUE])
-    mx0, my0, ms_ = 139.5, 83.0, 17.0
+    div = LinearSegmentedColormap.from_list('d', [AMBER, '#dbe7e1', '#ffffff', '#d3d9e3', BLUE])
+    # place the matrix level with the centre of the visible brain and start the arrow at the brain's right edge
+    vis = np.where((g_ > 0.06).any(axis=0))[0]
+    rows_ = np.where((g_ > 0.06).any(axis=1))[0]
+    brain_r = bx0 + (vis.max() + 1) / g_.shape[1] * bw_
+    brain_cy = by0 + bh - (rows_.min() + rows_.max() + 1) / 2 / g_.shape[0] * bh
+    ms_ = 12.5
+    mx0, my0 = brain_r + 7.0, brain_cy - ms_ / 2
     ax.imshow(np.clip(C, -1, 1), cmap=div, vmin=-1, vmax=1, extent=(mx0, mx0 + ms_, my0, my0 + ms_), interpolation='nearest', zorder=2)
-    ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=INK, lw=0.7, zorder=3))
-    cols_all = [net_col.get(order[q], '#c4574d') for q in g]
-    for q, c in enumerate(cols_all):                       # network strip along the matrix
-        ax.add_patch(Rectangle((mx0 + q * ms_ / n, my0 + ms_ + 0.4), ms_ / n, 1.0, fc=c, ec='none', zorder=3))
-    arrow(ax, (bx0 + bw_ + 0.4, by0 + bh / 2), (mx0 - 0.6, by0 + bh / 2), head=8, lw=1.0)
-    ax.text(bx0 + bw_ / 2, 68.5, 'fMRI regions', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
-    ax.text(mx0 + ms_ / 2 - 0.5, 68.5, 'Connectivity', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
+    ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=INK, lw=0.6, zorder=3))
+    arrow(ax, (brain_r + 1.2, brain_cy), (mx0 - 1.0, brain_cy), head=8, lw=1.0)
+    ax.text(bx0 + bw_ / 2, 68.5, 'Region graph', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
+    ax.text(mx0 + ms_ / 2, 68.5, 'Matrix', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
 
     ax = axb
     # human pose: keypoint skeletons across video frames (left)
@@ -402,8 +448,8 @@ def fig_medical():
 def fig_reliable():
     fig, axb, ax = canvas()
     panel(ax, 4, 123, 'Distribution shift')
-    panel(axb, 4, 57, 'Test-time adaptation')
-    panel(axb, 86, 57, 'Efficiency by distillation')
+    panel(axb, 4, 59, 'Test-time adaptation')
+    panel(axb, 86, 59, 'Compact models for real time')
     x = np.linspace(-4, 7, 400)
     X = lambda v: 14 + (v + 4) / 11 * 138
     Y = lambda v: 76 + v * 30
@@ -415,39 +461,70 @@ def fig_reliable():
     ax.text(X(1.3), Y(1.21), 'shift', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
     ax.text(X(-1.85), Y(0.6), 'Training\ndata', fontsize=T_SMALL, color=BLUE, ha='center', linespacing=1.15)
     ax.text(X(5.25), Y(0.55), 'Deployment\ndata', fontsize=T_SMALL, color=AMBER_D, ha='center', linespacing=1.15)
-    ax.text(X(1.5), 73, 'Input features', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    ax.text(X(1.5), 73, 'Pixel intensity', fontsize=T_SMALL, color=GREY, ha='center', va='top')
 
     ax = axb
+    # test-time adaptation (conceptual): unlabeled deployment frames update the model before it predicts
+    # one outdoor scene (public-domain photo shipped with scikit-image) under three weather conditions
+    from skimage import data as skdata, transform as sktf
+    scene = mute(sktf.resize(skdata.rocket().astype(float)[40:427, 0:640] / 255, (156, 204), anti_aliasing=True))
+    rng_w = np.random.default_rng(3)
+    def fog(im):
+        return im * 0.45 + 0.55 * np.array([0.84, 0.85, 0.87])
+    def rain(im):
+        im = im * 0.62 + 0.38 * np.array([0.55, 0.58, 0.62])
+        out = im.copy(); h, w = im.shape[:2]
+        for _ in range(170):
+            y, x = rng_w.integers(0, h - 9), rng_w.integers(0, w - 4)
+            for t_ in range(8):
+                out[y + t_, min(w - 1, x + t_ // 3)] = out[y + t_, min(w - 1, x + t_ // 3)] * 0.4 + 0.6
+        return out
+    looks = [('Clear', scene), ('Fog', fog(scene)), ('Rain', rain(scene))]
+    fw_, fh_, gap_ = 10.4, 8.0, 0.9
+    for k, (nm, img) in enumerate(looks):
+        fx = 4.5 + k * (fw_ + gap_)
+        ax.imshow(np.clip(img, 0, 1), extent=(fx, fx + fw_, 28.0, 28.0 + fh_), zorder=2, aspect='auto')
+        ax.add_patch(Rectangle((fx, 28.0), fw_, fh_, fc='none', ec=RULE, lw=0.6, zorder=3))
+        ax.text(fx + fw_ / 2, 26.8, nm, fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    ax.text(4.5 + 1.5 * fw_ + gap_, 19.6, 'Unlabeled test data', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
+    arrow(ax, (37.6, 32.0), (40.6, 32.0), head=8, lw=1.1)
+    ax.add_patch(FancyBboxPatch((41, 26), 17, 12, boxstyle='round,pad=0,rounding_size=1.4', fc=BLUE_L, ec=BLUE, lw=1.1))
+    ax.text(49.5, 32, 'Model', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
+    ax.add_patch(FancyArrowPatch((54.5, 38.6), (44.5, 38.6), connectionstyle='arc3,rad=1.25', arrowstyle='-|>',
+                                 mutation_scale=9, lw=1.1, color=BLUE))
+    ax.text(49.5, 47.2, 'adapt', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
+    arrow(ax, (58.6, 32.0), (66.0, 32.0), head=9, lw=1.1)
+    ax.text(67.0, 32.0, 'Predict', fontsize=T_SMALL, color=INK, ha='left', va='center')
+    ax.text(49.5, 22.6, 'no labels', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top', style='italic')
 
-    def small_axes(x0, label_x, label_y):
-        ax.plot([x0, x0], [15, 48], color=INK, lw=1.0)
-        ax.plot([x0, x0 + 56], [15, 15], color=INK, lw=1.0)
-        ax.text(x0 + 28, 12, label_x, fontsize=T_SMALL, color=GREY, ha='center', va='top')
-        ax.text(x0 - 2.5, 31.5, label_y, fontsize=T_SMALL, color=GREY, ha='right', va='center', rotation=90)
-
-    small_axes(16, 'Shift severity', 'Accuracy')
-    v = np.linspace(0, 1, 60)
-    ax.plot(16 + 48 * v, 45 - 24 * v ** 1.5, color=MID, lw=1.5, ls=(0, (3.5, 2.5)))
-    ax.plot(16 + 48 * v, 45.5 - 6 * v ** 1.6, color=BLUE, lw=2.0)
-    ax.text(65.5, 39.5, 'Adapted', fontsize=T_SMALL, color=BLUE, ha='left', va='center')
-    ax.text(65.5, 21.5, 'Fixed', fontsize=T_SMALL, color=GREY, ha='left', va='center')
-    # distilled student keeps most of the teacher's accuracy at a fraction of the compute
-    small_axes(98, 'Compute', 'Accuracy')
-    P = lambda c, a: (98 + 56 * c, 15 + 33 * a)
-    teacher, student, small = P(0.84, 0.88), P(0.24, 0.80), P(0.24, 0.44)
-    arrow(ax, (teacher[0] - 2.4, teacher[1] - 0.4), (student[0] + 2.4, student[1] + 0.2), color=GREY, ls=(0, (3, 2)), head=10)
-    arrow(ax, (small[0], small[1] + 2.0), (student[0], student[1] - 2.2), color=MID, head=10)
-    ax.plot(*teacher, 'o', ms=11, mfc=MID, mec='white', mew=1.2, zorder=4)
-    ax.plot(*student, 'o', ms=7.5, mfc=BLUE, mec='white', mew=1.2, zorder=4)
-    ax.plot(*small, 'o', ms=7.5, mfc='white', mec=MID, mew=1.2, zorder=4)
-    ax.text(teacher[0], teacher[1] - 3.6, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='top')
-    ax.text(student[0] + 2.2, student[1] - 2.6, 'Student', fontsize=T_SMALL, color=BLUE, ha='left', va='top')
-    ax.text(small[0] + 2.6, small[1] + 0.3, 'Trained alone', fontsize=T_SMALL, color=GREY, ha='left', va='center')
-    ax.text((teacher[0] + student[0]) / 2 + 1, (teacher[1] + student[1]) / 2 + 2.2, 'distill', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
-    # compute saving shown on the x-axis
-    ax.annotate('', xy=(student[0], 18.2), xytext=(teacher[0], 18.2),
-                arrowprops=dict(arrowstyle='<->', color=TEAL, lw=1.2, shrinkA=0, shrinkB=0))
-    ax.text((teacher[0] + student[0]) / 2, 19.6, 'less compute', fontsize=T_SMALL - 1, color=TEAL, ha='center', va='bottom')
+    # compact models under a real-time budget (conceptual; no measured values). The student replaces the
+    # teacher's multi-head self-attention with a single head and learns from the teacher (Lightweight TransUNet).
+    ay, ax0, ax1 = 21.5, 90.0, 154.0
+    arrow(ax, (ax0, ay), (ax1, ay), color=INK, lw=1.0, head=9)
+    ax.text((ax0 + ax1) / 2, ay - 2.2, 'Inference cost per frame', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
+    bxl = 121.0
+    ax.plot([bxl, bxl], [ay - 1.2, 49.0], color=TEAL, lw=1.2, ls=(0, (3, 2)))
+    ax.text(bxl, 50.0, 'real-time budget', fontsize=T_SMALL - 1.5, color=TEAL, ha='center', va='bottom')
+    amap = LinearSegmentedColormap.from_list('a', ['#ffffff', BLUE_L, BLUE])
+    rng_a = np.random.default_rng(7)
+    def attn(cx, cy, size, seed):
+        r = np.random.default_rng(seed)
+        q = np.linspace(0, 1, 8)
+        A = np.exp(-((q[:, None] - q[None, :] - r.uniform(-0.3, 0.3)) / r.uniform(0.12, 0.3)) ** 2) + 0.15 * r.random((8, 8))
+        ax.imshow(A / A.max(), cmap=amap, vmin=0, vmax=1, extent=(cx - size / 2, cx + size / 2, cy - size / 2, cy + size / 2),
+                  interpolation='nearest', zorder=3)
+        ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=INK, lw=0.6, zorder=4))
+    tcx, tcy, sz = 140.0, 36.5, 6.2
+    for k, (dx, dy) in enumerate(((-1, 1), (1, 1), (-1, -1), (1, -1))):
+        attn(tcx + dx * (sz / 2 + 0.5), tcy + dy * (sz / 2 + 0.5), sz, k + 1)
+    scx = 103.0
+    attn(scx, tcy, 8.0, 9)
+    ax.text(tcx, 44.6, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='bottom')
+    ax.text(scx, 44.6, 'Student', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
+    ax.text(tcx, 28.9, 'multi-head attention', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    ax.text(scx, 28.9, 'single-head attention', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    arrow(ax, (tcx - 8.2, tcy), (scx + 5.0, tcy), color=GREY, ls=(0, (3, 2)), head=9)
+    ax.text(113.0, tcy + 1.2, 'distill', fontsize=T_SMALL - 1, color=GREY, ha='center', va='bottom')
     save(fig, 'overview-reliable.svg')
 
 

@@ -34,7 +34,7 @@ directions:
       - Human pose estimation and motion analysis from video
       - Graph learning on brain connectivity
     figure: overview-medical.svg
-    figure_alt: Retinal vessel map computed from a fundus photograph, retinal layer boundaries in OCT, brain regions on an MNI template with their connectivity matrix, endoscope camera motion, and human pose keypoints across video frames
+    figure_alt: A fundus photograph with the five-level diabetic retinopathy severity scale, retinal layers in OCT, brain regions on an MNI template linked as a graph with the matching connectivity matrix, human pose keypoints across video frames, and an endoscope camera trajectory
     papers:
       - "SegSTRONG-C: Segmenting Surgical Tools Robustly On Non-adversarial Generated 'Corruptions', an EndoVis'24 Challenge"
       - "RVO-MIS: Robust Visual Odometry for Minimally Invasive Surgery"
@@ -48,7 +48,7 @@ directions:
       - Knowledge distillation and compact models for resource-constrained deployment
       - Efficient adaptation of foundation models, with simulation and synthetic data
     figure: overview-reliable.svg
-    figure_alt: A shift between training and deployment data, accuracy kept under shift by test-time adaptation, and a small student model distilled from a large teacher that keeps most of its accuracy with less compute
+    figure_alt: A shift in pixel intensity between training and deployment data; a model that adapts on unlabeled test images taken in clear, foggy, and rainy weather before predicting; and a multi-head attention teacher distilled into a single-head student that fits a real-time budget
     papers:
       - "Efficient Hyperspectral Image Classification Using Discrete Cosine Transform on Limited-Resource Systems"
       - "BCG-Former: Toward Pareto-Efficient Hyperspectral Image Classification via Band-Contextual Gating"

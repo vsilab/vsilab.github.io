@@ -448,24 +448,59 @@ def fig_medical():
 # ───────────────────────── figure 3: reliable and efficient AI ─────────────────────────
 def fig_reliable():
     fig, axb, ax = canvas()
-    panel(ax, 4, 123, 'Distribution shift')
-    panel(axb, 4, 59, 'Test-time adaptation')
-    panel(axb, 86, 59, 'Compact models for real time')
-    x = np.linspace(-4, 7, 400)
-    X = lambda v: 14 + (v + 4) / 11 * 138
-    Y = lambda v: 76 + v * 30
-    s_ = np.exp(-(x / 1.0) ** 2 / 2); tg = 0.82 * np.exp(-((x - 2.7) / 1.35) ** 2 / 2)
-    ax.fill_between(X(x), Y(0), Y(s_), color=BLUE_L, lw=0); ax.plot(X(x), Y(s_), color=BLUE, lw=1.8)
-    ax.fill_between(X(x), Y(0), Y(tg), color=AMBER_L, lw=0, alpha=0.85); ax.plot(X(x), Y(tg), color=AMBER, lw=1.8)
-    ax.plot([X(-4), X(7)], [76, 76], color=INK, lw=1.0)
-    arrow(ax, (X(-0.1), Y(1.17)), (X(2.7), Y(1.17)), color=GREY, head=10)
-    ax.text(X(1.3), Y(1.21), 'shift', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
-    ax.text(X(-1.85), Y(0.6), 'Training\ndata', fontsize=T_SMALL, color=BLUE, ha='center', linespacing=1.15)
-    ax.text(X(5.25), Y(0.55), 'Deployment\ndata', fontsize=T_SMALL, color=AMBER_D, ha='center', linespacing=1.15)
-    ax.text(X(1.5), 73, 'Feature space', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    # right half of the bottom row: same units, shifted so drawing code can use 0-based x positions
+    axr = fig.add_axes([0, 0, 1, 1]); axr.set_xlim(-80.5, 79.5); axr.set_ylim(0, 140); axr.axis('off'); axr.patch.set_alpha(0)
+    panel(ax, 4, 123, 'Compact models for real time')
+    panel(axb, 4, 59, 'Distribution shift')
+    panel(axr, 5.5, 59, 'Test-time adaptation')
 
+    # ── compact models under a real-time budget (top, conceptual; no measured values). The student replaces the
+    # teacher's multi-head self-attention with a single head and learns from the teacher (Lightweight TransUNet).
+    ay, ax0, ax1 = 72.0, 10.0, 152.0
+    arrow(ax, (ax0, ay), (ax1, ay), color=INK, lw=1.0, head=9)
+    ax.text((ax0 + ax1) / 2, ay - 2.2, 'Inference cost per frame', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
+    bxl = 81.0
+    ax.plot([bxl, bxl], [ay + 0.9, 109.0], color=TEAL, lw=1.2, ls=(0, (3, 2)), zorder=1)   # stops just above the axis
+    ax.text(bxl, 110.0, 'real-time budget', fontsize=T_SMALL - 1.5, color=TEAL, ha='center', va='bottom')
+    amap = LinearSegmentedColormap.from_list('a', ['#ffffff', BLUE_L, BLUE])
+    def attn(cx, cy, size, seed):
+        r = np.random.default_rng(seed)
+        q = np.linspace(0, 1, 8)
+        A = np.exp(-((q[:, None] - q[None, :] - r.uniform(-0.3, 0.3)) / r.uniform(0.12, 0.3)) ** 2) + 0.15 * r.random((8, 8))
+        ax.imshow(A / A.max(), cmap=amap, vmin=0, vmax=1, extent=(cx - size / 2, cx + size / 2, cy - size / 2, cy + size / 2),
+                  interpolation='nearest', zorder=3)
+        ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=INK, lw=0.6, zorder=4))
+    tcx, tcy, sz = 120.0, 91.0, 8.5
+    for k, (dx, dy) in enumerate(((-1, 1), (1, 1), (-1, -1), (1, -1))):
+        attn(tcx + dx * (sz / 2 + 0.6), tcy + dy * (sz / 2 + 0.6), sz, k + 1)
+    scx, ssz = 42.0, 12.0
+    attn(scx, tcy, ssz, 9)
+    top_ = tcy + sz + 0.6 + 2.0
+    ax.text(tcx, top_, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='bottom')
+    ax.text(scx, top_, 'Student', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
+    bot_ = tcy - sz - 0.6 - 1.4
+    ax.text(tcx, bot_, 'multi-head attention', fontsize=T_SMALL - 2, color=GREY, ha='center', va='top')
+    ax.text(scx, bot_, 'single-head attention', fontsize=T_SMALL - 2, color=GREY, ha='center', va='top')
+    arrow(ax, (tcx - sz - 2.2, tcy), (scx + ssz / 2 + 1.6, tcy), color=GREY, ls=(0, (3, 2)), head=10)
+    ax.text(64.0, tcy + 1.2, 'distill', fontsize=T_SMALL - 1, color=GREY, ha='center', va='bottom')
+
+    # ── distribution shift (bottom left)
     ax = axb
-    # test-time adaptation (conceptual): unlabeled deployment frames update the model before it predicts
+    x = np.linspace(-4, 7, 400)
+    X = lambda v: 6 + (v + 4) / 11 * 74
+    Y = lambda v: 18 + v * 27
+    s_ = np.exp(-(x / 1.0) ** 2 / 2); tg = 0.82 * np.exp(-((x - 2.7) / 1.35) ** 2 / 2)
+    ax.fill_between(X(x), Y(0), Y(s_), color=BLUE_L, lw=0); ax.plot(X(x), Y(s_), color=BLUE, lw=1.6)
+    ax.fill_between(X(x), Y(0), Y(tg), color=AMBER_L, lw=0, alpha=0.85); ax.plot(X(x), Y(tg), color=AMBER, lw=1.6)
+    ax.plot([X(-4), X(7)], [18, 18], color=INK, lw=1.0)
+    arrow(ax, (X(0.0), Y(1.13)), (X(2.7), Y(1.13)), color=GREY, head=9)
+    ax.text(X(1.35), Y(1.17), 'shift', fontsize=T_SMALL - 1, color=GREY, ha='center', va='bottom')
+    ax.text(X(-2.55), Y(0.55), 'Training\ndata', fontsize=T_SMALL - 1, color=BLUE, ha='center', linespacing=1.1)
+    ax.text(X(5.3), Y(0.55), 'Deployment\ndata', fontsize=T_SMALL - 1, color=AMBER_D, ha='center', linespacing=1.1)
+    ax.text(X(1.5), 15.6, 'Feature space', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
+
+    # ── test-time adaptation (bottom right)
+    ax = axr
     # one outdoor scene (public-domain photo shipped with scikit-image) under three weather conditions
     from skimage import data as skdata, transform as sktf
     scene = mute(sktf.resize(skdata.rocket().astype(float)[40:427, 0:640] / 255, (156, 204), anti_aliasing=True))
@@ -494,38 +529,10 @@ def fig_reliable():
     ax.add_patch(FancyArrowPatch((54.5, 38.6), (44.5, 38.6), connectionstyle='arc3,rad=1.25', arrowstyle='-|>',
                                  mutation_scale=9, lw=1.1, color=BLUE))
     ax.text(49.5, 47.2, 'adapt', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
-    arrow(ax, (58.6, 32.0), (66.0, 32.0), head=9, lw=1.1)
-    ax.text(67.0, 32.0, 'Predict', fontsize=T_SMALL, color=INK, ha='left', va='center')
+    arrow(ax, (58.6, 32.0), (63.0, 32.0), head=9, lw=1.1)
+    ax.text(63.8, 32.0, 'Predict', fontsize=T_SMALL, color=INK, ha='left', va='center')
     ax.text(49.5, 22.6, 'no labels', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top', style='italic')
 
-    # compact models under a real-time budget (conceptual; no measured values). The student replaces the
-    # teacher's multi-head self-attention with a single head and learns from the teacher (Lightweight TransUNet).
-    ay, ax0, ax1 = 21.5, 90.0, 154.0
-    arrow(ax, (ax0, ay), (ax1, ay), color=INK, lw=1.0, head=9)
-    ax.text((ax0 + ax1) / 2, ay - 2.2, 'Inference cost per frame', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
-    bxl = 121.0
-    ax.plot([bxl, bxl], [ay + 0.9, 49.0], color=TEAL, lw=1.2, ls=(0, (3, 2)), zorder=1)   # stops just above the axis
-    ax.text(bxl, 50.0, 'real-time budget', fontsize=T_SMALL - 1.5, color=TEAL, ha='center', va='bottom')
-    amap = LinearSegmentedColormap.from_list('a', ['#ffffff', BLUE_L, BLUE])
-    rng_a = np.random.default_rng(7)
-    def attn(cx, cy, size, seed):
-        r = np.random.default_rng(seed)
-        q = np.linspace(0, 1, 8)
-        A = np.exp(-((q[:, None] - q[None, :] - r.uniform(-0.3, 0.3)) / r.uniform(0.12, 0.3)) ** 2) + 0.15 * r.random((8, 8))
-        ax.imshow(A / A.max(), cmap=amap, vmin=0, vmax=1, extent=(cx - size / 2, cx + size / 2, cy - size / 2, cy + size / 2),
-                  interpolation='nearest', zorder=3)
-        ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=INK, lw=0.6, zorder=4))
-    tcx, tcy, sz = 140.0, 36.5, 6.2
-    for k, (dx, dy) in enumerate(((-1, 1), (1, 1), (-1, -1), (1, -1))):
-        attn(tcx + dx * (sz / 2 + 0.5), tcy + dy * (sz / 2 + 0.5), sz, k + 1)
-    scx = 103.0
-    attn(scx, tcy, 8.0, 9)
-    ax.text(tcx, 44.6, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='bottom')
-    ax.text(scx, 44.6, 'Student', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
-    ax.text(tcx, 28.9, 'multi-head attention', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
-    ax.text(scx, 28.9, 'single-head attention', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
-    arrow(ax, (tcx - 8.2, tcy), (scx + 5.0, tcy), color=GREY, ls=(0, (3, 2)), head=9)
-    ax.text(113.0, tcy + 1.2, 'distill', fontsize=T_SMALL - 1, color=GREY, ha='center', va='bottom')
     save(fig, 'overview-reliable.svg')
 
 

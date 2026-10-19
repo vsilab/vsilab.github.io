@@ -471,25 +471,37 @@ def fig_reliable():
         ax.text(xc, cap_y, caption, fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
     ax.plot([80.0, 80.0], [67.0, 115.0], color=RULE, lw=0.7)          # hairline between the two routes
 
-    # distillation
-    sz = 10.0; tcx = 23.0
+    # distillation under a real-time budget: the multi-head teacher sits past the budget on the cost axis,
+    # the single-head student it trains sits inside it
+    ay, ax0, ax1 = 72.5, 6.0, 76.0
+    arrow(ax, (ax0, ay), (ax1, ay), color=INK, lw=1.0, head=9)
+    ax.text((ax0 + ax1) / 2, cap_y + 0.4, 'Inference cost per frame', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    bxl = 41.0
+    ax.plot([bxl, bxl], [ay + 0.9, 104.5], color=TEAL, lw=1.1, ls=(0, (3, 2)), zorder=1)   # stops just above the axis
+    ax.text(bxl, 105.4, 'real-time budget', fontsize=T_SMALL - 3, color=TEAL, ha='center', va='bottom')
+    sz = 7.6; tcx = 61.0; dcy = 89.0
     for k, (dx, dy) in enumerate(((-1, 1), (1, 1), (-1, -1), (1, -1))):
-        attn(tcx + dx * (sz / 2 + 0.6), cy0 + dy * (sz / 2 + 0.6), sz, k + 1)
-    scx, ssz = 59.0, 15.0
-    attn(scx, cy0, ssz, 9)
-    arrow(ax, (tcx + sz + 2.2, cy0), (scx - ssz / 2 - 1.6, cy0), color=GREY, ls=(0, (3, 2)), head=10)
-    ax.text(tcx, cy0 - 14.6, 'teacher', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
-    ax.text(scx, cy0 - 14.6, 'student', fontsize=T_SMALL - 2.5, color=BLUE, ha='center', va='top')
-    sub(41.0, 'Distillation', 'fewer attention heads')
+        attn(tcx + dx * (sz / 2 + 0.5), dcy + dy * (sz / 2 + 0.5), sz, k + 1)
+    scx, ssz = 21.0, 11.5
+    attn(scx, dcy, ssz, 9)
+    arrow(ax, (tcx - sz - 2.0, dcy), (scx + ssz / 2 + 1.6, dcy), color=GREY, ls=(0, (3, 2)), head=9)
+    ax.text(33.8, dcy + 1.0, 'distill', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='bottom')
+    ax.text(tcx, dcy - sz - 1.9, 'multi-head', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
+    ax.text(scx, dcy - sz - 1.9, 'single-head', fontsize=T_SMALL - 3, color=BLUE, ha='center', va='top')
+    ax.text(tcx, dcy + sz + 1.8, 'Teacher', fontsize=T_SMALL - 1.5, color=INK, ha='center', va='bottom')
+    ax.text(scx, dcy + sz + 1.8, 'Student', fontsize=T_SMALL - 1.5, color=BLUE, ha='center', va='bottom')
+    ax.text(41.0, head_y, 'Distillation', fontsize=T_SMALL, color=INK, ha='center', va='baseline')
 
     # token pruning on a general image: the image is split into patch tokens; uninformative ones are dropped
     from skimage import data as skd
-    photo = mute(skd.coffee().astype(float) / 255, keep=0.55)[30:390, 60:540]
+    photo = mute(skd.chelsea().astype(float) / 255, keep=0.6)[0:300, 0:450]      # natural photograph, CC0
     gx, gy = 8, 6
     ph_, pw_ = photo.shape[0] // gy, photo.shape[1] // gx
     photo = photo[:ph_ * gy, :pw_ * gx]
     g = photo @ np.array([0.299, 0.587, 0.114])
-    score = np.array([[g[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_].std() for a in range(gx)] for b in range(gy)])
+    yy_, xx_ = np.mgrid[0:gy, 0:gx]
+    centre = np.exp(-(((xx_ - 3.6) / 2.6) ** 2 + ((yy_ - 2.6) / 2.4) ** 2))       # the subject sits near the centre
+    score = np.array([[g[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_].std() for a in range(gx)] for b in range(gy)]) * centre
     keep = score >= np.quantile(score, 0.6)
     ix0, iw = 85.0, 34.0
     ih = iw * photo.shape[0] / photo.shape[1]

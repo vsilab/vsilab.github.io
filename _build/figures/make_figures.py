@@ -167,9 +167,9 @@ def surgical_frame(seed, n=200):
 def fig_multimodal():
     from skimage import data, transform
     fig, ax, _ = canvas(lift=0)
-    panel(ax, 4, 132, 'Multimodal inputs')
-    panel(ax, 104, 132, 'Referral decision')
-    panel(ax, 4, 61.5, 'Robot retrieval under occlusion')
+    panel(ax, 4, 132, 'Multimodal inputs and attention')
+    panel(ax, 104, 132, 'Decision with deferral')
+    panel(ax, 4, 61.5, 'Language-guided object retrieval')
 
     tw, th = 40.0, 17.5
     cells = [(6, 104), (50, 104), (6, 78.5), (50, 78.5)]
@@ -178,45 +178,76 @@ def fig_multimodal():
         ax.add_patch(Rectangle((x_, y_), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
         ax.text(x_, y_ - 1.2, label, fontsize=T_SMALL, color=INK, va='top')
 
-    # image: CC0 photograph
+    # image: CC0 photograph; attention shown as a spotlight on the cup
     cof = data.coffee().astype(float) / 255
     h_ = int(cof.shape[1] * th / tw)
-    ax.imshow(cof[40:40 + h_], extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
+    crop = cof[40:40 + h_]
+    yy_, xx_ = np.mgrid[0:crop.shape[0], 0:crop.shape[1]]
+    heat = np.exp(-(((xx_ - 0.40 * crop.shape[1]) / (0.16 * crop.shape[1])) ** 2 + ((yy_ - 0.38 * crop.shape[0]) / (0.36 * crop.shape[0])) ** 2))
+    lit = crop * (0.32 + 0.68 * heat[..., None])
+    ax.imshow(np.clip(lit, 0, 1), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
+    ax.contour(np.linspace(cells[0][0], cells[0][0] + tw, crop.shape[1]), np.linspace(cells[0][1] + th, cells[0][1], crop.shape[0]),
+               heat, levels=[0.5], colors=['white'], linewidths=1.0, zorder=3)
     frame(*cells[0], 'Image')
-    # video: four consecutive frames of one scene (a slow pan)
+    # video: four consecutive frames of one scene (a slow pan); bars show per-frame attention
     rk = data.rocket()
     fw = (tw - 3 * 0.8) / 4
-    ch = 400; cw = int(round(ch * fw / th))
+    wts = [0.25, 0.45, 1.0, 0.6]
+    bar = 2.0
+    ch = 400; cw = int(round(ch * fw / (th - bar)))
     for k in range(4):
         fx = cells[1][0] + k * (fw + 0.8)
         x0_ = 150 + 40 * k
-        ax.imshow(rk[10:10 + ch, x0_:x0_ + cw], extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
+        crop_v = rk[10:10 + ch, x0_:x0_ + cw]
+        ax.imshow(crop_v, extent=(fx, fx + fw, cells[1][1] + bar, cells[1][1] + th), aspect='auto', zorder=2)
+        ax.add_patch(Rectangle((fx, cells[1][1]), fw, bar, fc=LIGHT, ec='none', zorder=2))
+        ax.add_patch(Rectangle((fx, cells[1][1]), fw * wts[k], bar, fc=BLUE, ec='none', zorder=3))
+        if wts[k] == max(wts):
+            ax.add_patch(Rectangle((fx, cells[1][1]), fw, th, fc='none', ec=BLUE, lw=1.4, zorder=7))
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
-    # text: a language query
-    x_, y_ = cells[2]
-    ax.add_patch(Rectangle((x_, y_), tw, th, fc='white', ec='none', zorder=1))
-    ax.text(x_ + 2.4, y_ + th - 6.4, 'Which container', fontsize=T_LABEL, color=INK, va='baseline', style='italic', zorder=4)
-    ax.text(x_ + 2.4, y_ + th - 12.6, 'holds the target?', fontsize=T_LABEL, color=INK, va='baseline', style='italic', zorder=4)
-    frame(x_, y_, 'Text')
-    # patient data: a small table of clinical variables
+    # audio: spectrogram; the attended segment stays bright
+    sr = 8000; t = np.arange(0, 1.6, 1 / sr)
+    f0 = 140 + 40 * np.sin(2 * np.pi * 1.1 * t)
+    phase = 2 * np.pi * np.cumsum(f0) / sr
+    sig = sum(np.sin(h * phase) / h for h in range(1, 14)) * (0.55 + 0.45 * np.sin(2 * np.pi * 2.2 * t) ** 2)
+    sig = sig * (0.25 + 0.75 * (np.sin(2 * np.pi * 0.8 * t + 0.6) > -0.8))
+    win, hop = 256, 40
+    frames_ = np.stack([sig[i_:i_ + win] * np.hanning(win) for i_ in range(0, len(sig) - win, hop)], 1)
+    spec = 20 * np.log10(np.abs(np.fft.rfft(frames_, axis=0))[:90] + 1e-3)
+    spec = np.clip((spec - spec.max() + 60) / 60, 0, 1)
+    rgb = plt.get_cmap('magma')(spec)[..., :3]
+    tt = np.linspace(0, 1, spec.shape[1])
+    on = (tt > 0.55) & (tt < 0.8)
+    rgb[:, ~on] = rgb[:, ~on] * 0.35 + 0.65 * np.array([0.93, 0.93, 0.94])
+    ax.imshow(rgb, origin='lower', aspect='auto', extent=(cells[2][0], cells[2][0] + tw, cells[2][1], cells[2][1] + th), zorder=2)
+    ax.add_patch(Rectangle((cells[2][0] + 0.55 * tw, cells[2][1]), 0.25 * tw, th, fc='none', ec='white', lw=1.0, zorder=4))
+    frame(*cells[2], 'Audio')
+    # text: the query, with attended words highlighted
     x_, y_ = cells[3]
     ax.add_patch(Rectangle((x_, y_), tw, th, fc='white', ec='none', zorder=1))
-    rows = 4
-    for r_ in range(rows + 1):
-        yy = y_ + th - 1.6 - r_ * (th - 3.2) / rows
-        ax.plot([x_ + 2, x_ + tw - 2], [yy, yy], color=RULE if r_ else MID, lw=0.7, zorder=3)
-    for c_ in (0.36, 0.68):
-        ax.plot([x_ + tw * c_] * 2, [y_ + 1.6, y_ + th - 1.6], color=RULE, lw=0.7, zorder=3)
-    rng_ = np.random.default_rng(4)
-    for r_ in range(rows):
-        yy = y_ + th - 1.6 - (r_ + 0.5) * (th - 3.2) / rows
-        for c0, c1 in ((0.07, 0.30), (0.42, 0.62), (0.74, 0.93)):
-            L = rng_.uniform(0.5, 1.0) * (c1 - c0) * tw
-            ax.plot([x_ + c0 * tw, x_ + c0 * tw + L], [yy, yy], color=MID, lw=2.2, solid_capstyle='round', zorder=4)
-    frame(x_, y_, 'Patient data')
+    r_ = fig.canvas.get_renderer()
+    inv = ax.transData.inverted()
 
-    # ── referral decision by predicted risk and uncertainty (ultrasound work under review: DVT, ocular B-scan)
+    def words(line, y_line, hi):
+        cx = x_ + 2.4
+        for w_ in line.split(' '):
+            tx = ax.text(cx, y_line, w_, fontsize=T_LABEL, color=INK, va='baseline', style='italic', zorder=4)
+            bb = tx.get_window_extent(renderer=r_)
+            (bx0, by0), (bx1, by1) = inv.transform([[bb.x0, bb.y0], [bb.x1, bb.y1]])
+            if w_.strip('?') in hi:
+                ax.add_patch(FancyBboxPatch((bx0 - 0.4, by0 - 0.4), bx1 - bx0 + 0.8, by1 - by0 + 0.6,
+                                            boxstyle='round,pad=0,rounding_size=0.8', fc=BLUE_L, ec='none', zorder=3))
+            sp = ax.text(0, 0, 'a a', fontsize=T_LABEL, style='italic'); sb = sp.get_window_extent(renderer=r_)
+            sa = ax.text(0, 0, 'aa', fontsize=T_LABEL, style='italic'); sab = sa.get_window_extent(renderer=r_)
+            space = inv.transform([[sb.x1 - sab.x1 + sab.x0, 0]])[0][0] - inv.transform([[sb.x0, 0]])[0][0]
+            sp.remove(); sa.remove()
+            cx = bx1 + space
+    words('Is the cup inside', y_ + th - 6.4, {'cup'})
+    words('the blue bowl?', y_ + th - 12.6, {'blue', 'bowl'})
+    frame(x_, y_, 'Text')
+
+    # ── decision map: refer, routine, or defer by predicted risk and uncertainty (clinical example)
     x0, x1, y0, y1 = 112, 155, 80, 122
     thr_r, thr_u = 0.5, 0.55
     Xr = lambda v: x0 + (x1 - x0) * v
@@ -235,13 +266,13 @@ def fig_multimodal():
         ax.plot([Xr(r_)], [Yu(u_)], 'o', ms=4.6, mfc=col, mec='white', mew=0.8, zorder=4)
     ax.text((x0 + x1) / 2, y0 - 2.0, 'Predicted risk', fontsize=T_SMALL, color=GREY, ha='center', va='top')
     ax.text(x0 - 2.0, (y0 + y1) / 2, 'Uncertainty', fontsize=T_SMALL, color=GREY, ha='right', va='center', rotation=90)
-    ax.text((x0 + x1) / 2, y0 - 7.4, 'DVT and ocular B-scan ultrasound', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top', style='italic')
+    ax.text((x0 + x1) / 2, y0 - 7.4, 'clinical example', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top', style='italic')
 
-    # ── robot retrieval under occlusion: real-robot sequence (Koh et al., under review, Fig. 1)
+    # ── language-guided object retrieval: real-robot sequence (Koh et al., ICRA submission, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,
             style='italic', va='center')
-    steps = (('Observe', 'target not visible'), ('Remove cover', 'act to gain a view'),
-             ('Re-observe', 'view into container'), ('Grasp', 'evidence suffices'))
+    steps = (('Observe', 'target occluded'), ('Remove cover', 'container exposed'),
+             ('Re-observe', 'new visual evidence'), ('Grasp target', 'target lifted'))
     gap = 2.4
     pw = (156 - 4 - 3 * gap) / 4
     ph = pw * 178 / 243
@@ -266,15 +297,16 @@ def fig_medical():
     panel(ax, 110, 123, 'Brain connectivity')
     panel(axb, 4, 57, 'Human pose from video')
     panel(axb, 86, 57, 'Endoscope motion')
-    # fundus photograph and the five-level diabetic retinopathy scale it is graded on (no grade is claimed)
-    ax.imshow(real_fundus(600), extent=(10, 45, 76, 111), zorder=2)
-    sx0, sx1, sy = 6.0, 49.0, 70.5
-    steps_ = ['#eef1f4', '#d6e1ec', '#aec4da', '#6f93b8', BLUE]
+    # fundus photograph and the five-level diabetic retinopathy severity scale it is graded on (no grade is claimed)
+    ax.imshow(real_fundus(600), extent=(10.5, 44.5, 79, 113), zorder=2)
+    arrow(ax, (27.5, 78.0), (27.5, 74.6), head=8, lw=1.0)
+    sx0, sx1, sy = 3.5, 51.5, 70.4
+    shades = ['#eef1f4', '#d3dfeb', '#a9c0d8', '#6f93b8', BLUE]
+    names = ['None', 'Mild', 'Mod.', 'Severe', 'PDR']
     sw_ = (sx1 - sx0) / 5
-    for k, c in enumerate(steps_):
-        ax.add_patch(Rectangle((sx0 + k * sw_ + 0.2, sy), sw_ - 0.4, 2.2, fc=c, ec='none', zorder=2))
-    ax.text(sx0, sy - 1.2, 'None', fontsize=T_SMALL - 1.5, color=GREY, ha='left', va='top')
-    ax.text(sx1, sy - 1.2, 'Proliferative', fontsize=T_SMALL - 1.5, color=GREY, ha='right', va='top')
+    for k, (c, nm) in enumerate(zip(shades, names)):
+        ax.add_patch(Rectangle((sx0 + k * sw_ + 0.2, sy), sw_ - 0.4, 3.0, fc=c, ec='none', zorder=2))
+        ax.text(sx0 + (k + 0.5) * sw_, sy - 1.0, nm, fontsize=T_SMALL - 3.5, color=GREY, ha='center', va='top')
     # retinal layers in OCT: right half shows the predicted layers as colored bands
     img, lines = oct_scan()
     img = img[::2, ::2]; lines = [l[::2] / 2 for l in lines]
@@ -298,36 +330,45 @@ def fig_medical():
     mni = plt.imread(os.path.join(src, 'mni152-axial.png'))
     info = json.load(open(os.path.join(src, 'mni152-rois.json')))
     H_, W_ = info['shape']
-    bh = 34.0; bw_ = bh * W_ / H_
-    bx0, by0 = 107.0, 75.5
+    bh = 37.0; bw_ = bh * W_ / H_
+    bx0, by0 = 106.0, 73.5
     g_ = mni if mni.ndim == 2 else mni[..., 0]
-    rgba = np.dstack([g_, g_, g_, np.clip((g_ - 0.04) * 12, 0, 1)])     # transparent outside the head
-    ax.imshow(rgba, extent=(bx0, bx0 + bw_, by0, by0 + bh), zorder=2)
+    rgba = np.dstack([g_, g_, g_, np.clip((g_ - 0.04) * 12, 0, 1) * 0.55])   # template drawn faintly under the graph
+    ax.imshow(rgba, extent=(bx0, bx0 + bw_, by0, by0 + bh), zorder=1)
     net_col = {'DefaultMode': BLUE, 'Visual': AMBER, 'Auditory': TEAL, 'FrontoParietal': '#7a5c99'}
     order = ['DefaultMode', 'FrontoParietal', 'Auditory', 'Visual', 'Other']
     rois = info['rois']
-    for r in rois:
-        c = net_col.get(r['net'], '#c4574d')
-        px_ = bx0 + (r['i'] + 0.5) / W_ * bw_; py_ = by0 + (r['j'] + 0.5) / H_ * bh
-        ax.plot([px_], [py_], 'o', ms=3.4, mfc=c, mec='white', mew=0.6, zorder=4)
-    groups = [r['net'] if r['net'] in net_col else 'Other' for r in rois]
-    lab = np.array(sorted(range(len(groups)), key=lambda q: order.index(groups[q])))
-    g = np.array([order.index(groups[q]) for q in lab])
+    P_ = np.array([(bx0 + (r['i'] + 0.5) / W_ * bw_, by0 + (r['j'] + 0.5) / H_ * bh) for r in rois])
+    nets = [r['net'] if r['net'] in net_col else 'Other' for r in rois]
     rng = np.random.default_rng(11)
-    n = len(g)
+    n = len(rois)
+    # edges (illustrative): each region links to its nearest regions in the same network, plus a few links across networks
+    edges = set()
+    for a_ in range(n):
+        same = [b_ for b_ in range(n) if b_ != a_ and nets[b_] == nets[a_]]
+        same.sort(key=lambda b_: np.hypot(*(P_[a_] - P_[b_])))
+        for b_ in same[:2]:
+            edges.add((min(a_, b_), max(a_, b_)))
+    for a_, b_ in edges:
+        ax.plot(*zip(P_[a_], P_[b_]), color=net_col.get(nets[a_], '#c4574d'), lw=1.0, alpha=0.8, zorder=2)
+    cross = [(a_, b_) for a_ in range(n) for b_ in range(a_ + 1, n) if nets[a_] != nets[b_] and np.hypot(*(P_[a_] - P_[b_])) < 9]
+    for k_ in rng.choice(len(cross), size=min(5, len(cross)), replace=False):
+        a_, b_ = cross[k_]
+        ax.plot(*zip(P_[a_], P_[b_]), color=MID, lw=0.7, ls=(0, (2, 1.5)), zorder=2)
+    for (px_, py_), nt in zip(P_, nets):
+        ax.plot([px_], [py_], 'o', ms=3.8, mfc=net_col.get(nt, '#c4574d'), mec='white', mew=0.6, zorder=4)
+    # the same graph as a region-by-region matrix, drawn small
+    lab = np.array(sorted(range(n), key=lambda q: order.index(nets[q])))
+    g = np.array([order.index(nets[q]) for q in lab])
     C = np.where(g[:, None] == g[None, :], 0.6, 0.05) + rng.normal(0, 0.14, (n, n))
-    C[np.ix_(g == 0, g == 1)] -= 0.3; C[np.ix_(g == 1, g == 0)] -= 0.3
     C = (C + C.T) / 2; np.fill_diagonal(C, 1)
     div = LinearSegmentedColormap.from_list('d', [AMBER, '#f3d9b8', '#ffffff', '#b9cfe3', BLUE])
-    mx0, my0, ms_ = 139.5, 83.0, 17.0
+    mx0, my0, ms_ = 144.0, 86.0, 11.5
     ax.imshow(np.clip(C, -1, 1), cmap=div, vmin=-1, vmax=1, extent=(mx0, mx0 + ms_, my0, my0 + ms_), interpolation='nearest', zorder=2)
-    ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=INK, lw=0.7, zorder=3))
-    cols_all = [net_col.get(order[q], '#c4574d') for q in g]
-    for q, c in enumerate(cols_all):                       # network strip along the matrix
-        ax.add_patch(Rectangle((mx0 + q * ms_ / n, my0 + ms_ + 0.4), ms_ / n, 1.0, fc=c, ec='none', zorder=3))
-    arrow(ax, (bx0 + bw_ + 0.4, by0 + bh / 2), (mx0 - 0.6, by0 + bh / 2), head=8, lw=1.0)
-    ax.text(bx0 + bw_ / 2, 68.5, 'fMRI regions', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
-    ax.text(mx0 + ms_ / 2 - 0.5, 68.5, 'Connectivity', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
+    ax.add_patch(Rectangle((mx0, my0), ms_, ms_, fc='none', ec=INK, lw=0.6, zorder=3))
+    arrow(ax, (bx0 + bw_ + 0.6, my0 + ms_ / 2), (mx0 - 0.6, my0 + ms_ / 2), head=7, lw=0.9)
+    ax.text(bx0 + bw_ / 2, 68.5, 'Region graph', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
+    ax.text(mx0 + ms_ / 2, 68.5, 'Matrix', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
 
     ax = axb
     # human pose: keypoint skeletons across video frames (left)
@@ -391,16 +432,20 @@ def fig_reliable():
     ax.text(X(1.3), Y(1.21), 'shift', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
     ax.text(X(-1.85), Y(0.6), 'Training\ndata', fontsize=T_SMALL, color=BLUE, ha='center', linespacing=1.15)
     ax.text(X(5.25), Y(0.55), 'Deployment\ndata', fontsize=T_SMALL, color=AMBER_D, ha='center', linespacing=1.15)
-    ax.text(X(1.5), 73, 'Imaging device, weather, developmental stage', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    ax.text(X(1.5), 73, 'Pixel intensity', fontsize=T_SMALL, color=GREY, ha='center', va='top')
 
     ax = axb
     # test-time adaptation (conceptual): unlabeled deployment frames update the model before it predicts
-    from skimage import data as skdata
-    scene = skdata.rocket().astype(float)[60:360, 120:510] / 255        # stand-in outdoor frame (public domain)
-    for k, fog in enumerate((0.0, 0.35, 0.65)):
+    # the same fundus photograph as it might look from three devices (colour cast, contrast, haze)
+    base = real_fundus(300)
+    looks = [(np.array([1.0, 1.0, 1.0]), 1.0, 0.0), (np.array([0.82, 1.05, 1.15]), 0.8, 0.10), (np.array([1.1, 0.9, 0.75]), 0.65, 0.22)]
+    for k, (tint, con, haze) in enumerate(looks):
         fx, fy = 6 + k * 3.2, 22 + k * 4.2
-        img = scene * (1 - fog) + fog * np.array([0.86, 0.87, 0.89])
-        ax.imshow(img, extent=(fx, fx + 17, fy, fy + 13), zorder=2 + k, aspect='auto')
+        rgb = base[..., :3]
+        rgb = np.clip(((rgb - 0.5) * con + 0.5) * tint * (1 - haze) + haze * 0.9, 0, 1)
+        img = np.dstack([rgb, base[..., 3]])
+        ax.add_patch(Rectangle((fx, fy), 17, 13, fc='#111111', ec='none', zorder=2 + k))
+        ax.imshow(img, extent=(fx + 2.0, fx + 15.0, fy, fy + 13), zorder=2 + k, aspect='auto')
         ax.add_patch(Rectangle((fx, fy), 17, 13, fc='none', ec='white', lw=0.8, zorder=2 + k))
     ax.text(16.5, 18.6, 'Unlabeled', fontsize=T_SMALL, color=GREY, ha='center', va='top')
     ax.text(16.5, 13.6, 'test data', fontsize=T_SMALL, color=GREY, ha='center', va='top')
@@ -442,8 +487,6 @@ def fig_reliable():
     ax.text(scx, 28.9, 'single-head attention', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
     arrow(ax, (tcx - 8.2, tcy), (scx + 5.0, tcy), color=GREY, ls=(0, (3, 2)), head=9)
     ax.text(113.0, tcy + 1.2, 'distill', fontsize=T_SMALL - 1, color=GREY, ha='center', va='bottom')
-    ax.text((ax0 + ax1) / 2, 12.4, 'also channel pruning and DCT features', fontsize=T_SMALL - 1.5, color=GREY,
-            ha='center', va='top', style='italic')
     save(fig, 'overview-reliable.svg')
 
 

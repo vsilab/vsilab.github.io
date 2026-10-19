@@ -58,6 +58,8 @@ def arrow(ax, p, q, color=MID, lw=1.3, ls='-', rad=0.0, head=11, z=1):
 
 def save(fig, name):
     path = os.path.join(OUT, name)
+    if os.environ.get('FIG_PNG'):                               # optional PNG preview for checking
+        fig.savefig(os.path.join(os.environ['FIG_PNG'], name.replace('.svg', '.png')), dpi=110, facecolor='white')
     fig.savefig(path, format='svg', dpi=220, facecolor='white')
     plt.close(fig)
     import re
@@ -165,9 +167,9 @@ def surgical_frame(seed, n=200):
 def fig_multimodal():
     from skimage import data, transform
     fig, ax, _ = canvas(lift=0)
-    panel(ax, 4, 132, 'Multimodal inputs and attention')
-    panel(ax, 104, 132, 'Decision with deferral')
-    panel(ax, 4, 61.5, 'Language-guided object retrieval')
+    panel(ax, 4, 132, 'Multimodal inputs')
+    panel(ax, 104, 132, 'Imaging with patient data')
+    panel(ax, 4, 61.5, 'Robot retrieval under occlusion')
 
     tw, th = 40.0, 17.5
     cells = [(6, 104), (50, 104), (6, 78.5), (50, 78.5)]
@@ -176,101 +178,70 @@ def fig_multimodal():
         ax.add_patch(Rectangle((x_, y_), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
         ax.text(x_, y_ - 1.2, label, fontsize=T_SMALL, color=INK, va='top')
 
-    # image: CC0 photograph; attention shown as a spotlight on the cup
+    # image: CC0 photograph
     cof = data.coffee().astype(float) / 255
     h_ = int(cof.shape[1] * th / tw)
-    crop = cof[40:40 + h_]
-    yy_, xx_ = np.mgrid[0:crop.shape[0], 0:crop.shape[1]]
-    heat = np.exp(-(((xx_ - 0.40 * crop.shape[1]) / (0.16 * crop.shape[1])) ** 2 + ((yy_ - 0.38 * crop.shape[0]) / (0.36 * crop.shape[0])) ** 2))
-    lit = crop * (0.32 + 0.68 * heat[..., None])
-    ax.imshow(np.clip(lit, 0, 1), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
-    ax.contour(np.linspace(cells[0][0], cells[0][0] + tw, crop.shape[1]), np.linspace(cells[0][1] + th, cells[0][1], crop.shape[0]),
-               heat, levels=[0.5], colors=['white'], linewidths=1.0, zorder=3)
+    ax.imshow(cof[40:40 + h_], extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
     frame(*cells[0], 'Image')
-    # video: four consecutive frames of one scene (a slow pan); bars show per-frame attention
+    # video: four consecutive frames of one scene (a slow pan)
     rk = data.rocket()
     fw = (tw - 3 * 0.8) / 4
-    wts = [0.25, 0.45, 1.0, 0.6]
-    bar = 2.0
-    ch = 400; cw = int(round(ch * fw / (th - bar)))
+    ch = 400; cw = int(round(ch * fw / th))
     for k in range(4):
         fx = cells[1][0] + k * (fw + 0.8)
         x0_ = 150 + 40 * k
-        crop_v = rk[10:10 + ch, x0_:x0_ + cw]
-        ax.imshow(crop_v, extent=(fx, fx + fw, cells[1][1] + bar, cells[1][1] + th), aspect='auto', zorder=2)
-        ax.add_patch(Rectangle((fx, cells[1][1]), fw, bar, fc=LIGHT, ec='none', zorder=2))
-        ax.add_patch(Rectangle((fx, cells[1][1]), fw * wts[k], bar, fc=BLUE, ec='none', zorder=3))
-        if wts[k] == max(wts):
-            ax.add_patch(Rectangle((fx, cells[1][1]), fw, th, fc='none', ec=BLUE, lw=1.4, zorder=7))
+        ax.imshow(rk[10:10 + ch, x0_:x0_ + cw], extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
-    # audio: spectrogram; the attended segment stays bright
-    sr = 8000; t = np.arange(0, 1.6, 1 / sr)
-    f0 = 140 + 40 * np.sin(2 * np.pi * 1.1 * t)
-    phase = 2 * np.pi * np.cumsum(f0) / sr
-    sig = sum(np.sin(h * phase) / h for h in range(1, 14)) * (0.55 + 0.45 * np.sin(2 * np.pi * 2.2 * t) ** 2)
-    sig = sig * (0.25 + 0.75 * (np.sin(2 * np.pi * 0.8 * t + 0.6) > -0.8))
-    win, hop = 256, 40
-    frames_ = np.stack([sig[i_:i_ + win] * np.hanning(win) for i_ in range(0, len(sig) - win, hop)], 1)
-    spec = 20 * np.log10(np.abs(np.fft.rfft(frames_, axis=0))[:90] + 1e-3)
-    spec = np.clip((spec - spec.max() + 60) / 60, 0, 1)
-    rgb = plt.get_cmap('magma')(spec)[..., :3]
-    tt = np.linspace(0, 1, spec.shape[1])
-    on = (tt > 0.55) & (tt < 0.8)
-    rgb[:, ~on] = rgb[:, ~on] * 0.35 + 0.65 * np.array([0.93, 0.93, 0.94])
-    ax.imshow(rgb, origin='lower', aspect='auto', extent=(cells[2][0], cells[2][0] + tw, cells[2][1], cells[2][1] + th), zorder=2)
-    ax.add_patch(Rectangle((cells[2][0] + 0.55 * tw, cells[2][1]), 0.25 * tw, th, fc='none', ec='white', lw=1.0, zorder=4))
-    frame(*cells[2], 'Audio')
-    # text: the query, with attended words highlighted
+    # text: a language query
+    x_, y_ = cells[2]
+    ax.add_patch(Rectangle((x_, y_), tw, th, fc='white', ec='none', zorder=1))
+    ax.text(x_ + 2.4, y_ + th - 6.4, 'Which container', fontsize=T_LABEL, color=INK, va='baseline', style='italic', zorder=4)
+    ax.text(x_ + 2.4, y_ + th - 12.6, 'holds the target?', fontsize=T_LABEL, color=INK, va='baseline', style='italic', zorder=4)
+    frame(x_, y_, 'Text')
+    # patient data: a small table of clinical variables
     x_, y_ = cells[3]
     ax.add_patch(Rectangle((x_, y_), tw, th, fc='white', ec='none', zorder=1))
-    r_ = fig.canvas.get_renderer()
-    inv = ax.transData.inverted()
+    rows = 4
+    for r_ in range(rows + 1):
+        yy = y_ + th - 1.6 - r_ * (th - 3.2) / rows
+        ax.plot([x_ + 2, x_ + tw - 2], [yy, yy], color=RULE if r_ else MID, lw=0.7, zorder=3)
+    for c_ in (0.36, 0.68):
+        ax.plot([x_ + tw * c_] * 2, [y_ + 1.6, y_ + th - 1.6], color=RULE, lw=0.7, zorder=3)
+    rng_ = np.random.default_rng(4)
+    for r_ in range(rows):
+        yy = y_ + th - 1.6 - (r_ + 0.5) * (th - 3.2) / rows
+        for c0, c1 in ((0.07, 0.30), (0.42, 0.62), (0.74, 0.93)):
+            L = rng_.uniform(0.5, 1.0) * (c1 - c0) * tw
+            ax.plot([x_ + c0 * tw, x_ + c0 * tw + L], [yy, yy], color=MID, lw=2.2, solid_capstyle='round', zorder=4)
+    frame(x_, y_, 'Patient data')
 
-    def words(line, y_line, hi):
-        cx = x_ + 2.4
-        for w_ in line.split(' '):
-            tx = ax.text(cx, y_line, w_, fontsize=T_LABEL, color=INK, va='baseline', style='italic', zorder=4)
-            bb = tx.get_window_extent(renderer=r_)
-            (bx0, by0), (bx1, by1) = inv.transform([[bb.x0, bb.y0], [bb.x1, bb.y1]])
-            if w_.strip('?') in hi:
-                ax.add_patch(FancyBboxPatch((bx0 - 0.4, by0 - 0.4), bx1 - bx0 + 0.8, by1 - by0 + 0.6,
-                                            boxstyle='round,pad=0,rounding_size=0.8', fc=BLUE_L, ec='none', zorder=3))
-            sp = ax.text(0, 0, 'a a', fontsize=T_LABEL, style='italic'); sb = sp.get_window_extent(renderer=r_)
-            sa = ax.text(0, 0, 'aa', fontsize=T_LABEL, style='italic'); sab = sa.get_window_extent(renderer=r_)
-            space = inv.transform([[sb.x1 - sab.x1 + sab.x0, 0]])[0][0] - inv.transform([[sb.x0, 0]])[0][0]
-            sp.remove(); sa.remove()
-            cx = bx1 + space
-    words('Is the cup inside', y_ + th - 6.4, {'cup'})
-    words('the blue bowl?', y_ + th - 12.6, {'blue', 'bowl'})
-    frame(x_, y_, 'Text')
+    # ── imaging with patient data: two sources combined into one prediction (conceptual)
+    bx, bw = 108.0, 17.0
+    ax.add_patch(Rectangle((bx, 104), bw, 17.5, fc=LIGHT, ec=RULE, lw=0.7))
+    mni_ = plt.imread(os.path.join(os.path.dirname(__file__), 'sources', 'mni152-axial.png'))
+    mni_ = mni_ if mni_.ndim == 2 else mni_[..., 0]
+    ax.imshow(mni_, cmap='gray', extent=(bx + 1.5, bx + bw - 1.5, 105.5, 119.5), zorder=2, aspect='auto')
+    ax.text(bx + bw / 2, 102.8, 'Images', fontsize=T_SMALL, color=INK, ha='center', va='top')
+    ax.add_patch(Rectangle((bx, 78.5), bw, 17.5, fc='white', ec=RULE, lw=0.7))
+    for r_ in range(4):
+        yy = 92.6 - r_ * 3.6
+        ax.plot([bx + 2, bx + 2 + rng_.uniform(6, 12)], [yy, yy], color=MID, lw=2.2, solid_capstyle='round')
+    ax.text(bx + bw / 2, 77.3, 'Clinical data', fontsize=T_SMALL, color=INK, ha='center', va='top')
+    fx_, fy_ = 136.0, 100.0
+    arrow(ax, (bx + bw + 0.6, 112.75), (fx_ - 2.6, fy_ + 1.6), head=8, lw=1.0)
+    arrow(ax, (bx + bw + 0.6, 87.25), (fx_ - 2.6, fy_ - 1.6), head=8, lw=1.0)
+    ax.add_patch(FancyBboxPatch((fx_ - 2.2, fy_ - 4), 18.4, 8, boxstyle='round,pad=0,rounding_size=1.2', fc=BLUE_L, ec=BLUE, lw=1.0))
+    ax.text(fx_ + 7, fy_, 'Model', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
+    arrow(ax, (fx_ + 7, fy_ - 4.4), (fx_ + 7, 87.0), head=8, lw=1.0)
+    ax.text(fx_ + 7, 85.6, 'Detection or', fontsize=T_SMALL, color=INK, ha='center', va='top')
+    ax.text(fx_ + 7, 80.2, 'outcome', fontsize=T_SMALL, color=INK, ha='center', va='top')
 
-    # ── decision map: refer, routine, or defer by predicted risk and uncertainty (clinical example)
-    x0, x1, y0, y1 = 112, 155, 80, 122
-    thr_r, thr_u = 0.5, 0.55
-    Xr = lambda v: x0 + (x1 - x0) * v
-    Yu = lambda v: y0 + (y1 - y0) * v
-    ax.add_patch(Rectangle((x0, y0), Xr(thr_r) - x0, Yu(thr_u) - y0, fc=LIGHT, ec='none'))
-    ax.add_patch(Rectangle((Xr(thr_r), y0), x1 - Xr(thr_r), Yu(thr_u) - y0, fc=BLUE_L, ec='none'))
-    ax.add_patch(Rectangle((x0, Yu(thr_u)), x1 - x0, y1 - Yu(thr_u), fc=AMBER_L, ec='none'))
-    ax.plot([x0, x0, x1], [y1, y0, y0], color=INK, lw=1.0)
-    ax.text((x0 + x1) / 2, Yu(0.87), 'Defer to clinician', fontsize=T_SMALL, color=AMBER_D, ha='center', va='center')
-    ax.text(Xr(0.25), Yu(0.11), 'Routine', fontsize=T_SMALL, color=GREY, ha='center', va='center')
-    ax.text(Xr(0.75), Yu(0.11), 'Refer', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
-    pts = np.array([[0.12, 0.30], [0.22, 0.42], [0.30, 0.25], [0.38, 0.47], [0.68, 0.36], [0.78, 0.24], [0.86, 0.42],
-                    [0.93, 0.30], [0.44, 0.64], [0.57, 0.70], [0.32, 0.69], [0.68, 0.63]])
-    for (r_, u_) in pts:
-        col = AMBER if u_ >= thr_u else (BLUE if r_ >= thr_r else MID)
-        ax.plot([Xr(r_)], [Yu(u_)], 'o', ms=4.6, mfc=col, mec='white', mew=0.8, zorder=4)
-    ax.text((x0 + x1) / 2, y0 - 2.0, 'Predicted risk', fontsize=T_SMALL, color=GREY, ha='center', va='top')
-    ax.text(x0 - 2.0, (y0 + y1) / 2, 'Uncertainty', fontsize=T_SMALL, color=GREY, ha='right', va='center', rotation=90)
-    ax.text((x0 + x1) / 2, y0 - 7.4, 'clinical example', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top', style='italic')
-
-    # ── language-guided object retrieval: real-robot sequence (Koh et al., ICRA submission, Fig. 1)
+    # ── robot retrieval under occlusion: real-robot sequence (Koh et al., under review, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,
             style='italic', va='center')
-    steps = (('Observe', 'target occluded'), ('Remove cover', 'container exposed'),
-             ('Re-observe', 'new visual evidence'), ('Grasp target', 'target lifted'))
+    steps = (('Observe', 'target not visible'), ('Remove cover', 'act to gain a view'),
+             ('Re-observe', 'view into container'), ('Grasp', 'evidence suffices'))
     gap = 2.4
     pw = (156 - 4 - 3 * gap) / 4
     ph = pw * 178 / 243
@@ -290,15 +261,20 @@ def fig_multimodal():
 # ───────────────────────── figure 2: medical image and video ─────────────────────────
 def fig_medical():
     fig, axb, ax = canvas()
-    panel(ax, 4, 123, 'Retinal vessels')
+    panel(ax, 4, 123, 'Retinal grading')
     panel(ax, 58, 123, 'Retinal layers')
     panel(ax, 110, 123, 'Brain connectivity')
     panel(axb, 4, 57, 'Human pose from video')
     panel(axb, 86, 57, 'Endoscope motion')
-    ax.imshow(real_fundus(600, vessel_half=True), extent=(8, 47, 72, 111), zorder=2)
-    ax.plot([27.5, 27.5], [72.5, 110.5], color='white', lw=1.0, ls=(0, (2.5, 2)), zorder=3)
-    ax.text(17.5, 68.5, 'Photo', fontsize=T_SMALL, color=GREY, ha='center', va='top')
-    ax.text(37.5, 68.5, 'Vessels', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    # fundus photograph and the five-level diabetic retinopathy scale it is graded on (no grade is claimed)
+    ax.imshow(real_fundus(600), extent=(10, 45, 76, 111), zorder=2)
+    sx0, sx1, sy = 6.0, 49.0, 70.5
+    steps_ = ['#eef1f4', '#d6e1ec', '#aec4da', '#6f93b8', BLUE]
+    sw_ = (sx1 - sx0) / 5
+    for k, c in enumerate(steps_):
+        ax.add_patch(Rectangle((sx0 + k * sw_ + 0.2, sy), sw_ - 0.4, 2.2, fc=c, ec='none', zorder=2))
+    ax.text(sx0, sy - 1.2, 'None', fontsize=T_SMALL - 1.5, color=GREY, ha='left', va='top')
+    ax.text(sx1, sy - 1.2, 'Proliferative', fontsize=T_SMALL - 1.5, color=GREY, ha='right', va='top')
     # retinal layers in OCT: right half shows the predicted layers as colored bands
     img, lines = oct_scan()
     img = img[::2, ::2]; lines = [l[::2] / 2 for l in lines]
@@ -403,7 +379,7 @@ def fig_reliable():
     fig, axb, ax = canvas()
     panel(ax, 4, 123, 'Distribution shift')
     panel(axb, 4, 57, 'Test-time adaptation')
-    panel(axb, 86, 57, 'Efficiency by distillation')
+    panel(axb, 86, 57, 'Compact models by distillation')
     x = np.linspace(-4, 7, 400)
     X = lambda v: 14 + (v + 4) / 11 * 138
     Y = lambda v: 76 + v * 30
@@ -415,39 +391,50 @@ def fig_reliable():
     ax.text(X(1.3), Y(1.21), 'shift', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
     ax.text(X(-1.85), Y(0.6), 'Training\ndata', fontsize=T_SMALL, color=BLUE, ha='center', linespacing=1.15)
     ax.text(X(5.25), Y(0.55), 'Deployment\ndata', fontsize=T_SMALL, color=AMBER_D, ha='center', linespacing=1.15)
-    ax.text(X(1.5), 73, 'Input features', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    ax.text(X(1.5), 73, 'Imaging device, weather, developmental stage', fontsize=T_SMALL, color=GREY, ha='center', va='top')
 
     ax = axb
+    # test-time adaptation (conceptual): unlabeled deployment frames update the model before it predicts
+    from skimage import data as skdata
+    scene = skdata.rocket().astype(float)[60:360, 120:510] / 255        # stand-in outdoor frame (public domain)
+    for k, fog in enumerate((0.0, 0.35, 0.65)):
+        fx, fy = 6 + k * 3.2, 22 + k * 4.2
+        img = scene * (1 - fog) + fog * np.array([0.86, 0.87, 0.89])
+        ax.imshow(img, extent=(fx, fx + 17, fy, fy + 13), zorder=2 + k, aspect='auto')
+        ax.add_patch(Rectangle((fx, fy), 17, 13, fc='none', ec='white', lw=0.8, zorder=2 + k))
+    ax.text(16.5, 18.6, 'Unlabeled', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    ax.text(16.5, 13.6, 'test data', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    arrow(ax, (31.0, 32.0), (40.0, 32.0), head=9, lw=1.1)
+    ax.add_patch(FancyBboxPatch((41, 26), 17, 12, boxstyle='round,pad=0,rounding_size=1.4', fc=BLUE_L, ec=BLUE, lw=1.1))
+    ax.text(49.5, 32, 'Model', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
+    ax.add_patch(FancyArrowPatch((54.5, 38.6), (44.5, 38.6), connectionstyle='arc3,rad=1.25', arrowstyle='-|>',
+                                 mutation_scale=9, lw=1.1, color=BLUE))
+    ax.text(49.5, 47.2, 'adapt', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
+    arrow(ax, (58.6, 32.0), (66.0, 32.0), head=9, lw=1.1)
+    ax.text(67.0, 32.0, 'Predict', fontsize=T_SMALL, color=INK, ha='left', va='center')
+    ax.text(49.5, 22.6, 'no labels', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top', style='italic')
 
-    def small_axes(x0, label_x, label_y):
-        ax.plot([x0, x0], [15, 48], color=INK, lw=1.0)
-        ax.plot([x0, x0 + 56], [15, 15], color=INK, lw=1.0)
-        ax.text(x0 + 28, 12, label_x, fontsize=T_SMALL, color=GREY, ha='center', va='top')
-        ax.text(x0 - 2.5, 31.5, label_y, fontsize=T_SMALL, color=GREY, ha='right', va='center', rotation=90)
-
-    small_axes(16, 'Shift severity', 'Accuracy')
-    v = np.linspace(0, 1, 60)
-    ax.plot(16 + 48 * v, 45 - 24 * v ** 1.5, color=MID, lw=1.5, ls=(0, (3.5, 2.5)))
-    ax.plot(16 + 48 * v, 45.5 - 6 * v ** 1.6, color=BLUE, lw=2.0)
-    ax.text(65.5, 39.5, 'Adapted', fontsize=T_SMALL, color=BLUE, ha='left', va='center')
-    ax.text(65.5, 21.5, 'Fixed', fontsize=T_SMALL, color=GREY, ha='left', va='center')
-    # distilled student keeps most of the teacher's accuracy at a fraction of the compute
-    small_axes(98, 'Compute', 'Accuracy')
-    P = lambda c, a: (98 + 56 * c, 15 + 33 * a)
-    teacher, student, small = P(0.84, 0.88), P(0.24, 0.80), P(0.24, 0.44)
-    arrow(ax, (teacher[0] - 2.4, teacher[1] - 0.4), (student[0] + 2.4, student[1] + 0.2), color=GREY, ls=(0, (3, 2)), head=10)
-    arrow(ax, (small[0], small[1] + 2.0), (student[0], student[1] - 2.2), color=MID, head=10)
-    ax.plot(*teacher, 'o', ms=11, mfc=MID, mec='white', mew=1.2, zorder=4)
-    ax.plot(*student, 'o', ms=7.5, mfc=BLUE, mec='white', mew=1.2, zorder=4)
-    ax.plot(*small, 'o', ms=7.5, mfc='white', mec=MID, mew=1.2, zorder=4)
-    ax.text(teacher[0], teacher[1] - 3.6, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='top')
-    ax.text(student[0] + 2.2, student[1] - 2.6, 'Student', fontsize=T_SMALL, color=BLUE, ha='left', va='top')
-    ax.text(small[0] + 2.6, small[1] + 0.3, 'Trained alone', fontsize=T_SMALL, color=GREY, ha='left', va='center')
-    ax.text((teacher[0] + student[0]) / 2 + 1, (teacher[1] + student[1]) / 2 + 2.2, 'distill', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
-    # compute saving shown on the x-axis
-    ax.annotate('', xy=(student[0], 18.2), xytext=(teacher[0], 18.2),
-                arrowprops=dict(arrowstyle='<->', color=TEAL, lw=1.2, shrinkA=0, shrinkB=0))
-    ax.text((teacher[0] + student[0]) / 2, 19.6, 'less compute', fontsize=T_SMALL - 1, color=TEAL, ha='center', va='bottom')
+    # distillation (conceptual): a large teacher trains a smaller student
+    def net(cx, cy, layers, sp_x, sp_y, col, ms):
+        pts = []
+        for li, n_ in enumerate(layers):
+            xs_ = cx + (li - (len(layers) - 1) / 2) * sp_x
+            ys_ = [cy + (q - (n_ - 1) / 2) * sp_y for q in range(n_)]
+            pts.append([(xs_, y) for y in ys_])
+        for a_, b_ in zip(pts[:-1], pts[1:]):
+            for p1 in a_:
+                for p2 in b_:
+                    ax.plot([p1[0], p2[0]], [p1[1], p2[1]], color=RULE, lw=0.5, zorder=1)
+        for layer in pts:
+            for (xx, yy) in layer:
+                ax.plot([xx], [yy], 'o', ms=ms, mfc=col, mec='white', mew=0.6, zorder=2)
+    net(104, 32, [5, 7, 7, 5], 5.4, 3.6, MID, 4.6)
+    net(140, 32, [3, 4, 3], 5.0, 4.0, BLUE, 4.6)
+    ax.text(104, 17.5, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='top')
+    ax.text(140, 17.5, 'Student', fontsize=T_SMALL, color=BLUE, ha='center', va='top')
+    arrow(ax, (117.5, 32), (128.5, 32), color=GREY, ls=(0, (3, 2)), head=10)
+    ax.text(123, 34.2, 'distill', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
+    ax.text(140, 12.4, 'fewer parameters', fontsize=T_SMALL - 1, color=TEAL, ha='center', va='top')
     save(fig, 'overview-reliable.svg')
 
 

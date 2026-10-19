@@ -54,5 +54,6 @@ The overview figures are drawn by `_build/figures/make_figures.py`. They use:
 - Fundus photograph: Mikael Häggström, Wikimedia Commons, CC0 (distributed with scikit-image).
 - Coffee photograph: Rachel Michetti, CC0; rocket launch photograph: SpaceX, public domain (both distributed with scikit-image).
 - Brain template: MNI ICBM152 2009 nonlinear symmetric template, © McConnell Brain Imaging Centre, Montreal Neurological Institute; region coordinates from Seitzman et al. (2018). Both are distributed with nilearn.
+- Token pruning photograph (Winged Victory of Samothrace, Louvre): Eungjoo Lee.
 - Robot photographs: Koh et al., "Selective Commitment for Language-Guided Object Retrieval under Partial Observability," Fig. 1.
 - EB Garamond typeface: SIL Open Font License.

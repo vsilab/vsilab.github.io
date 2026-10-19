@@ -494,16 +494,18 @@ def fig_reliable():
 
     # token pruning on a general image: the image is split into patch tokens; uninformative ones are dropped
     from skimage import data as skd
-    photo = mute(skd.chelsea().astype(float) / 255, keep=0.6)[0:300, 0:450]      # natural photograph, CC0
-    gx, gy = 8, 6
+    # photograph by Eungjoo Lee (Winged Victory of Samothrace, Louvre); the plain wall makes the pruned tokens easy to see
+    photo = plt.imread(os.path.join(os.path.dirname(__file__), 'sources', 'token-photo.jpg')).astype(float) / 255
+    photo = np.clip(photo * 1.04, 0, 1)                                     # original colours, slightly lifted
+    gx, gy = 7, 7
     ph_, pw_ = photo.shape[0] // gy, photo.shape[1] // gx
     photo = photo[:ph_ * gy, :pw_ * gx]
     g = photo @ np.array([0.299, 0.587, 0.114])
-    yy_, xx_ = np.mgrid[0:gy, 0:gx]
-    centre = np.exp(-(((xx_ - 3.6) / 2.6) ** 2 + ((yy_ - 2.6) / 2.4) ** 2))       # the subject sits near the centre
-    score = np.array([[g[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_].std() for a in range(gx)] for b in range(gy)]) * centre
-    keep = score >= np.quantile(score, 0.6)
-    ix0, iw = 85.0, 34.0
+    from scipy.ndimage import gaussian_filter
+    detail = np.abs(g - gaussian_filter(g, 6))                               # local detail: high on the statue, low on the wall
+    score = np.array([[detail[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_].mean() for a in range(gx)] for b in range(gy)])
+    keep = score >= np.quantile(score, 0.55)
+    ix0, iw = 88.0, 27.0
     ih = iw * photo.shape[0] / photo.shape[1]
     iy0 = cy0 - ih / 2
     shown = photo.copy()
@@ -511,18 +513,22 @@ def fig_reliable():
         for a in range(gx):
             if not keep[b, a]:
                 blk = shown[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_]
-                shown[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_] = blk * 0.25 + 0.75 * np.array([0.97, 0.975, 0.98])
+                shown[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_] = blk * 0.35 + 0.65 * np.array([0.975, 0.977, 0.98])
     ax.imshow(shown, extent=(ix0, ix0 + iw, iy0, iy0 + ih), zorder=2)
     tw_, th_ = iw / gx, ih / gy
     for a in range(gx + 1):
         ax.plot([ix0 + a * tw_] * 2, [iy0, iy0 + ih], color='white', lw=0.6, zorder=3)
     for b in range(gy + 1):
         ax.plot([ix0, ix0 + iw], [iy0 + b * th_] * 2, color='white', lw=0.6, zorder=3)
+    for b in range(gy):
+        for a in range(gx):
+            if keep[b, a]:
+                ax.add_patch(Rectangle((ix0 + a * tw_, iy0 + ih - (b + 1) * th_), tw_, th_, fc='none', ec=BLUE, lw=0.7, zorder=4))
     ax.text(ix0 + iw / 2, cy0 - 14.6, 'image tokens', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
     # the kept tokens, lined up as the shorter sequence the model processes
     kept = [(b, a) for b in range(gy) for a in range(gx) if keep[b, a]]
-    cols = 5
-    kw = 3.6; gap = 0.6
+    cols = 6
+    kw = 3.1; gap = 0.5
     rows = int(np.ceil(len(kept) / cols))
     kx0 = ix0 + iw + 6.5
     ky_top = cy0 + (rows * (kw * th_ / tw_ + gap) - gap) / 2

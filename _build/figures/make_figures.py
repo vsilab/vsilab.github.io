@@ -436,20 +436,29 @@ def fig_reliable():
 
     ax = axb
     # test-time adaptation (conceptual): unlabeled deployment frames update the model before it predicts
-    # the same fundus photograph as it might look from three devices (colour cast, contrast, haze)
-    base = real_fundus(300)
-    looks = [(np.array([1.0, 1.0, 1.0]), 1.0, 0.0), (np.array([0.82, 1.05, 1.15]), 0.8, 0.10), (np.array([1.1, 0.9, 0.75]), 0.65, 0.22)]
-    for k, (tint, con, haze) in enumerate(looks):
-        fx, fy = 6 + k * 3.2, 22 + k * 4.2
-        rgb = base[..., :3]
-        rgb = np.clip(((rgb - 0.5) * con + 0.5) * tint * (1 - haze) + haze * 0.9, 0, 1)
-        img = np.dstack([rgb, base[..., 3]])
-        ax.add_patch(Rectangle((fx, fy), 17, 13, fc='#111111', ec='none', zorder=2 + k))
-        ax.imshow(img, extent=(fx + 2.0, fx + 15.0, fy, fy + 13), zorder=2 + k, aspect='auto')
-        ax.add_patch(Rectangle((fx, fy), 17, 13, fc='none', ec='white', lw=0.8, zorder=2 + k))
-    ax.text(16.5, 18.6, 'Unlabeled', fontsize=T_SMALL, color=GREY, ha='center', va='top')
-    ax.text(16.5, 13.6, 'test data', fontsize=T_SMALL, color=GREY, ha='center', va='top')
-    arrow(ax, (31.0, 32.0), (40.0, 32.0), head=9, lw=1.1)
+    # one outdoor scene (public-domain photo shipped with scikit-image) under three weather conditions
+    from skimage import data as skdata, transform as sktf
+    scene = sktf.resize(skdata.rocket().astype(float)[40:427, 0:640] / 255, (156, 204), anti_aliasing=True)
+    rng_w = np.random.default_rng(3)
+    def fog(im):
+        return im * 0.45 + 0.55 * np.array([0.84, 0.85, 0.87])
+    def rain(im):
+        im = im * 0.62 + 0.38 * np.array([0.55, 0.58, 0.62])
+        out = im.copy(); h, w = im.shape[:2]
+        for _ in range(170):
+            y, x = rng_w.integers(0, h - 9), rng_w.integers(0, w - 4)
+            for t_ in range(8):
+                out[y + t_, min(w - 1, x + t_ // 3)] = out[y + t_, min(w - 1, x + t_ // 3)] * 0.4 + 0.6
+        return out
+    looks = [('Clear', scene), ('Fog', fog(scene)), ('Rain', rain(scene))]
+    fw_, fh_, gap_ = 10.4, 8.0, 0.9
+    for k, (nm, img) in enumerate(looks):
+        fx = 4.5 + k * (fw_ + gap_)
+        ax.imshow(np.clip(img, 0, 1), extent=(fx, fx + fw_, 28.0, 28.0 + fh_), zorder=2, aspect='auto')
+        ax.add_patch(Rectangle((fx, 28.0), fw_, fh_, fc='none', ec=RULE, lw=0.6, zorder=3))
+        ax.text(fx + fw_ / 2, 26.8, nm, fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    ax.text(4.5 + 1.5 * fw_ + gap_, 19.6, 'Unlabeled test data', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
+    arrow(ax, (37.6, 32.0), (40.6, 32.0), head=8, lw=1.1)
     ax.add_patch(FancyBboxPatch((41, 26), 17, 12, boxstyle='round,pad=0,rounding_size=1.4', fc=BLUE_L, ec=BLUE, lw=1.1))
     ax.text(49.5, 32, 'Model', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
     ax.add_patch(FancyArrowPatch((54.5, 38.6), (44.5, 38.6), connectionstyle='arc3,rad=1.25', arrowstyle='-|>',

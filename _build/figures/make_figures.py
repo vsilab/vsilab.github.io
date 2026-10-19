@@ -26,24 +26,24 @@ plt.rcParams.update({
     'image.interpolation': 'antialiased',
 })
 
-# palette: warm ink and greys from the website, one deep accent (the site's oxblood) and a muted bronze.
+# palette: deep navy-black, white and greys, with a muted deep green where a second hue is needed.
 # Names are kept from the earlier palette so the drawing code reads the same.
-INK, GREY, MID, LIGHT, RULE = '#1b1a17', '#6a665e', '#a39e94', '#f4f2ee', '#e2ded6'
-BLUE, BLUE_L = '#6b1f2a', '#f1e9e7'          # oxblood accent
-AMBER, AMBER_L, AMBER_D = '#8c6d46', '#f2ede4', '#6e5434'   # bronze
-TEAL, RED = '#4f5b55', '#6b1f2a'
+INK, GREY, MID, LIGHT, RULE = '#111418', '#5f6670', '#a0a6ae', '#f2f3f5', '#dde0e5'
+BLUE, BLUE_L = '#1b2a44', '#e7eaf0'          # deep navy
+AMBER, AMBER_L, AMBER_D = '#3e6a5a', '#e6eee9', '#2d5245'   # deep green
+TEAL, RED = '#7a828c', '#1b2a44'
 T_LABEL, T_SMALL, T_TITLE = 17.5, 16, 18.5
 
 W, H = 8.0, 7.0          # inches; drawing units are 160 x 140
 
 
 def mute(img, keep=0.35):
-    """Pulls a photo toward a warm monochrome so it sits with the restrained palette."""
+    """Pulls a photo toward a cool monochrome so it sits with the restrained palette."""
     rgb = img[..., :3].astype(float)
     if rgb.max() > 1.5:
         rgb = rgb / 255
     g = rgb @ np.array([0.299, 0.587, 0.114])
-    warm = np.dstack([g * 1.02, g * 0.99, g * 0.94])
+    warm = np.dstack([g * 0.98, g * 0.99, g * 1.02])     # neutral, slightly cool grey
     out = np.clip(keep * rgb + (1 - keep) * warm, 0, 1)
     return np.dstack([out, img[..., 3]]) if img.shape[-1] == 4 else out
 
@@ -239,10 +239,10 @@ def fig_multimodal():
     frames_ = np.stack([sig[i_:i_ + win] * np.hanning(win) for i_ in range(0, len(sig) - win, hop)], 1)
     spec = 20 * np.log10(np.abs(np.fft.rfft(frames_, axis=0))[:90] + 1e-3)
     spec = np.clip((spec - spec.max() + 60) / 60, 0, 1)
-    rgb = LinearSegmentedColormap.from_list('m', ['#f4f2ee', '#a39e94', '#3a3631', '#1b1a17'])(spec)[..., :3]
+    rgb = LinearSegmentedColormap.from_list('m', ['#f2f3f5', '#a0a6ae', '#33486b', '#111418'])(spec)[..., :3]
     tt = np.linspace(0, 1, spec.shape[1])
     on = (tt > 0.55) & (tt < 0.8)
-    rgb[:, ~on] = rgb[:, ~on] * 0.35 + 0.65 * np.array([0.955, 0.95, 0.93])
+    rgb[:, ~on] = rgb[:, ~on] * 0.35 + 0.65 * np.array([0.95, 0.953, 0.96])
     ax.imshow(rgb, origin='lower', aspect='auto', extent=(cells[2][0], cells[2][0] + tw, cells[2][1], cells[2][1] + th), zorder=2)
     ax.add_patch(Rectangle((cells[2][0] + 0.55 * tw, cells[2][1]), 0.25 * tw, th, fc='none', ec='white', lw=1.0, zorder=4))
     frame(*cells[2], 'Audio')
@@ -324,7 +324,7 @@ def fig_medical():
     ax.imshow(real_fundus(600), extent=(10.5, 44.5, 79, 113), zorder=2)
     arrow(ax, (27.5, 78.0), (27.5, 74.6), head=8, lw=1.0)
     sx0, sx1, sy = 3.5, 51.5, 70.4
-    shades = ['#efebe6', '#dcd0c9', '#b89a94', '#8d4d55', BLUE]
+    shades = ['#eef0f3', '#d2d8e1', '#a3afc0', '#5d6f8c', BLUE]
     names = ['None', 'Mild', 'Mod.', 'Severe', 'PDR']
     sw_ = (sx1 - sx0) / 5
     for k, (c, nm) in enumerate(zip(shades, names)):
@@ -338,7 +338,7 @@ def fig_medical():
     xs = np.linspace(ox0, ox1, img.shape[1])
     Yo = lambda ln: oy1 - ln / img.shape[0] * (oy1 - oy0)
     half = xs >= 79
-    band_cols = ['#3a3631', '#8c6d46', '#a39e94', '#6b1f2a', '#5b5750']
+    band_cols = ['#1b2a44', '#3e6a5a', '#a0a6ae', '#33486b', '#5f6670']
     for k in range(5):
         top, bot = Yo(lines[k]), Yo(lines[k + 1])
         ax.fill_between(xs[half], bot[half], top[half], color=band_cols[k], alpha=0.55, lw=0, zorder=3)
@@ -385,7 +385,7 @@ def fig_medical():
     g = np.array([order.index(nets[q]) for q in lab])
     C = np.where(g[:, None] == g[None, :], 0.6, 0.05) + rng.normal(0, 0.14, (n, n))
     C = (C + C.T) / 2; np.fill_diagonal(C, 1)
-    div = LinearSegmentedColormap.from_list('d', [AMBER, '#ece3d6', '#ffffff', '#e2cfcc', BLUE])
+    div = LinearSegmentedColormap.from_list('d', [AMBER, '#dbe7e1', '#ffffff', '#d3d9e3', BLUE])
     # place the matrix level with the centre of the visible brain and start the arrow at the brain's right edge
     vis = np.where((g_ > 0.06).any(axis=0))[0]
     rows_ = np.where((g_ > 0.06).any(axis=1))[0]

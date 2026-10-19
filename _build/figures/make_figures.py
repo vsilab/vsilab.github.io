@@ -454,14 +454,10 @@ def fig_reliable():
     panel(axb, 4, 59, 'Distribution shift')
     panel(axr, 5.5, 59, 'Test-time adaptation')
 
-    # ── compact models under a real-time budget (top, conceptual; no measured values). The student replaces the
-    # teacher's multi-head self-attention with a single head and learns from the teacher (Lightweight TransUNet).
-    ay, ax0, ax1 = 72.0, 10.0, 152.0
-    arrow(ax, (ax0, ay), (ax1, ay), color=INK, lw=1.0, head=9)
-    ax.text((ax0 + ax1) / 2, ay - 2.2, 'Inference cost per frame', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
-    bxl = 81.0
-    ax.plot([bxl, bxl], [ay + 0.9, 109.0], color=TEAL, lw=1.2, ls=(0, (3, 2)), zorder=1)   # stops just above the axis
-    ax.text(bxl, 110.0, 'real-time budget', fontsize=T_SMALL - 1.5, color=TEAL, ha='center', va='bottom')
+    # ── compact models for real time (top): three routes the lab uses, drawn as concepts (no measured values)
+    #    distillation: multi-head teacher to single-head student (Lightweight TransUNet)
+    #    token pruning: keep informative image tokens (adaptive token sampling, OCT)
+    #    DCT features: keep low-frequency DCT coefficients (DCT-based hyperspectral classification)
     amap = LinearSegmentedColormap.from_list('a', ['#ffffff', BLUE_L, BLUE])
     def attn(cx, cy, size, seed):
         r = np.random.default_rng(seed)
@@ -470,19 +466,67 @@ def fig_reliable():
         ax.imshow(A / A.max(), cmap=amap, vmin=0, vmax=1, extent=(cx - size / 2, cx + size / 2, cy - size / 2, cy + size / 2),
                   interpolation='nearest', zorder=3)
         ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=INK, lw=0.6, zorder=4))
-    tcx, tcy, sz = 120.0, 91.0, 8.5
+    head_y, cap_y, cy0 = 112.0, 69.5, 90.0
+    def sub(xc, title, caption):
+        ax.text(xc, head_y, title, fontsize=T_SMALL, color=INK, ha='center', va='baseline')
+        ax.text(xc, cap_y, caption, fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    for xs_ in (54.7, 106.0):                                    # hairlines between the three routes
+        ax.plot([xs_, xs_], [67.0, 115.0], color=RULE, lw=0.7)
+
+    # distillation
+    sz = 9.2; tcx = 15.0
     for k, (dx, dy) in enumerate(((-1, 1), (1, 1), (-1, -1), (1, -1))):
-        attn(tcx + dx * (sz / 2 + 0.6), tcy + dy * (sz / 2 + 0.6), sz, k + 1)
-    scx, ssz = 42.0, 12.0
-    attn(scx, tcy, ssz, 9)
-    top_ = tcy + sz + 0.6 + 2.0
-    ax.text(tcx, top_, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='bottom')
-    ax.text(scx, top_, 'Student', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
-    bot_ = tcy - sz - 0.6 - 1.4
-    ax.text(tcx, bot_, 'multi-head attention', fontsize=T_SMALL - 2, color=GREY, ha='center', va='top')
-    ax.text(scx, bot_, 'single-head attention', fontsize=T_SMALL - 2, color=GREY, ha='center', va='top')
-    arrow(ax, (tcx - sz - 2.2, tcy), (scx + ssz / 2 + 1.6, tcy), color=GREY, ls=(0, (3, 2)), head=10)
-    ax.text(64.0, tcy + 1.2, 'distill', fontsize=T_SMALL - 1, color=GREY, ha='center', va='bottom')
+        attn(tcx + dx * (sz / 2 + 0.5), cy0 + dy * (sz / 2 + 0.5), sz, k + 1)
+    attn(43.0, cy0, 13.5, 9)
+    arrow(ax, (tcx + sz + 1.8, cy0), (43.0 - 6.75 - 1.4, cy0), color=GREY, ls=(0, (3, 2)), head=9)
+    ax.text(tcx, cy0 - sz - 2.2, 'teacher', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
+    ax.text(43.0, cy0 - sz - 2.2, 'student', fontsize=T_SMALL - 3, color=BLUE, ha='center', va='top')
+    sub(29.0, 'Distillation', 'fewer attention heads')
+
+    # token pruning on an OCT B-scan: patches split into tokens, uninformative ones dropped
+    img, _ = oct_scan()
+    img = img[40:230:2, 80:620:2]
+    ox0, oy0, ow, oh = 58.5, cy0 - 10.5, 22.0, 21.0
+    gx, gy = 6, 5
+    tw_, th_ = ow / gx, oh / gy
+    ax.imshow(img, cmap='gray', vmin=0, vmax=1, extent=(ox0, ox0 + ow, oy0, oy0 + oh), aspect='auto', zorder=2)
+    for a_ in range(1, gx):
+        ax.plot([ox0 + a_ * tw_] * 2, [oy0, oy0 + oh], color='white', lw=0.5, zorder=3)
+    for b_ in range(1, gy):
+        ax.plot([ox0, ox0 + ow], [oy0 + b_ * th_] * 2, color='white', lw=0.5, zorder=3)
+    H_, W_ = img.shape
+    score = np.array([[img[int(b_ * H_ / gy):int((b_ + 1) * H_ / gy), int(a_ * W_ / gx):int((a_ + 1) * W_ / gx)].std()
+                       for a_ in range(gx)] for b_ in range(gy)])          # rows top to bottom
+    keep = score >= np.quantile(score, 0.55)
+    arrow(ax, (ox0 + ow + 1.2, cy0), (ox0 + ow + 4.6, cy0), head=8, lw=1.0)
+    kx0 = ox0 + ow + 5.6
+    for b_ in range(gy):
+        for a_ in range(gx):
+            x_ = kx0 + a_ * (tw_ * 0.62 + 0.5); y_ = oy0 + oh - (b_ + 1) * th_
+            if keep[b_, a_]:
+                ax.add_patch(Rectangle((x_, y_ + 0.3), tw_ * 0.62, th_ - 0.6, fc=BLUE, ec='none', zorder=3))
+            else:
+                ax.add_patch(Rectangle((x_, y_ + 0.3), tw_ * 0.62, th_ - 0.6, fc='none', ec=RULE, lw=0.6, zorder=3))
+    ax.text(ox0 + ow / 2, oy0 - 1.6, 'tokens', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
+    ax.text(kx0 + 3 * (tw_ * 0.62 + 0.5) - 0.25, oy0 - 1.6, 'kept', fontsize=T_SMALL - 3, color=BLUE, ha='center', va='top')
+    sub(80.3, 'Token pruning', 'fewer image tokens')
+
+    # DCT features: a signal and its DCT coefficients, low frequencies kept
+    from scipy.fft import dct
+    t_ = np.linspace(0, 1, 64)
+    sig = 0.6 * np.sin(2 * np.pi * 1.2 * t_) + 0.3 * np.sin(2 * np.pi * 3.1 * t_ + 0.7) + 0.08 * np.sin(2 * np.pi * 11 * t_)
+    sx0, sw, sy = 109.5, 18.0, cy0
+    ax.plot(sx0 + sw * t_, sy + 7.5 * sig, color=INK, lw=1.2)
+    ax.text(sx0 + sw / 2, oy0 - 1.6, 'input', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
+    arrow(ax, (sx0 + sw + 1.2, cy0), (sx0 + sw + 4.6, cy0), head=8, lw=1.0)
+    c = dct(sig, norm='ortho')[:16]
+    c = np.abs(c) / np.abs(c).max()
+    bx_ = sx0 + sw + 5.8; bw_ = 1.0
+    for k, v in enumerate(c):
+        col = BLUE if k < 5 else RULE
+        ax.add_patch(Rectangle((bx_ + k * (bw_ + 0.25), oy0), bw_, 2.0 + 18.0 * v, fc=col, ec='none', zorder=3))
+    ax.text(bx_ + 8 * (bw_ + 0.25), oy0 - 1.6, 'DCT coefficients', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
+    sub(132.0, 'DCT features', 'fewer coefficients')
 
     # ── distribution shift (bottom left)
     ax = axb

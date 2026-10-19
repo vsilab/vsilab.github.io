@@ -454,10 +454,9 @@ def fig_reliable():
     panel(axb, 4, 59, 'Distribution shift')
     panel(axr, 5.5, 59, 'Test-time adaptation')
 
-    # ── compact models for real time (top): three routes the lab uses, drawn as concepts (no measured values)
+    # ── compact models for real time (top): two routes the lab uses, drawn as concepts (no measured values)
     #    distillation: multi-head teacher to single-head student (Lightweight TransUNet)
-    #    token pruning: keep informative image tokens (adaptive token sampling, OCT)
-    #    DCT features: keep low-frequency DCT coefficients (DCT-based hyperspectral classification)
+    #    token pruning: keep informative image tokens (adaptive token sampling, used on OCT, WSI, and other images)
     amap = LinearSegmentedColormap.from_list('a', ['#ffffff', BLUE_L, BLUE])
     def attn(cx, cy, size, seed):
         r = np.random.default_rng(seed)
@@ -466,67 +465,64 @@ def fig_reliable():
         ax.imshow(A / A.max(), cmap=amap, vmin=0, vmax=1, extent=(cx - size / 2, cx + size / 2, cy - size / 2, cy + size / 2),
                   interpolation='nearest', zorder=3)
         ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=INK, lw=0.6, zorder=4))
-    head_y, cap_y, cy0 = 112.0, 69.5, 90.0
+    head_y, cap_y, cy0 = 112.0, 68.5, 91.0
     def sub(xc, title, caption):
         ax.text(xc, head_y, title, fontsize=T_SMALL, color=INK, ha='center', va='baseline')
         ax.text(xc, cap_y, caption, fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
-    for xs_ in (54.7, 106.0):                                    # hairlines between the three routes
-        ax.plot([xs_, xs_], [67.0, 115.0], color=RULE, lw=0.7)
+    ax.plot([80.0, 80.0], [67.0, 115.0], color=RULE, lw=0.7)          # hairline between the two routes
 
     # distillation
-    sz = 9.2; tcx = 15.0
+    sz = 10.0; tcx = 23.0
     for k, (dx, dy) in enumerate(((-1, 1), (1, 1), (-1, -1), (1, -1))):
-        attn(tcx + dx * (sz / 2 + 0.5), cy0 + dy * (sz / 2 + 0.5), sz, k + 1)
-    attn(43.0, cy0, 13.5, 9)
-    arrow(ax, (tcx + sz + 1.8, cy0), (43.0 - 6.75 - 1.4, cy0), color=GREY, ls=(0, (3, 2)), head=9)
-    ax.text(tcx, cy0 - sz - 2.2, 'teacher', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
-    ax.text(43.0, cy0 - sz - 2.2, 'student', fontsize=T_SMALL - 3, color=BLUE, ha='center', va='top')
-    sub(29.0, 'Distillation', 'fewer attention heads')
+        attn(tcx + dx * (sz / 2 + 0.6), cy0 + dy * (sz / 2 + 0.6), sz, k + 1)
+    scx, ssz = 59.0, 15.0
+    attn(scx, cy0, ssz, 9)
+    arrow(ax, (tcx + sz + 2.2, cy0), (scx - ssz / 2 - 1.6, cy0), color=GREY, ls=(0, (3, 2)), head=10)
+    ax.text(tcx, cy0 - 14.6, 'teacher', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    ax.text(scx, cy0 - 14.6, 'student', fontsize=T_SMALL - 2.5, color=BLUE, ha='center', va='top')
+    sub(41.0, 'Distillation', 'fewer attention heads')
 
-    # token pruning on an OCT B-scan: patches split into tokens, uninformative ones dropped
-    img, _ = oct_scan()
-    img = img[40:230:2, 80:620:2]
-    ox0, oy0, ow, oh = 58.5, cy0 - 10.5, 22.0, 21.0
-    gx, gy = 6, 5
-    tw_, th_ = ow / gx, oh / gy
-    ax.imshow(img, cmap='gray', vmin=0, vmax=1, extent=(ox0, ox0 + ow, oy0, oy0 + oh), aspect='auto', zorder=2)
-    for a_ in range(1, gx):
-        ax.plot([ox0 + a_ * tw_] * 2, [oy0, oy0 + oh], color='white', lw=0.5, zorder=3)
-    for b_ in range(1, gy):
-        ax.plot([ox0, ox0 + ow], [oy0 + b_ * th_] * 2, color='white', lw=0.5, zorder=3)
-    H_, W_ = img.shape
-    score = np.array([[img[int(b_ * H_ / gy):int((b_ + 1) * H_ / gy), int(a_ * W_ / gx):int((a_ + 1) * W_ / gx)].std()
-                       for a_ in range(gx)] for b_ in range(gy)])          # rows top to bottom
-    keep = score >= np.quantile(score, 0.55)
-    arrow(ax, (ox0 + ow + 1.2, cy0), (ox0 + ow + 4.6, cy0), head=8, lw=1.0)
-    kx0 = ox0 + ow + 5.6
-    for b_ in range(gy):
-        for a_ in range(gx):
-            x_ = kx0 + a_ * (tw_ * 0.62 + 0.5); y_ = oy0 + oh - (b_ + 1) * th_
-            if keep[b_, a_]:
-                ax.add_patch(Rectangle((x_, y_ + 0.3), tw_ * 0.62, th_ - 0.6, fc=BLUE, ec='none', zorder=3))
-            else:
-                ax.add_patch(Rectangle((x_, y_ + 0.3), tw_ * 0.62, th_ - 0.6, fc='none', ec=RULE, lw=0.6, zorder=3))
-    ax.text(ox0 + ow / 2, oy0 - 1.6, 'tokens', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
-    ax.text(kx0 + 3 * (tw_ * 0.62 + 0.5) - 0.25, oy0 - 1.6, 'kept', fontsize=T_SMALL - 3, color=BLUE, ha='center', va='top')
-    sub(80.3, 'Token pruning', 'fewer image tokens')
-
-    # DCT features: a signal and its DCT coefficients, low frequencies kept
-    from scipy.fft import dct
-    t_ = np.linspace(0, 1, 64)
-    sig = 0.6 * np.sin(2 * np.pi * 1.2 * t_) + 0.3 * np.sin(2 * np.pi * 3.1 * t_ + 0.7) + 0.08 * np.sin(2 * np.pi * 11 * t_)
-    sx0, sw, sy = 109.5, 18.0, cy0
-    ax.plot(sx0 + sw * t_, sy + 7.5 * sig, color=INK, lw=1.2)
-    ax.text(sx0 + sw / 2, oy0 - 1.6, 'input', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
-    arrow(ax, (sx0 + sw + 1.2, cy0), (sx0 + sw + 4.6, cy0), head=8, lw=1.0)
-    c = dct(sig, norm='ortho')[:16]
-    c = np.abs(c) / np.abs(c).max()
-    bx_ = sx0 + sw + 5.8; bw_ = 1.0
-    for k, v in enumerate(c):
-        col = BLUE if k < 5 else RULE
-        ax.add_patch(Rectangle((bx_ + k * (bw_ + 0.25), oy0), bw_, 2.0 + 18.0 * v, fc=col, ec='none', zorder=3))
-    ax.text(bx_ + 8 * (bw_ + 0.25), oy0 - 1.6, 'DCT coefficients', fontsize=T_SMALL - 3, color=GREY, ha='center', va='top')
-    sub(132.0, 'DCT features', 'fewer coefficients')
+    # token pruning on a general image: the image is split into patch tokens; uninformative ones are dropped
+    from skimage import data as skd
+    photo = mute(skd.coffee().astype(float) / 255, keep=0.55)[30:390, 60:540]
+    gx, gy = 8, 6
+    ph_, pw_ = photo.shape[0] // gy, photo.shape[1] // gx
+    photo = photo[:ph_ * gy, :pw_ * gx]
+    g = photo @ np.array([0.299, 0.587, 0.114])
+    score = np.array([[g[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_].std() for a in range(gx)] for b in range(gy)])
+    keep = score >= np.quantile(score, 0.6)
+    ix0, iw = 85.0, 34.0
+    ih = iw * photo.shape[0] / photo.shape[1]
+    iy0 = cy0 - ih / 2
+    shown = photo.copy()
+    for b in range(gy):
+        for a in range(gx):
+            if not keep[b, a]:
+                blk = shown[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_]
+                shown[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_] = blk * 0.25 + 0.75 * np.array([0.97, 0.975, 0.98])
+    ax.imshow(shown, extent=(ix0, ix0 + iw, iy0, iy0 + ih), zorder=2)
+    tw_, th_ = iw / gx, ih / gy
+    for a in range(gx + 1):
+        ax.plot([ix0 + a * tw_] * 2, [iy0, iy0 + ih], color='white', lw=0.6, zorder=3)
+    for b in range(gy + 1):
+        ax.plot([ix0, ix0 + iw], [iy0 + b * th_] * 2, color='white', lw=0.6, zorder=3)
+    ax.text(ix0 + iw / 2, cy0 - 14.6, 'image tokens', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    # the kept tokens, lined up as the shorter sequence the model processes
+    kept = [(b, a) for b in range(gy) for a in range(gx) if keep[b, a]]
+    cols = 5
+    kw = 3.6; gap = 0.6
+    rows = int(np.ceil(len(kept) / cols))
+    kx0 = ix0 + iw + 6.5
+    ky_top = cy0 + (rows * (kw * th_ / tw_ + gap) - gap) / 2
+    arrow(ax, (ix0 + iw + 1.4, cy0), (kx0 - 1.4, cy0), head=9, lw=1.0)
+    for n_, (b, a) in enumerate(kept):
+        r_, c_ = divmod(n_, cols)
+        kh = kw * th_ / tw_
+        x_ = kx0 + c_ * (kw + gap); y_ = ky_top - (r_ + 1) * kh - r_ * gap
+        ax.imshow(photo[b * ph_:(b + 1) * ph_, a * pw_:(a + 1) * pw_], extent=(x_, x_ + kw, y_, y_ + kh), zorder=3)
+        ax.add_patch(Rectangle((x_, y_), kw, kh, fc='none', ec=BLUE, lw=0.6, zorder=4))
+    ax.text(kx0 + (cols * (kw + gap) - gap) / 2, cy0 - 14.6, 'kept tokens', fontsize=T_SMALL - 2.5, color=BLUE, ha='center', va='top')
+    sub(119.0, 'Token pruning', 'fewer image tokens')
 
     # ── distribution shift (bottom left)
     ax = axb

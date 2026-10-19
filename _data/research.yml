@@ -48,7 +48,7 @@ directions:
       - Knowledge distillation and compact models for resource-constrained deployment
       - Efficient adaptation of foundation models, with simulation and synthetic data
     figure: overview-reliable.svg
-    figure_alt: Three routes to compact models (distillation from a multi-head to a single-head attention student, pruning uninformative tokens of an OCT scan, and keeping low-frequency DCT coefficients); a shift in feature space between training and deployment data; and a model that adapts on unlabeled images taken in clear, foggy, and rainy weather
+    figure_alt: Two routes to compact models (distillation from a multi-head to a single-head attention student, and pruning uninformative image tokens so the model processes fewer of them); a shift in feature space between training and deployment data; and a model that adapts on unlabeled images taken in clear, foggy, and rainy weather
     papers:
       - "Efficient Hyperspectral Image Classification Using Discrete Cosine Transform on Limited-Resource Systems"
       - "BCG-Former: Toward Pareto-Efficient Hyperspectral Image Classification via Band-Contextual Gating"

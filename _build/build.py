@@ -97,7 +97,7 @@ def figure(d):
     """Overview illustration for the home page. A missing file shows a blank panel instead of a broken image."""
     f = d.get('figure') or ''
     if os.path.exists(os.path.join(ROOT, 'assets', 'figures', f)):
-        img = (f'<img src="assets/figures/{e(f)}" alt="{e(d.get("figure_alt", d["title"]))}" loading="lazy" decoding="async" '
+        img = (f'<img src="assets/figures/{e(f)}?v={ver("figures/" + f)}" alt="{e(d.get("figure_alt", d["title"]))}" loading="lazy" decoding="async" '
                f'onerror="vsiFigError(this)">')
         cls = ''
     else:

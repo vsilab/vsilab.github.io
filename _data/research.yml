@@ -12,14 +12,14 @@
 directions:
   - id: multimodal
     title: Multimodal Perception and Decision Systems
-    summary: "We build models that combine images, video, text, and clinical records, for example imaging with patient data for oral cancer detection and for predicting response to spinal cord stimulation. In ongoing robot work, a vision-language model updates a belief about an occluded target, and the robot acts on the scene and looks again until the evidence supports a grasp."
+    summary: "We build models that combine images, video, text, and clinical records, from oral cancer detection and spinal cord stimulation outcome prediction to referral decisions from DVT and ocular B-scan ultrasound (under review). In ongoing robot work, a vision-language model updates a belief about an occluded target, and the robot looks again until the evidence supports a grasp."
     topics:
       - Vision-language models and multimodal perception
       - Reliable multimodal reasoning under uncertainty in adaptive decision-making
       - Human-centered perception and decision support
       - Vision-language models for robot perception under partial observability
     figure: overview-multimodal.svg
-    figure_alt: "Example inputs (image, video, text, patient data); a conceptual diagram combining images and clinical data into one prediction; and a real robot that cannot see the target, removes the cover, looks into the container, and grasps once the evidence suffices"
+    figure_alt: "Example inputs (image, video, text, patient data); a referral map that routes cases to routine care, referral, or clinician review by predicted risk and uncertainty; and a real robot that cannot see the target, removes the cover, looks into the container, and grasps once the evidence suffices"
     papers:
       - "Prediction of Response to Spinal Cord Stimulation Using Machine Learning Based on Radiomics and Patient-Reported Outcomes"
       - "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"
@@ -42,13 +42,13 @@ directions:
 
   - id: reliable
     title: Reliable and Efficient AI Systems
-    summary: "Models must keep working when the data change, across imaging devices, weather, and developmental stages, and must fit limited hardware. We study test-time adaptation on unlabeled data, including a federated setting across distributed cameras, domain-shift mitigation for retinal grading, knowledge distillation and pruning for compact models, and efficient hyperspectral classification on resource-limited systems."
+    summary: "Models must keep working when the data change, across imaging devices, weather, and developmental stages, and must meet real-time budgets. We study test-time adaptation on unlabeled data, including a federated setting across cameras, domain-shift mitigation for retinal grading, distillation into single-head transformer students, channel pruning, and DCT-based hyperspectral classification on resource-limited systems."
     topics:
       - Reliability under distribution and domain shift, including test-time adaptation
       - Knowledge distillation and compact models for resource-constrained deployment
       - Efficient adaptation of foundation models, with simulation and synthetic data
     figure: overview-reliable.svg
-    figure_alt: "Conceptual diagrams: training and deployment data that differ by imaging device, weather, or developmental stage; a model that adapts on unlabeled test data before predicting; and a large teacher network distilled into a smaller student"
+    figure_alt: "Conceptual diagrams: training and deployment data that differ by imaging device, weather, or developmental stage; a model that adapts on unlabeled test data before predicting; and a multi-head attention teacher distilled into a single-head student that fits a real-time budget"
     papers:
       - "Efficient Hyperspectral Image Classification Using Discrete Cosine Transform on Limited-Resource Systems"
       - "BCG-Former: Toward Pareto-Efficient Hyperspectral Image Classification via Band-Contextual Gating"

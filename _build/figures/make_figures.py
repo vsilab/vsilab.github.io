@@ -168,7 +168,7 @@ def fig_multimodal():
     from skimage import data, transform
     fig, ax, _ = canvas(lift=0)
     panel(ax, 4, 132, 'Multimodal inputs')
-    panel(ax, 104, 132, 'Imaging with patient data')
+    panel(ax, 104, 132, 'Referral decision')
     panel(ax, 4, 61.5, 'Robot retrieval under occlusion')
 
     tw, th = 40.0, 17.5
@@ -216,26 +216,26 @@ def fig_multimodal():
             ax.plot([x_ + c0 * tw, x_ + c0 * tw + L], [yy, yy], color=MID, lw=2.2, solid_capstyle='round', zorder=4)
     frame(x_, y_, 'Patient data')
 
-    # ── imaging with patient data: two sources combined into one prediction (conceptual)
-    bx, bw = 108.0, 17.0
-    ax.add_patch(Rectangle((bx, 104), bw, 17.5, fc=LIGHT, ec=RULE, lw=0.7))
-    mni_ = plt.imread(os.path.join(os.path.dirname(__file__), 'sources', 'mni152-axial.png'))
-    mni_ = mni_ if mni_.ndim == 2 else mni_[..., 0]
-    ax.imshow(mni_, cmap='gray', extent=(bx + 1.5, bx + bw - 1.5, 105.5, 119.5), zorder=2, aspect='auto')
-    ax.text(bx + bw / 2, 102.8, 'Images', fontsize=T_SMALL, color=INK, ha='center', va='top')
-    ax.add_patch(Rectangle((bx, 78.5), bw, 17.5, fc='white', ec=RULE, lw=0.7))
-    for r_ in range(4):
-        yy = 92.6 - r_ * 3.6
-        ax.plot([bx + 2, bx + 2 + rng_.uniform(6, 12)], [yy, yy], color=MID, lw=2.2, solid_capstyle='round')
-    ax.text(bx + bw / 2, 77.3, 'Clinical data', fontsize=T_SMALL, color=INK, ha='center', va='top')
-    fx_, fy_ = 136.0, 100.0
-    arrow(ax, (bx + bw + 0.6, 112.75), (fx_ - 2.6, fy_ + 1.6), head=8, lw=1.0)
-    arrow(ax, (bx + bw + 0.6, 87.25), (fx_ - 2.6, fy_ - 1.6), head=8, lw=1.0)
-    ax.add_patch(FancyBboxPatch((fx_ - 2.2, fy_ - 4), 18.4, 8, boxstyle='round,pad=0,rounding_size=1.2', fc=BLUE_L, ec=BLUE, lw=1.0))
-    ax.text(fx_ + 7, fy_, 'Model', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
-    arrow(ax, (fx_ + 7, fy_ - 4.4), (fx_ + 7, 87.0), head=8, lw=1.0)
-    ax.text(fx_ + 7, 85.6, 'Detection or', fontsize=T_SMALL, color=INK, ha='center', va='top')
-    ax.text(fx_ + 7, 80.2, 'outcome', fontsize=T_SMALL, color=INK, ha='center', va='top')
+    # ── referral decision by predicted risk and uncertainty (ultrasound work under review: DVT, ocular B-scan)
+    x0, x1, y0, y1 = 112, 155, 80, 122
+    thr_r, thr_u = 0.5, 0.55
+    Xr = lambda v: x0 + (x1 - x0) * v
+    Yu = lambda v: y0 + (y1 - y0) * v
+    ax.add_patch(Rectangle((x0, y0), Xr(thr_r) - x0, Yu(thr_u) - y0, fc=LIGHT, ec='none'))
+    ax.add_patch(Rectangle((Xr(thr_r), y0), x1 - Xr(thr_r), Yu(thr_u) - y0, fc=BLUE_L, ec='none'))
+    ax.add_patch(Rectangle((x0, Yu(thr_u)), x1 - x0, y1 - Yu(thr_u), fc=AMBER_L, ec='none'))
+    ax.plot([x0, x0, x1], [y1, y0, y0], color=INK, lw=1.0)
+    ax.text((x0 + x1) / 2, Yu(0.87), 'Defer to clinician', fontsize=T_SMALL, color=AMBER_D, ha='center', va='center')
+    ax.text(Xr(0.25), Yu(0.11), 'Routine', fontsize=T_SMALL, color=GREY, ha='center', va='center')
+    ax.text(Xr(0.75), Yu(0.11), 'Refer', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
+    pts = np.array([[0.12, 0.30], [0.22, 0.42], [0.30, 0.25], [0.38, 0.47], [0.68, 0.36], [0.78, 0.24], [0.86, 0.42],
+                    [0.93, 0.30], [0.44, 0.64], [0.57, 0.70], [0.32, 0.69], [0.68, 0.63]])
+    for (r_, u_) in pts:
+        col = AMBER if u_ >= thr_u else (BLUE if r_ >= thr_r else MID)
+        ax.plot([Xr(r_)], [Yu(u_)], 'o', ms=4.6, mfc=col, mec='white', mew=0.8, zorder=4)
+    ax.text((x0 + x1) / 2, y0 - 2.0, 'Predicted risk', fontsize=T_SMALL, color=GREY, ha='center', va='top')
+    ax.text(x0 - 2.0, (y0 + y1) / 2, 'Uncertainty', fontsize=T_SMALL, color=GREY, ha='right', va='center', rotation=90)
+    ax.text((x0 + x1) / 2, y0 - 7.4, 'DVT and ocular B-scan ultrasound', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top', style='italic')
 
     # ── robot retrieval under occlusion: real-robot sequence (Koh et al., under review, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,
@@ -378,8 +378,8 @@ def fig_medical():
 def fig_reliable():
     fig, axb, ax = canvas()
     panel(ax, 4, 123, 'Distribution shift')
-    panel(axb, 4, 57, 'Test-time adaptation')
-    panel(axb, 86, 57, 'Compact models by distillation')
+    panel(axb, 4, 59, 'Test-time adaptation')
+    panel(axb, 86, 59, 'Compact models for real time')
     x = np.linspace(-4, 7, 400)
     X = lambda v: 14 + (v + 4) / 11 * 138
     Y = lambda v: 76 + v * 30
@@ -414,27 +414,36 @@ def fig_reliable():
     ax.text(67.0, 32.0, 'Predict', fontsize=T_SMALL, color=INK, ha='left', va='center')
     ax.text(49.5, 22.6, 'no labels', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top', style='italic')
 
-    # distillation (conceptual): a large teacher trains a smaller student
-    def net(cx, cy, layers, sp_x, sp_y, col, ms):
-        pts = []
-        for li, n_ in enumerate(layers):
-            xs_ = cx + (li - (len(layers) - 1) / 2) * sp_x
-            ys_ = [cy + (q - (n_ - 1) / 2) * sp_y for q in range(n_)]
-            pts.append([(xs_, y) for y in ys_])
-        for a_, b_ in zip(pts[:-1], pts[1:]):
-            for p1 in a_:
-                for p2 in b_:
-                    ax.plot([p1[0], p2[0]], [p1[1], p2[1]], color=RULE, lw=0.5, zorder=1)
-        for layer in pts:
-            for (xx, yy) in layer:
-                ax.plot([xx], [yy], 'o', ms=ms, mfc=col, mec='white', mew=0.6, zorder=2)
-    net(104, 32, [5, 7, 7, 5], 5.4, 3.6, MID, 4.6)
-    net(140, 32, [3, 4, 3], 5.0, 4.0, BLUE, 4.6)
-    ax.text(104, 17.5, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='top')
-    ax.text(140, 17.5, 'Student', fontsize=T_SMALL, color=BLUE, ha='center', va='top')
-    arrow(ax, (117.5, 32), (128.5, 32), color=GREY, ls=(0, (3, 2)), head=10)
-    ax.text(123, 34.2, 'distill', fontsize=T_SMALL, color=GREY, ha='center', va='bottom')
-    ax.text(140, 12.4, 'fewer parameters', fontsize=T_SMALL - 1, color=TEAL, ha='center', va='top')
+    # compact models under a real-time budget (conceptual; no measured values). The student replaces the
+    # teacher's multi-head self-attention with a single head and learns from the teacher (Lightweight TransUNet).
+    ay, ax0, ax1 = 21.5, 90.0, 154.0
+    arrow(ax, (ax0, ay), (ax1, ay), color=INK, lw=1.0, head=9)
+    ax.text((ax0 + ax1) / 2, ay - 2.2, 'Inference cost per frame', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
+    bxl = 121.0
+    ax.plot([bxl, bxl], [ay - 1.2, 49.0], color=TEAL, lw=1.2, ls=(0, (3, 2)))
+    ax.text(bxl, 50.0, 'real-time budget', fontsize=T_SMALL - 1.5, color=TEAL, ha='center', va='bottom')
+    amap = LinearSegmentedColormap.from_list('a', ['#ffffff', BLUE_L, BLUE])
+    rng_a = np.random.default_rng(7)
+    def attn(cx, cy, size, seed):
+        r = np.random.default_rng(seed)
+        q = np.linspace(0, 1, 8)
+        A = np.exp(-((q[:, None] - q[None, :] - r.uniform(-0.3, 0.3)) / r.uniform(0.12, 0.3)) ** 2) + 0.15 * r.random((8, 8))
+        ax.imshow(A / A.max(), cmap=amap, vmin=0, vmax=1, extent=(cx - size / 2, cx + size / 2, cy - size / 2, cy + size / 2),
+                  interpolation='nearest', zorder=3)
+        ax.add_patch(Rectangle((cx - size / 2, cy - size / 2), size, size, fc='none', ec=INK, lw=0.6, zorder=4))
+    tcx, tcy, sz = 140.0, 36.5, 6.2
+    for k, (dx, dy) in enumerate(((-1, 1), (1, 1), (-1, -1), (1, -1))):
+        attn(tcx + dx * (sz / 2 + 0.5), tcy + dy * (sz / 2 + 0.5), sz, k + 1)
+    scx = 103.0
+    attn(scx, tcy, 8.0, 9)
+    ax.text(tcx, 44.6, 'Teacher', fontsize=T_SMALL, color=INK, ha='center', va='bottom')
+    ax.text(scx, 44.6, 'Student', fontsize=T_SMALL, color=BLUE, ha='center', va='bottom')
+    ax.text(tcx, 28.9, 'multi-head attention', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    ax.text(scx, 28.9, 'single-head attention', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    arrow(ax, (tcx - 8.2, tcy), (scx + 5.0, tcy), color=GREY, ls=(0, (3, 2)), head=9)
+    ax.text(113.0, tcy + 1.2, 'distill', fontsize=T_SMALL - 1, color=GREY, ha='center', va='bottom')
+    ax.text((ax0 + ax1) / 2, 12.4, 'also channel pruning and DCT features', fontsize=T_SMALL - 1.5, color=GREY,
+            ha='center', va='top', style='italic')
     save(fig, 'overview-reliable.svg')
 
 

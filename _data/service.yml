@@ -9,7 +9,6 @@ groups:
       - { name: Scientific Reports, role: "Editorial Board Member, Nature Portfolio", years: "2023–" }
       - { name: Journal of Signal Processing Systems, role: "Associate Editor, Springer", years: "2023–" }
       - { name: IEIE Transactions on Smart Processing and Computing, role: Associate Editor, years: "2026–" }
-      - { name: Journal of Signal Processing Systems, role: "Guest Editor, Springer", years: "2023" }
 
   - title: Grant and fellowship review
     items:

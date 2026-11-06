@@ -12,6 +12,14 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ── Most recent (entries with "status: to-appear" are hidden until published) ──
+- title: "Global RETFound: A Protocol for the World's First Global Medical Foundation Model"
+  authors: "Paul Nderitu, Yukun Zhou, An Ran Ran, et al., including Eungjoo Lee"
+  note: "Global RETFound Consortium"
+  venue: "Ophthalmology Science"
+  year: 2026
+  type: journal
+  url: https://doi.org/10.1016/j.xops.2026.101384
+
 - title: "SegSTRONG-C: Segmenting Surgical Tools Robustly On Non-adversarial Generated 'Corruptions', an EndoVis'24 Challenge"
   authors: "SegSTRONG-C Challenge Consortium, including Eungjoo Lee"
   venue: "IEEE Transactions on Medical Imaging"

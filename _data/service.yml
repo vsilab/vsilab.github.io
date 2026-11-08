@@ -33,7 +33,7 @@ groups:
       - { name: AAAI, role: Program Committee, years: "2025–2027" }
       - { name: SPIE Defense + Security, role: Program Committee, years: "2025–2027" }
       - { name: CVPR, role: Program Committee, years: "2026" }
-      - { name: "Asilomar Conference on Signals, Systems, and Computers", role: Special Session Organizer, years: "2026" }
+      - { name: "Asilomar Conference on Signals, Systems, and Computers", role: Special Session Organizer and Chair, years: "2026" }
       - { name: Hamlyn Symposium on Medical Robotics, role: Workshop Organizer, years: "2025" }
       - { name: IEEE-EMBS Body Sensor Networks, role: "Workshop Organizer and Technical Program Committee", years: "2025" }
       - { name: IEEE ISBI, role: Session Chair, years: "2025" }

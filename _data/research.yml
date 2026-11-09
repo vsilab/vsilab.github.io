@@ -25,16 +25,17 @@ directions:
       - "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"
 
   - id: medical
-    title: Medical Image and Video Understanding
-    summary: Ophthalmic imaging, surgical video, human movement, and brain connectivity. We interpret retinal scans, estimate camera motion inside the body, track human pose over time, and build tools that assist clinicians during a procedure.
+    title: Image, Video, and 3D Scene Understanding
+    summary: Medical imaging, surgical video, human movement, brain connectivity, and indoor scenes seen by robots. We interpret retinal scans, estimate camera motion inside the body, track human pose over time, and build 3D maps from a mobile robot's camera for indoor navigation.
     topics:
       - Foundation and self-supervised models for medical image interpretation
       - Ophthalmic AI for retinal imaging and clinical decision support
       - Surgical AI for workflow understanding and intelligent assistance
       - Human pose estimation and motion analysis from video
       - Graph learning on brain connectivity
+      - 3D scene reconstruction and mapping for indoor robot navigation
     figure: overview-medical.svg
-    figure_alt: A fundus photograph with the five-level diabetic retinopathy severity scale, retinal layers in OCT, brain regions on an MNI template linked as a graph with the matching connectivity matrix, human pose keypoints across video frames, and an endoscope camera trajectory
+    figure_alt: A fundus photograph with the five-level diabetic retinopathy severity scale, retinal layers in OCT, brain regions on an MNI template linked as a graph with the matching connectivity matrix, human pose keypoints across video frames, an endoscope camera trajectory, and a robot camera frame with the 3D Gaussian map built from the robot's video
     papers:
       - "SegSTRONG-C: Segmenting Surgical Tools Robustly On Non-adversarial Generated 'Corruptions', an EndoVis'24 Challenge"
       - "RVO-MIS: Robust Visual Odometry for Minimally Invasive Surgery"

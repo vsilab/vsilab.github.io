@@ -318,8 +318,9 @@ def fig_medical():
     panel(ax, 4, 123, 'Retinal grading')
     panel(ax, 58, 123, 'Retinal layers')
     panel(ax, 110, 123, 'Brain connectivity')
-    panel(axb, 4, 57, 'Human pose from video')
-    panel(axb, 86, 57, 'Endoscope motion')
+    panel(axb, 4, 57, 'Human pose')
+    panel(axb, 57, 57, 'Endoscope motion')
+    panel(axb, 110, 57, 'Robot 3D mapping')
     # fundus photograph and the five-level diabetic retinopathy severity scale it is graded on (no grade is claimed)
     ax.imshow(real_fundus(600), extent=(10.5, 44.5, 79, 113), zorder=2)
     arrow(ax, (27.5, 78.0), (27.5, 74.6), head=8, lw=1.0)
@@ -416,32 +417,45 @@ def fig_medical():
     bones = [('head', 'neck', INK), ('neck', 'hip', INK), ('neck', 'sh_l', AMBER), ('sh_l', 'el_l', AMBER), ('el_l', 'wr_l', AMBER),
              ('neck', 'sh_r', BLUE), ('sh_r', 'el_r', BLUE), ('el_r', 'wr_r', BLUE), ('hip', 'hp_l', AMBER), ('hp_l', 'kn_l', AMBER),
              ('kn_l', 'an_l', AMBER), ('hip', 'hp_r', BLUE), ('hp_r', 'kn_r', BLUE), ('kn_r', 'an_r', BLUE)]
-    for k, ph in enumerate(np.linspace(-1.0, 1.0, 4)):
-        fx = 8 + k * 17.5
-        ax.add_patch(Rectangle((fx, 14), 15, 31, fc=LIGHT, ec=RULE, lw=0.8, zorder=1))
-        P = {kk: vv * 1.35 for kk, vv in skeleton(ph).items()}
-        off = np.array([fx + 7.0, 28.0])
+    for k, ph in enumerate(np.linspace(-1.0, 1.0, 3)):
+        fx = 6 + k * 15.0
+        ax.add_patch(Rectangle((fx, 14), 13, 31, fc=LIGHT, ec=RULE, lw=0.8, zorder=1))
+        P = {kk: vv * 1.3 for kk, vv in skeleton(ph).items()}
+        off = np.array([fx + 6.0, 28.0])
         for a_, b_, c_ in bones:
             p1, p2 = P[a_] + off, P[b_] + off
             ax.plot([p1[0], p2[0]], [p1[1], p2[1]], color=c_, lw=1.6, solid_capstyle='round', zorder=3)
         for v in P.values():
             ax.plot(*(v + off), 'o', ms=3.2, mfc='white', mec=INK, mew=0.9, zorder=4)
-        ax.text(fx + 7.5, 11, f't{k + 1}', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
+        ax.text(fx + 6.5, 11, f't{k + 1}', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
 
-    # endoscope trajectory (right)
+    # endoscope trajectory (middle)
     t = np.linspace(0, 1, 300)
-    px = 90 + 62 * t
-    py = 30 + 8 * np.sin(2 * np.pi * t * 1.1) + 3 * t
-    ax.plot(px, py - 1.4 + 1.6 * np.sin(8 * t + 0.4), color=MID, lw=1.3, ls=(0, (3.5, 2.5)))
-    ax.plot(px, py, color=BLUE, lw=2.0)
-    for k in np.linspace(12, 288, 5).astype(int):
+    px = 59 + 44 * t
+    py = 30 + 7 * np.sin(2 * np.pi * t * 1.1) + 3 * t
+    ax.plot(px, py - 1.4 + 1.6 * np.sin(8 * t + 0.4), color=MID, lw=1.2, ls=(0, (3.5, 2.5)))
+    ax.plot(px, py, color=BLUE, lw=1.8)
+    for k in np.linspace(14, 286, 4).astype(int):
         cx, cy = px[k], py[k]
         a = np.arctan2(py[min(k + 4, 299)] - py[k - 4], px[min(k + 4, 299)] - px[k - 4])
         R = np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
-        tri = np.array([[0, 0], [5, 2.6], [5, -2.6]]) @ R.T + [cx, cy]
-        ax.add_patch(Polygon(tri, closed=True, fc='white', ec=BLUE, lw=1.2, zorder=4))
-    ax.plot([90, 97], [11, 11], color=BLUE, lw=2.0); ax.text(98.5, 11, 'Estimated', fontsize=T_SMALL, color=INK, va='center')
-    ax.plot([122, 129], [11, 11], color=MID, lw=1.3, ls=(0, (3.5, 2.5))); ax.text(130.5, 11, 'Reference', fontsize=T_SMALL, color=INK, va='center')
+        tri = np.array([[0, 0], [4.2, 2.2], [4.2, -2.2]]) @ R.T + [cx, cy]
+        ax.add_patch(Polygon(tri, closed=True, fc='white', ec=BLUE, lw=1.1, zorder=4))
+    ax.plot([59, 64], [11, 11], color=BLUE, lw=1.8); ax.text(65.2, 11, 'Estimated', fontsize=T_SMALL - 2, color=INK, va='center')
+    ax.plot([83, 88], [11, 11], color=MID, lw=1.2, ls=(0, (3.5, 2.5))); ax.text(89.2, 11, 'Reference', fontsize=T_SMALL - 2, color=INK, va='center')
+
+    # robot 3D mapping (right): a frame from the robot camera and the full 3D Gaussian map built from the
+    # robot's video (TurtleBot4, Gaussian Splatting SLAM vs. offline SfM; Bay Area Robotics Symposium 2026)
+    src = os.path.join(os.path.dirname(__file__), 'sources')
+    for k, (fn, lab) in enumerate((('robot-frame.jpg', 'robot camera'), ('robot-gsmap.jpg', '3D Gaussian map'))):
+        im_ = plt.imread(os.path.join(src, fn)).astype(float) / 255
+        w_ = 44.0; h_ = 19.0; x_ = 112.0; y_ = 32.0 - k * 21.5
+        r_ = im_.shape[1] / im_.shape[0]
+        hh = int(round(im_.shape[1] / (w_ / h_)))
+        top = max(0, (im_.shape[0] - hh) // 2)
+        ax.imshow(im_[top:top + hh], extent=(x_, x_ + w_, y_, y_ + h_), aspect='auto', zorder=2)
+        ax.add_patch(Rectangle((x_, y_), w_, h_, fc='none', ec=RULE, lw=0.5, zorder=3))
+        ax.text(x_ + 1.2, y_ + 1.0, lab, fontsize=T_SMALL - 2, color='white', ha='left', va='bottom', zorder=4)
     save(fig, 'overview-medical.svg')
 
 

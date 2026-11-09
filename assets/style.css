@@ -70,6 +70,12 @@ main{display:block;padding-bottom:24px}
 .minor{color:var(--muted)}
 .sec-more{font-size:var(--fs-5)}
 
+/* Home: sharpen secondary text and section rules in both color schemes. */
+.hero,#pi,#service,#current{
+  --muted:color-mix(in srgb,var(--ink) 80%,var(--paper));
+  --rule:color-mix(in srgb,var(--ink) 17%,var(--paper));
+}
+
 /* hero and page heads share one size */
 .hero,.page-head{display:grid;gap:18px;padding-block:72px 56px;padding-left:calc(var(--title-col) + var(--gap))}
 .hero h1,.page-head h1{font-size:var(--fs-1);line-height:1.15;letter-spacing:-.005em}
@@ -78,11 +84,12 @@ main{display:block;padding-bottom:24px}
 .hero .join span{font-weight:500}
 
 /* PI */
+#pi{border-top-color:color-mix(in srgb,var(--ink) 24%,var(--paper))}
 .pi{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:48px;align-items:start}
 .pi-photo{margin:0}
 .pi-text{display:grid;gap:14px;max-width:64ch}
-.pi-name{font-size:var(--fs-3);font-weight:500}
-.pi-roles{color:var(--muted);font-size:var(--fs-5);margin-top:-8px}
+.pi-text .pi-name{font-size:clamp(26px,2.15vw,30px);font-weight:500;line-height:1.12;letter-spacing:-.015em}
+.pi-text .pi-roles{color:var(--muted);font-size:var(--fs-5);line-height:1.45;margin-top:-6px}
 .pi-links{display:flex;flex-wrap:wrap;gap:6px 28px;font-size:var(--fs-5)}
 
 /* service */

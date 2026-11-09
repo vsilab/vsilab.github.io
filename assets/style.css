@@ -80,18 +80,12 @@ main{display:block;padding-bottom:24px}
 .page-head h1{font-size:var(--fs-1);line-height:1.15;letter-spacing:-.005em}
 .page-head>p{max-width:64ch;color:var(--muted)}
 
-/* The home masthead uses the same left rail as the sections below. */
-.hero{display:grid;grid-template-columns:var(--title-col) minmax(0,1fr);gap:var(--gap);padding-block:68px 48px}
-.hero-affiliation{padding-top:13px}
-.hero-body{display:grid;gap:20px}
-.hero h1{max-width:720px;font-size:clamp(37px,5vw,62px);line-height:1.02;letter-spacing:-.03em;text-wrap:balance}
-.hero-body>p{max-width:60ch;color:var(--muted);font-size:19px;line-height:1.45}
-.hero-notes{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px 28px;
-  padding-top:14px;border-top:1px solid var(--rule)}
-.hero .join{max-width:58ch;font-size:var(--fs-5);line-height:1.45}
-.hero .join strong{font-weight:600}
-.hero-research{flex:none;font-size:var(--fs-5);text-decoration-color:var(--muted)}
-.hero-research span{display:inline-block;margin-left:5px}
+/* home hero: same size and rail as the page heads */
+.hero{display:grid;gap:18px;padding-block:72px 56px;padding-left:calc(var(--title-col) + var(--gap))}
+.hero h1{font-size:var(--fs-1);line-height:1.15;letter-spacing:-.005em}
+.hero p{max-width:64ch;color:var(--muted)}
+.hero .join{font-size:var(--fs-5);color:var(--ink);padding-top:16px;border-top:1px solid var(--rule);max-width:none;width:min(100%,calc(var(--fs-4) / var(--fs-5) * 64ch))}
+.hero .join span{font-weight:500}
 
 /* PI */
 #pi{border-top-color:color-mix(in srgb,var(--ink) 24%,var(--paper))}
@@ -245,9 +239,8 @@ figcaption a:hover{text-decoration:underline}
   .js .nav:not(.open){display:none}
   .sec{grid-template-columns:1fr;padding-block:40px}
   .sec.stack .sec-title,.sec.stack .sec-body{grid-column:1}
-  .page-head,.empty{padding-left:0}
-  .hero{padding-block:38px 32px}
-  .page-head{padding-block:44px 36px}
+  .hero,.page-head,.empty{padding-left:0}
+  .hero,.page-head{padding-block:44px 36px}
   .rv{grid-template-columns:1fr;gap:2px}
   .dir{grid-template-columns:1fr;grid-template-areas:"text" "figure";gap:16px}
   .people{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 16px}
@@ -268,15 +261,10 @@ figcaption a:hover{text-decoration:underline}
 @media (max-width:1060px){
   .sec{grid-template-columns:1fr;row-gap:18px}
   .sec.stack .sec-title,.sec.stack .sec-body{grid-column:1}
-  .page-head,.empty{padding-left:0}
-  .hero{grid-template-columns:1fr;gap:14px}
-  .hero-affiliation{padding-top:0}
+  .hero,.page-head,.empty{padding-left:0}
   .pi{grid-template-columns:minmax(0,1fr) 160px}
 }
 @media (max-width:620px){
-  .hero h1{text-wrap:initial}
-  .hero-body{gap:16px}
-  .hero-body>p{font-size:var(--fs-4)}
   .svc-featured{grid-template-columns:1fr;gap:18px}
 }
 
@@ -309,7 +297,7 @@ figcaption a:hover{text-decoration:underline}
   .pi-text>p{grid-column:1/-1;text-wrap:pretty}
   .pi-text>.pi-name{grid-column:1;grid-row:1;align-self:center}
   /* body copy: slightly larger leading for small screens */
-  .sec-body p,.r-text p{line-height:1.62}
+  .sec-body p,.hero p,.r-text p{line-height:1.62}
   /* publications: one swipeable row of categories instead of four wrapped lines */
   .page-head,.page-head>*{min-width:0}
   .filters{flex-direction:column;align-items:stretch;gap:14px;min-width:0;max-width:100%}

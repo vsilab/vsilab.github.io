@@ -173,11 +173,8 @@ def page_home():
     dirs = ''.join(f'<article class="dir"><div class="dir-text">'
                    f'<h3><a href="{href("research", d["id"])}">{e(d["title"])}</a></h3>'
                    f'<p>{e(d["summary"])}</p></div>{figure(d)}</article>' for d in RESEARCH['directions'])
-    return ('<section class="hero"><p class="minor hero-affiliation">University of Arizona</p>'
-            f'<div class="hero-body"><h1>{e(SITE["statement"])}</h1><p>{e(SITE["intro"].strip())}</p>'
-            f'<div class="hero-notes"><p class="join"><strong>Join the lab.</strong> {e(SITE["join"].strip())} '
-            f'<a href="mailto:{e(SITE["email"])}">{e(SITE["email"])}</a></p>'
-            '<a class="hero-research" href="#current">Explore our research <span aria-hidden="true">↓</span></a></div></div></section>'
+    return (f'<section class="hero"><h1>{e(SITE["statement"])}</h1><p>{e(SITE["intro"].strip())}</p>'
+            f'<p class="join"><span>Join the lab.</span> {e(SITE["join"].strip())} <a href="mailto:{e(SITE["email"])}">{e(SITE["email"])}</a></p></section>'
             + section('Principal Investigator', pi_html, 'pi')
             + section('Academic and Professional Service', service, 'service')
             + section('Current Research', f'<div class="dirs">{dirs}</div>'

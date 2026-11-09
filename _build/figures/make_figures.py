@@ -212,11 +212,12 @@ def fig_multimodal():
     # image: the statue among the clipped yews
     ax.imshow(view(0.50, 0.37, 1.0, tw / th), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
     frame(*cells[0], 'Image')
-    # video: four frames moving in on the statue
+    # video: four frames of a slow pan across the garden (roses and yews, the statue, the far yew and the path)
     fw = (tw - 3 * 0.8) / 4
-    for k in range(4):
+    pans = ((0.10, 0.64), (0.30, 0.47), (0.50, 0.36), (0.82, 0.50))
+    for k, (px_, py_) in enumerate(pans):
         fx = cells[1][0] + k * (fw + 0.8)
-        fr = view(0.50, 0.40 - 0.03 * k, 0.62 - 0.11 * k, fw / th)
+        fr = view(px_, py_, 0.36, fw / th)
         ax.imshow(fr, extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')

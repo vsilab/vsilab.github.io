@@ -301,17 +301,15 @@ def fig_multimodal():
     thr = gx0 + 0.42 * (gx1 - gx0)
     ax.plot([gx0, thr], [gy, gy], color=MID, lw=0.9, solid_capstyle='butt')
     ax.plot([thr, gx1], [gy, gy], color=AMBER, lw=1.6, solid_capstyle='butt')
-    ax.plot([thr, thr], [gy - 2.4, gy + 2.4], color=INK, lw=0.7)
+    ax.plot([thr, thr], [gy - 1.8, gy + 3.6], color=INK, lw=0.7)          # the threshold, shown by the tick and the change of line
     xs_ = np.concatenate([np.linspace(gx0 + 3.0, thr - 3.0, 3), np.linspace(thr + 3.2, gx1 - 2.0, 5)])
     for x_ in xs_:
         acc = x_ > thr
         ax.plot([x_], [gy + 2.2], 'o', ms=3.0, mfc=AMBER if acc else 'white', mec=AMBER if acc else MID, mew=0.8, zorder=4)
-    ax.text(thr, gy + 4.6, 'reliability threshold', fontsize=T_SMALL - 4.5, color=GREY, ha='center', va='bottom', style='italic')
     ax.text(gx0, gy - 2.6, 'Defer', fontsize=T_SMALL - 2, color=INK, ha='left', va='top')
     ax.text(gx0, gy - 6.4, 'expert review', fontsize=T_SMALL - 4.5, color=GREY, ha='left', va='top')
     ax.text(gx1, gy - 2.6, 'Accept', fontsize=T_SMALL - 2, color=AMBER_D, ha='right', va='top')
     ax.text(gx1, gy - 6.4, 'pre-label', fontsize=T_SMALL - 4.5, color=GREY, ha='right', va='top')
-    ax.text((gx0 + gx1) / 2, gy - 10.6, 'model confidence', fontsize=T_SMALL - 4.5, color=GREY, ha='center', va='top', style='italic')
 
     # ── language-guided object retrieval: real-robot sequence (Koh et al., ICRA submission, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,

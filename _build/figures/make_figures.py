@@ -201,35 +201,36 @@ def fig_multimodal():
         ax.add_patch(Rectangle((x_, y_), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
         ax.text(x_, y_ - 1.2, label, fontsize=T_SMALL, color=INK, va='top')
 
-    # image: CC0 photograph
-    cof = mute(data.coffee().astype(float) / 255)
-    h_ = int(cof.shape[1] * th / tw)
-    crop = cof[40:40 + h_]
-    yy_, xx_ = np.mgrid[0:crop.shape[0], 0:crop.shape[1]]
-    heat = np.exp(-(((xx_ - 0.40 * crop.shape[1]) / (0.16 * crop.shape[1])) ** 2 + ((yy_ - 0.38 * crop.shape[0]) / (0.36 * crop.shape[0])) ** 2))
-    ax.imshow(np.clip(crop, 0, 1), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
+    # one garden scene in four modalities (photographs by Eungjoo Lee, Musée Rodin garden, Paris)
+    garden = plt.imread(os.path.join(os.path.dirname(__file__), 'sources', 'garden-statue.jpg')).astype(float) / 255
+    GH, GW = garden.shape[:2]
+    def view(cx, cy, w_frac, aspect):                       # crop centred at (cx, cy) in image fractions
+        cw = int(GW * w_frac); ch = int(round(cw / aspect))
+        x0 = int(cx * GW - cw / 2); y0 = int(cy * GH - ch / 2)
+        x0 = max(0, min(GW - cw, x0)); y0 = max(0, min(GH - ch, y0))
+        return garden[y0:y0 + ch, x0:x0 + cw]
+    # image: the statue among the clipped yews
+    ax.imshow(view(0.50, 0.37, 1.0, tw / th), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
     frame(*cells[0], 'Image')
-    # video: four consecutive frames of the same table scene (a slow push-in on the cup), so all inputs share one scene
+    # video: four frames moving in on the statue
     fw = (tw - 3 * 0.8) / 4
-    full = mute(data.coffee().astype(float) / 255)
-    H0, W0 = full.shape[:2]
     for k in range(4):
         fx = cells[1][0] + k * (fw + 0.8)
-        z = 1.0 - 0.12 * k                                  # crop shrinks frame by frame
-        ch = int(H0 * 0.92 * z); cw = int(round(ch * fw / th))
-        cx0 = int(0.40 * W0 - cw / 2); cy0 = int(0.40 * H0 - ch / 2)
-        cx0 = max(0, min(W0 - cw, cx0)); cy0 = max(0, min(H0 - ch, cy0))
-        ax.imshow(full[cy0:cy0 + ch, cx0:cx0 + cw], extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
+        fr = view(0.50, 0.40 - 0.03 * k, 0.62 - 0.11 * k, fw / th)
+        ax.imshow(fr, extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
-    # audio: spectrogram of a short sound from the same scene (a cup set down on a saucer), illustrative
+    # audio: spectrogram of birdsong in the same garden, illustrative
     sr = 8000; t = np.arange(0, 1.6, 1 / sr)
     rng_a = np.random.default_rng(2)
-    sig = 0.004 * rng_a.normal(size=t.size)                 # quiet room tone
-    for t0, amp in ((0.35, 1.0), (0.95, 0.6)):              # two clinks of porcelain: decaying partials
-        m = t >= t0; tt_ = t[m] - t0
-        for f, d in ((1320, 0.18), (2480, 0.12), (3350, 0.08)):
-            sig[m] += amp * np.exp(-tt_ / d) * np.sin(2 * np.pi * f * tt_) / (f / 1320)
+    sig = 0.0015 * rng_a.normal(size=t.size)                # quiet garden ambience
+    for t0, f0, f1, dur in ((0.12, 900, 1900, 0.10), (0.30, 1000, 2000, 0.09), (0.47, 950, 1950, 0.10),
+                            (0.86, 2100, 700, 0.18), (1.18, 1100, 2200, 0.08), (1.30, 1100, 2200, 0.08)):
+        m = (t >= t0) & (t < t0 + dur); tt_ = t[m] - t0          # birdsong: short frequency sweeps
+        f = f0 + (f1 - f0) * tt_ / dur
+        env = np.sin(np.pi * tt_ / dur) ** 2
+        ph = 2 * np.pi * np.cumsum(f) / sr
+        sig[m] += (np.sin(ph) + 0.35 * np.sin(2 * ph)) * env
     win, hop = 256, 40
     frames_ = np.stack([sig[i_:i_ + win] * np.hanning(win) for i_ in range(0, len(sig) - win, hop)], 1)
     spec = 20 * np.log10(np.abs(np.fft.rfft(frames_, axis=0))[:90] + 1e-3)
@@ -254,8 +255,8 @@ def fig_multimodal():
             space = inv.transform([[sb.x1 - sab.x1 + sab.x0, 0]])[0][0] - inv.transform([[sb.x0, 0]])[0][0]
             sp.remove(); sa.remove()
             cx = bx1 + space
-    words('Is there a spoon', y_ + th - 6.4, set())
-    words('on the saucer?', y_ + th - 12.6, set())
+    words('Is the statue', y_ + th - 6.4, set())
+    words('in a garden?', y_ + th - 12.6, set())
     frame(x_, y_, 'Text')
 
     # ── selective deferral (ultrasound work under review): a model accepts reliable predictions and defers the rest

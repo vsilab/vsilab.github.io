@@ -19,7 +19,7 @@ directions:
       - Human-centered perception and decision support
       - Vision-language models for robot perception under partial observability
     figure: overview-multimodal.svg
-    figure_alt: One table scene in four modalities (a photo of a coffee cup, video frames moving in on it, the sound of the cup on its saucer, and a question about the spoon); compression ultrasound (DVT) and ocular B-scan views above a model-confidence scale, where cases below a reliability threshold are deferred to expert review and the rest are accepted as pre-labels; and a real robot that removes a cover, looks again, and grasps the target
+    figure_alt: One garden scene in four modalities (a photo of a statue among clipped yews, video frames moving in on it, birdsong recorded there, and a question about the scene); compression ultrasound (DVT) and ocular B-scan views above a model-confidence scale, where cases below a reliability threshold are deferred to expert review and the rest are accepted as pre-labels; and a real robot that removes a cover, looks again, and grasps the target
     papers:
       - "Prediction of Response to Spinal Cord Stimulation Using Machine Learning Based on Radiomics and Patient-Reported Outcomes"
       - "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"

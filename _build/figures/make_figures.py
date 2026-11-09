@@ -220,23 +220,32 @@ def fig_multimodal():
         ax.imshow(fr, extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
-    # audio: waveform of birdsong in the same garden (illustrative): a few short chirps over quiet ambience,
-    # drawn as a thin symmetric amplitude envelope, the way audio is shown in an editor
-    sr = 8000; t = np.arange(0, 1.6, 1 / sr)
-    rng_a = np.random.default_rng(2)
-    sig = 0.02 * rng_a.normal(size=t.size)
-    for t0, amp, dur in ((0.10, 0.85, 0.07), (0.22, 1.0, 0.07), (0.34, 0.8, 0.07), (0.62, 0.55, 0.16),
-                         (0.98, 0.9, 0.06), (1.08, 0.95, 0.06), (1.18, 0.7, 0.06), (1.42, 0.4, 0.09)):
-        m = (t >= t0) & (t < t0 + dur); tt_ = t[m] - t0
-        sig[m] += amp * np.sin(np.pi * tt_ / dur) ** 1.5 * np.sin(2 * np.pi * 1600 * tt_)
-    nb = 180
-    env = np.array([np.abs(c).max() for c in np.array_split(sig, nb)])
-    env = env / env.max()
-    xs = np.linspace(cells[2][0] + 1.2, cells[2][0] + tw - 1.2, nb)
-    ymid, half = cells[2][1] + th / 2, th / 2 - 2.2
+    # audio: waveform of birdsong in the same garden (illustrative). Irregular chirps with fast attacks and
+    # slower decays over a slowly varying ambient bed (wind, distant voices), drawn as per-column min/max like an editor.
+    sr = 16000; dur_all = 2.4; t = np.arange(0, dur_all, 1 / sr)
+    rng_a = np.random.default_rng(11)
+    bed = np.convolve(rng_a.normal(size=t.size), np.ones(40) / 40, mode='same')
+    bed *= 0.10 * (1 + 0.6 * np.sin(2 * np.pi * 0.35 * t + 1.0)) * (1 + 0.4 * np.sin(2 * np.pi * 1.7 * t))
+    sig = bed + 0.025 * rng_a.normal(size=t.size)
+    t_ = 0.08
+    while t_ < dur_all - 0.1:                                   # phrases of 2 to 6 chirps, then a pause
+        n = rng_a.integers(2, 7); base = rng_a.uniform(0.35, 1.0)
+        for _ in range(n):
+            d = rng_a.uniform(0.025, 0.09); a = base * rng_a.uniform(0.55, 1.0)
+            m = (t >= t_) & (t < t_ + d); tt_ = t[m] - t_
+            f = rng_a.uniform(2500, 4200) + rng_a.uniform(-1500, 1500) * tt_ / d
+            env = (1 - np.exp(-tt_ / 0.003)) * np.exp(-tt_ / (0.35 * d))
+            sig[m] += a * env * np.sin(2 * np.pi * np.cumsum(f) / sr) * (1 + 0.3 * rng_a.normal(size=m.sum()))
+            t_ += d + rng_a.uniform(0.01, 0.05)
+        t_ += rng_a.uniform(0.12, 0.35)
+    nb = 320
+    chunks = np.array_split(sig, nb)
+    lo = np.array([c.min() for c in chunks]); hi = np.array([c.max() for c in chunks])
+    sc = max(abs(lo).max(), hi.max())
+    xs = np.linspace(cells[2][0] + 1.0, cells[2][0] + tw - 1.0, nb)
+    ymid, half = cells[2][1] + th / 2, th / 2 - 1.6
     ax.add_patch(Rectangle(cells[2], tw, th, fc='white', ec='none', zorder=1))
-    ax.fill_between(xs, ymid - half * env, ymid + half * env, color=BLUE, lw=0, zorder=2)
-    ax.plot([cells[2][0] + 1.2, cells[2][0] + tw - 1.2], [ymid, ymid], color=BLUE, lw=0.4, zorder=2)
+    ax.vlines(xs, ymid + half * lo / sc, ymid + half * hi / sc, color=BLUE, lw=0.45, zorder=2)
     frame(*cells[2], 'Audio')
     # text: a language query
     x_, y_ = cells[3]

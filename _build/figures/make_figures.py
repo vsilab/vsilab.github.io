@@ -289,7 +289,7 @@ def fig_multimodal():
         g_ = g_ if g_.ndim == 2 else g_[..., 0]
         fx = bx0 + (k % 2) * (b_ + gap_); fy = by0 + (1 - k // 2) * (b_ + gap_)
         ax.imshow(g_, cmap='gray', extent=(fx, fx + b_, fy, fy + b_), zorder=2)
-    cL = 104.6 + (d_ + 2 * off_) / 2
+    cL = 104.6 + 2 * off_ + d_ / 2                         # centre of the front frame, which the eye reads
     cR = bx0 + b_ + gap_ / 2
     ax.text(cL, 103.6, 'Compression US', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
     ax.text(cR, 103.6, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')

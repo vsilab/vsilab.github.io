@@ -76,16 +76,26 @@ main{display:block;padding-bottom:24px}
   --rule:color-mix(in srgb,var(--ink) 17%,var(--paper));
 }
 
-/* hero and page heads share one size */
-.hero,.page-head{display:grid;gap:18px;padding-block:72px 56px;padding-left:calc(var(--title-col) + var(--gap))}
-.hero h1,.page-head h1{font-size:var(--fs-1);line-height:1.15;letter-spacing:-.005em}
-.hero p,.page-head>p{max-width:64ch;color:var(--muted)}
-.hero .join{font-size:var(--fs-5);color:var(--ink);padding-top:16px;border-top:1px solid var(--rule);max-width:64ch}
-.hero .join span{font-weight:500}
+.page-head{display:grid;gap:18px;padding-block:72px 56px;padding-left:calc(var(--title-col) + var(--gap))}
+.page-head h1{font-size:var(--fs-1);line-height:1.15;letter-spacing:-.005em}
+.page-head>p{max-width:64ch;color:var(--muted)}
+
+/* The home masthead uses the same left rail as the sections below. */
+.hero{display:grid;grid-template-columns:var(--title-col) minmax(0,1fr);gap:var(--gap);padding-block:68px 48px}
+.hero-affiliation{padding-top:13px}
+.hero-body{display:grid;gap:20px}
+.hero h1{max-width:720px;font-size:clamp(37px,5vw,62px);line-height:1.02;letter-spacing:-.03em;text-wrap:balance}
+.hero-body>p{max-width:60ch;color:var(--muted);font-size:19px;line-height:1.45}
+.hero-notes{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px 28px;
+  padding-top:14px;border-top:1px solid var(--rule)}
+.hero .join{max-width:58ch;font-size:var(--fs-5);line-height:1.45}
+.hero .join strong{font-weight:600}
+.hero-research{flex:none;font-size:var(--fs-5);text-decoration-color:var(--muted)}
+.hero-research span{display:inline-block;margin-left:5px}
 
 /* PI */
 #pi{border-top-color:color-mix(in srgb,var(--ink) 24%,var(--paper))}
-.pi{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:48px;align-items:start}
+.pi{display:grid;grid-template-columns:minmax(0,1fr) 184px;gap:48px;align-items:start}
 .pi-photo{margin:0}
 .pi-text{display:grid;gap:14px;max-width:64ch}
 .pi-text .pi-name{font-size:clamp(26px,2.15vw,30px);font-weight:500;line-height:1.12;letter-spacing:-.015em}
@@ -93,6 +103,15 @@ main{display:block;padding-bottom:24px}
 .pi-links{display:flex;flex-wrap:wrap;gap:6px 28px;font-size:var(--fs-5)}
 
 /* service */
+.svc-featured{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 48px}
+.svc-details{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.svc-details summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;
+  padding-block:8px;list-style:none;cursor:pointer;font-size:var(--fs-5)}
+.svc-details summary::-webkit-details-marker{display:none}
+.svc-details summary span::before{content:"+";font-family:var(--sans);color:var(--muted)}
+.svc-details[open] summary span::before{content:"−"}
+.svc-details[open]>summary{margin-bottom:16px}
+.svc-details[open]{padding-bottom:18px}
 .svc-grid{columns:2;column-gap:56px}
 .svc-grid>.svc-group{break-inside:avoid;margin-bottom:36px}
 .svc-rv{display:grid;gap:14px}
@@ -122,12 +141,13 @@ figcaption a:hover{text-decoration:underline}
 
 /* current research */
 .dirs{display:grid;gap:32px}
-.dir{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:36px;row-gap:10px;align-items:start;min-width:0}
-.dir .fig{grid-row:1/3}
-.dir h3{font-size:var(--fs-3);font-weight:500;line-height:1.3;margin-top:4px;text-wrap:pretty}
+.dir{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);grid-template-areas:"figure text";gap:36px;align-items:start;min-width:0}
+.dir .fig{grid-area:figure}
+.dir-text{grid-area:text;display:grid;gap:10px}
+.dir h3{font-size:var(--fs-2);font-weight:500;line-height:1.2;margin-top:4px;text-wrap:pretty}
 .dir h3 a{text-decoration:none}
 .dir h3 a:hover{text-decoration:underline}
-.dir>p{font-size:var(--fs-4);line-height:1.55;color:var(--ink)}
+.dir-text>p{font-size:var(--fs-4);line-height:1.55}
 
 /* research page */
 .r-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;align-items:start}
@@ -225,12 +245,11 @@ figcaption a:hover{text-decoration:underline}
   .js .nav:not(.open){display:none}
   .sec{grid-template-columns:1fr;padding-block:40px}
   .sec.stack .sec-title,.sec.stack .sec-body{grid-column:1}
-  .hero,.page-head,.empty{padding-left:0}
-  .hero,.page-head{padding-block:44px 36px}
-  .pi{grid-template-columns:1fr;gap:20px}.pi-photo{width:150px;grid-row:1}
+  .page-head,.empty{padding-left:0}
+  .hero{padding-block:38px 32px}
+  .page-head{padding-block:44px 36px}
   .rv{grid-template-columns:1fr;gap:2px}
-  .dir{grid-template-columns:1fr;grid-template-rows:none}
-  .dir .fig{grid-row:auto}
+  .dir{grid-template-columns:1fr;grid-template-areas:"text" "figure";gap:16px}
   .people{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 16px}
   .pub{grid-template-columns:1fr;gap:0}
   .rows li,.rows li:has(> :nth-child(2):last-child){grid-template-columns:1fr;gap:2px}
@@ -249,8 +268,16 @@ figcaption a:hover{text-decoration:underline}
 @media (max-width:1060px){
   .sec{grid-template-columns:1fr;row-gap:18px}
   .sec.stack .sec-title,.sec.stack .sec-body{grid-column:1}
-  .hero,.page-head,.empty{padding-left:0}
-  .pi{grid-template-columns:minmax(0,1fr) 170px}
+  .page-head,.empty{padding-left:0}
+  .hero{grid-template-columns:1fr;gap:14px}
+  .hero-affiliation{padding-top:0}
+  .pi{grid-template-columns:minmax(0,1fr) 160px}
+}
+@media (max-width:620px){
+  .hero h1{text-wrap:initial}
+  .hero-body{gap:16px}
+  .hero-body>p{font-size:var(--fs-4)}
+  .svc-featured{grid-template-columns:1fr;gap:18px}
 }
 
 /* quiet sections (Teaching, Resources): no rules between rows, spacing does the work */
@@ -275,13 +302,14 @@ figcaption a:hover{text-decoration:underline}
 /* phones: desktop layout above is unchanged; these rules only apply at 760px and below */
 @media (max-width:760px){
   body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-  /* PI: photo first, then name and bio across the full width */
-  .pi{grid-template-columns:1fr;gap:22px}
-  .pi-photo{grid-row:1;width:160px}
-  .pi-text{max-width:none}
-  .pi-text p{text-wrap:pretty}
+  /* Keep the PI's name and portrait together before the full-width biography. */
+  .pi{grid-template-columns:minmax(0,1fr) 96px;gap:14px 20px}
+  .pi-photo{grid-row:1;grid-column:2;width:100%;margin-bottom:0}
+  .pi-text{display:contents}
+  .pi-text>p{grid-column:1/-1;text-wrap:pretty}
+  .pi-text>.pi-name{grid-column:1;grid-row:1;align-self:center}
   /* body copy: slightly larger leading for small screens */
-  .sec-body p,.hero p,.r-text p{line-height:1.62}
+  .sec-body p,.r-text p{line-height:1.62}
   /* publications: one swipeable row of categories instead of four wrapped lines */
   .page-head,.page-head>*{min-width:0}
   .filters{flex-direction:column;align-items:stretch;gap:14px;min-width:0;max-width:100%}
@@ -318,6 +346,7 @@ figcaption a:hover{text-decoration:underline}
 .foot-in .foot-copy{margin-top:26px !important;padding:0}
 @media (max-width:760px){.foot-in{gap:6px}}
 .foot .nw{white-space:nowrap}
+@media (max-width:380px){.foot .nw{white-space:normal}}
 
 /* alumni: a step smaller and tighter than current members */
 .al-grid{gap:28px 48px}
@@ -336,9 +365,7 @@ figcaption a:hover{text-decoration:underline}
 .brand-name{letter-spacing:.12em}
 .nav a,.menu,.chip,.minor,.foot-copy{font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;font-weight:500}
 .foot-copy{text-transform:none;letter-spacing:.02em;font-weight:400}
-.pi{grid-template-columns:minmax(0,1fr) 184px}
-@media (max-width:1060px){.pi{grid-template-columns:minmax(0,1fr) 160px}}
-@media (max-width:760px){.mark{width:27px;height:31px}.brand{gap:12px}.pi{grid-template-columns:1fr}.pi-photo{width:150px}}
+@media (max-width:760px){.mark{width:27px;height:31px}.brand{gap:12px}}
 
 /* quieter details: paper links read as small labels, and the mobile menu is plain text */
 .pub-links{font-family:var(--sans);font-size:11px;letter-spacing:.08em;text-transform:uppercase;gap:4px 20px;margin-top:5px}
@@ -353,6 +380,3 @@ figcaption a:hover{text-decoration:underline}
 @media (max-width:1060px){
   .sec.numbered .r-num{position:static;display:block;width:auto;font-size:var(--fs-5);margin-bottom:6px}
 }
-
-/* the rule above the join note spans the same measure as the intro paragraph above it */
-.hero p.join{max-width:none;width:min(100%,calc(var(--fs-4) / var(--fs-5) * 64ch))}

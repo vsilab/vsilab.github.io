@@ -112,6 +112,7 @@
   venue: "Journal of Intelligent Manufacturing"
   year: 2025
   type: journal
+  url: https://doi.org/10.1007/s10845-025-02726-x
 
 - title: "Investigating Machine Learning Algorithms to Classify Label-Free Images of Pancreatic Neuroendocrine Neoplasms"
   authors: "Noelle Daigle, Shuyuan Guan, Suzann Duan, Thomas G. Knapp, et al., including Eungjoo Lee"
@@ -203,6 +204,7 @@
   venue: "SPIE Real-Time Image Processing and Deep Learning"
   year: 2026
   type: conference
+  url: https://spie.org/DS26/conferencedetails/real-time-image-processing-and-deep-learning
   code: https://github.com/vsi-lab/federated-tta
 
 - title: "RVO-MIS: Robust Visual Odometry for Minimally Invasive Surgery"
@@ -230,7 +232,7 @@
   code: https://github.com/vsi-lab/eye-movement-perimetry
 
 - title: "Using Cross-Domain Detection Loss to Infer Multi-Scale Information for Improved Tiny Head Tracking"
-  authors: "Jisu Kim, Alex Mattingly, Eungjoo Lee, Benjamin Riggan"
+  authors: "Jisu Kim, Alexander Mattingly, Eungjoo Lee, Benjamin Riggan"
   venue: "IEEE International Conference on Automatic Face and Gesture Recognition (FG)"
   year: 2025
   type: conference
@@ -316,7 +318,7 @@
   url: https://doi.org/10.1109/IEEECONF56349.2022.10051958
 
 - title: "Object Detection on Resource-Constrained Platforms Using a Configurable Ensemble of Detectors"
-  authors: "Eungjoo Lee, Alex Mattingly, Jing Xie, Heesung Kwon, Shuvra S. Bhattacharyya"
+  authors: "Eungjoo Lee, Alexander Mattingly, Jing Xie, Heesung Kwon, Shuvra S. Bhattacharyya"
   venue: "SPIE Real-Time Image Processing and Deep Learning"
   year: 2022
   type: conference

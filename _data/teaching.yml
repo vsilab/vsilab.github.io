@@ -5,10 +5,10 @@
 courses:
   - code: ECE 696B
     title: Applications of Machine Learning in Image and Video Processing
-    detail: Graduate course developed for the department, Spring 2025 and 2026
+    detail: New graduate course, developed and introduced to the department, Spring 2025–Spring 2026
   - code: ENGR 102B
     title: Introduction to Engineering, Honors Section
-    detail: Undergraduate honors course, Fall 2023 to 2026
+    detail: Undergraduate honors course, Fall 2023–Fall 2026
 
 advising:
   - year: "2026"

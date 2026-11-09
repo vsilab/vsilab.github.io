@@ -81,12 +81,16 @@ def pub_item(p):
     title = ext(p['url'], e(p['title'])) if p.get('url') else e(p['title'])
     short = short_authors(p['authors'])
     note_txt = p.get('note') or ''
-    if short != p['authors'] and 'equal' in note_txt.lower():   # keep co-first authors visible when shortened
+    eq = ''
+    if 'equal' in note_txt.lower():   # always "A and B (equal contribution), C, ..." right after the co-first authors
         n = [x.strip() for x in p['authors'].split(',')]
-        short, note_txt = f'{n[0]} and {n[1]} (equal contribution) et al.', ''
-    authors = e(short).replace(OWNER, f'<b>{OWNER}</b>')
-    if note_txt.lower() == 'equal contribution':
-        note_txt = 'first two authors contributed equally'
+        rest = 'et al.' if short != p['authors'] else ', '.join(n[2:])
+        short = f'{n[0]} and {n[1]}'
+        eq, note_txt = (', ' + rest) if rest else '', ''
+        authors = (e(short).replace(OWNER, f'<b>{OWNER}</b>') + ' <span class="pub-note">(equal contribution)</span>'
+                   + e(eq).replace(OWNER, f'<b>{OWNER}</b>'))
+    else:
+        authors = e(short).replace(OWNER, f'<b>{OWNER}</b>')
     note = f' <span class="pub-note">({e(note_txt)})</span>' if note_txt else ''
     links = pub_links(p)
     srch = e(' '.join(str(p.get(k, '')) for k in ('title', 'authors', 'venue', 'year')).lower())

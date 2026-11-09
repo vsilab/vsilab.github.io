@@ -220,32 +220,40 @@ def fig_multimodal():
         ax.imshow(fr, extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
-    # audio: waveform of birdsong in the same garden (illustrative). Irregular chirps with fast attacks and
-    # slower decays over a slowly varying ambient bed (wind, distant voices), drawn as per-column min/max like an editor.
-    sr = 16000; dur_all = 2.4; t = np.arange(0, dur_all, 1 / sr)
-    rng_a = np.random.default_rng(11)
-    bed = np.convolve(rng_a.normal(size=t.size), np.ones(40) / 40, mode='same')
-    bed *= 0.10 * (1 + 0.6 * np.sin(2 * np.pi * 0.35 * t + 1.0)) * (1 + 0.4 * np.sin(2 * np.pi * 1.7 * t))
-    sig = bed + 0.025 * rng_a.normal(size=t.size)
-    t_ = 0.08
-    while t_ < dur_all - 0.1:                                   # phrases of 2 to 6 chirps, then a pause
-        n = rng_a.integers(2, 7); base = rng_a.uniform(0.35, 1.0)
-        for _ in range(n):
-            d = rng_a.uniform(0.025, 0.09); a = base * rng_a.uniform(0.55, 1.0)
-            m = (t >= t_) & (t < t_ + d); tt_ = t[m] - t_
-            f = rng_a.uniform(2500, 4200) + rng_a.uniform(-1500, 1500) * tt_ / d
-            env = (1 - np.exp(-tt_ / 0.003)) * np.exp(-tt_ / (0.35 * d))
-            sig[m] += a * env * np.sin(2 * np.pi * np.cumsum(f) / sr) * (1 + 0.3 * rng_a.normal(size=m.sum()))
-            t_ += d + rng_a.uniform(0.01, 0.05)
-        t_ += rng_a.uniform(0.12, 0.35)
-    nb = 320
+    # audio: waveform of a garden recording (illustrative, synthesised): pink wind noise with gusts, two birds at
+    # different distances singing trills and whistles that overlap, drawn as a filled min/max envelope like an editor.
+    sr = 16000; dur_all = 3.0; n_ = int(sr * dur_all); t = np.arange(n_) / sr
+    rng_a = np.random.default_rng(23)
+    W = np.fft.rfft(rng_a.normal(size=n_)); fr = np.fft.rfftfreq(n_, 1 / sr)
+    W[1:] /= np.sqrt(fr[1:]); W[0] = 0
+    wind = np.fft.irfft(W, n_); wind /= np.abs(wind).max()
+    gust = np.convolve(np.abs(rng_a.normal(size=n_)), np.ones(4000) / 4000, mode='same')
+    sig = 0.16 * wind * (0.4 + gust / gust.max())
+    def trill(t0, n_notes, f_lo, f_hi, amp, note=0.035, gap=0.018):
+        tt0 = t0
+        for q in range(n_notes):
+            d = note * rng_a.uniform(0.8, 1.25)
+            m = (t >= tt0) & (t < tt0 + d); tt_ = t[m] - tt0
+            f = f_lo + (f_hi - f_lo) * (1 - tt_ / d) ** 2
+            env = np.sin(np.pi * tt_ / d) ** 0.7 * np.exp(-tt_ / (0.6 * d))
+            sig[m] += amp * rng_a.uniform(0.6, 1.0) * (1 - 0.35 * q / n_notes) * env * np.sin(2 * np.pi * np.cumsum(f) / sr)
+            tt0 += d + gap * rng_a.uniform(0.7, 1.4)
+    def whistle(t0, d, f0, f1, amp):
+        m = (t >= t0) & (t < t0 + d); tt_ = t[m] - t0
+        f = f0 + (f1 - f0) * tt_ / d + 120 * np.sin(2 * np.pi * 18 * tt_)
+        env = np.sin(np.pi * tt_ / d) ** 1.2
+        sig[m] += amp * env * np.sin(2 * np.pi * np.cumsum(f) / sr)
+    trill(0.15, 9, 2600, 4400, 0.9); whistle(0.82, 0.32, 2900, 2300, 0.55)
+    trill(1.30, 6, 3100, 5000, 0.35); trill(1.62, 11, 2500, 4300, 0.8)
+    whistle(2.32, 0.22, 3300, 2800, 0.3); trill(2.55, 5, 2700, 4600, 0.6)
+    nb = 520
     chunks = np.array_split(sig, nb)
     lo = np.array([c.min() for c in chunks]); hi = np.array([c.max() for c in chunks])
     sc = max(abs(lo).max(), hi.max())
     xs = np.linspace(cells[2][0] + 1.0, cells[2][0] + tw - 1.0, nb)
-    ymid, half = cells[2][1] + th / 2, th / 2 - 1.6
+    ymid, half = cells[2][1] + th / 2, th / 2 - 1.4
     ax.add_patch(Rectangle(cells[2], tw, th, fc='white', ec='none', zorder=1))
-    ax.vlines(xs, ymid + half * lo / sc, ymid + half * hi / sc, color=BLUE, lw=0.45, zorder=2)
+    ax.fill_between(xs, ymid + half * lo / sc, ymid + half * hi / sc, color=BLUE, lw=0.2, ec=BLUE, zorder=2)
     frame(*cells[2], 'Audio')
     # text: a language query
     x_, y_ = cells[3]

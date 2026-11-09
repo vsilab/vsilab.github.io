@@ -291,33 +291,36 @@ def fig_multimodal():
         ax.imshow(g_, cmap='gray', extent=(fx, fx + b_, fy, fy + b_), zorder=2)
     cL = 104.6 + (d_ + 2 * off_) / 2
     cR = bx0 + b_ + gap_ / 2
-    ax.text(cL, 103.4, 'Compression US', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
-    ax.text(cR, 103.4, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
+    ax.text(cL, 103.6, 'Compression US', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
+    ax.text(cR, 103.6, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
 
-    # routing: the two inputs merge into the model (left), which routes each case to accept or defer (right)
-    LW, LC = 0.8, GREY
-    bus_in = 98.0
+    # routing: the two inputs merge into the model (left), which routes each case to accept or defer (right).
+    # All connectors are orthogonal, share one weight and one head size, and stop exactly at box edges.
+    LW, LC, HD = 0.8, GREY, 6
+    stub_top, bus_in = 98.4, 96.8                           # clear gap below the input labels
     for cx_ in (cL, cR):
-        ax.plot([cx_, cx_], [99.2, bus_in], color=LC, lw=LW, solid_capstyle='butt')
+        ax.plot([cx_, cx_], [stub_top, bus_in], color=LC, lw=LW, solid_capstyle='butt')
     ax.plot([cL, cR], [bus_in, bus_in], color=LC, lw=LW, solid_capstyle='butt')
-    mx_, my_, mw_, mh_ = cL, 87.4, 15.0, 6.0
-    arrow(ax, (mx_, bus_in), (mx_, my_ + mh_ / 2), color=LC, lw=LW, head=6)
+    oh_, gapo = 7.6, 2.0
+    yA = bus_in - 1.6 - oh_ / 2                             # accept box sits just under the merge line
+    yD = yA - oh_ - gapo
+    mx_, my_, mw_, mh_ = cL, (yA + yD) / 2, 15.0, 6.0      # model centred on the two outcomes
+    arrow(ax, (mx_, bus_in), (mx_, my_ + mh_ / 2), color=LC, lw=LW, head=HD)
     ax.add_patch(FancyBboxPatch((mx_ - mw_ / 2, my_ - mh_ / 2), mw_, mh_, boxstyle='round,pad=0,rounding_size=0.8',
                                 fc=BLUE_L, ec=BLUE, lw=0.7, zorder=3))
     ax.text(mx_, my_, 'Model', fontsize=T_SMALL - 2, color=BLUE, ha='center', va='center', zorder=4)
-    ox0, ow_, oh_ = bx0 - 0.4, 2 * b_ + gap_ + 0.8, 8.0      # outcome boxes span the B-scan column
-    yA, yD = 92.4, 82.4
-    jx = mx_ + mw_ / 2 + 4.0                                 # junction between model and outcomes
+    ox0, ow_ = bx0, 2 * b_ + gap_                           # outcome boxes match the B-scan column exactly
+    jx = (mx_ + mw_ / 2 + ox0) / 2                          # junction halfway between model and outcomes
     ax.plot([mx_ + mw_ / 2, jx], [my_, my_], color=LC, lw=LW, solid_capstyle='butt')
     ax.plot([jx, jx], [yD, yA], color=LC, lw=LW, solid_capstyle='butt')
     for yy in (yA, yD):
-        arrow(ax, (jx, yy), (ox0, yy), color=LC, lw=LW, head=6)
+        arrow(ax, (jx, yy), (ox0, yy), color=LC, lw=LW, head=HD)
     for yy, fc_, ec_, t1, t2, tc in ((yA, AMBER_L, AMBER, 'Accept', 'pre-label', AMBER_D),
                                      (yD, LIGHT, MID, 'Defer', 'expert review', INK)):
         ax.add_patch(FancyBboxPatch((ox0, yy - oh_ / 2), ow_, oh_, boxstyle='round,pad=0,rounding_size=0.8',
                                     fc=fc_, ec=ec_, lw=0.7, zorder=3))
-        ax.text(ox0 + ow_ / 2, yy + 1.5, t1, fontsize=T_SMALL - 2, color=tc, ha='center', va='center', zorder=4)
-        ax.text(ox0 + ow_ / 2, yy - 1.9, t2, fontsize=T_SMALL - 4.5, color=GREY, ha='center', va='center', zorder=4)
+        ax.text(ox0 + ow_ / 2, yy + 1.45, t1, fontsize=T_SMALL - 2, color=tc, ha='center', va='center', zorder=4)
+        ax.text(ox0 + ow_ / 2, yy - 1.85, t2, fontsize=T_SMALL - 4.5, color=GREY, ha='center', va='center', zorder=4)
 
     # ── language-guided object retrieval: real-robot sequence (Koh et al., ICRA submission, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,

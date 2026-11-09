@@ -138,22 +138,6 @@ def footer():
             f'</div></footer>')
 
 # ───────────────────────── pages ─────────────────────────
-def service_groups(featured):
-    groups = []
-    for group in SERVICE['groups']:
-        items = [item for item in group['items'] if item.get('featured', False) == featured]
-        if not items:
-            continue
-        rows = ''.join(
-            f'<li><span class="svc-what"><span class="svc-name">{e(item["name"])}</span>'
-            f'<span class="svc-role">{e(item["role"])}</span></span>'
-            f'<span class="svc-year">{e(item.get("years", ""))}</span></li>'
-            for item in items)
-        groups.append(f'<div class="svc-group"><h3 class="minor">{e(group["title"])}</h3>'
-                      f'<ul class="svc">{rows}</ul></div>')
-    return ''.join(groups)
-
-
 def page_home():
     pi = SITE['pi']
     links = [ext(pi['scholar'], 'Google Scholar'), ext(pi['orcid'], 'ORCID'), f'<a href="mailto:{e(SITE["email"])}">{e(SITE["email"])}</a>']
@@ -167,16 +151,18 @@ def page_home():
     rvhtml = (f'<div class="svc-rv"><h3 class="minor">Reviewer</h3>'
                f'<p class="rv"><span>Journals</span>{", ".join(e(x) for x in rv["journals"])}</p>'
                f'<p class="rv"><span>Conferences</span>{", ".join(e(x) for x in rv["conferences"])}</p></div>')
-    service = (f'<div class="svc-featured">{service_groups(True)}</div>'
-               '<details class="svc-details"><summary>Additional service and honors <span aria-hidden="true"></span></summary>'
-               f'<div class="svc-grid">{service_groups(False)}</div>{rvhtml}</details>')
+    groups = ''.join(
+        f'<div class="svc-group"><h3 class="minor">{e(g["title"])}</h3><ul class="svc">'
+        + ''.join(f'<li><span class="svc-what"><span class="svc-name">{e(i["name"])}</span><span class="svc-role">{e(i["role"])}</span></span>'
+                  f'<span class="svc-year">{e(i.get("years", ""))}</span></li>' for i in g['items']) + '</ul></div>'
+        for g in SERVICE['groups'])
     dirs = ''.join(f'<article class="dir"><div class="dir-text">'
                    f'<h3><a href="{href("research", d["id"])}">{e(d["title"])}</a></h3>'
                    f'<p>{e(d["summary"])}</p></div>{figure(d)}</article>' for d in RESEARCH['directions'])
     return (f'<section class="hero"><h1>{e(SITE["statement"])}</h1><p>{e(SITE["intro"].strip())}</p>'
             f'<p class="join"><span>Join the lab.</span> {e(SITE["join"].strip())} <a href="mailto:{e(SITE["email"])}">{e(SITE["email"])}</a></p></section>'
             + section('Principal Investigator', pi_html, 'pi')
-            + section('Academic and Professional Service', service, 'service')
+            + section('Academic and Professional Service', f'<div class="svc-grid">{groups}</div>{rvhtml}', 'service')
             + section('Current Research', f'<div class="dirs">{dirs}</div>'
                       f'<p class="sec-more"><a href="{href("research")}">More on our research</a></p>', 'current'))
 

@@ -97,15 +97,6 @@ main{display:block;padding-bottom:24px}
 .pi-links{display:flex;flex-wrap:wrap;gap:6px 28px;font-size:var(--fs-5)}
 
 /* service */
-.svc-featured{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 48px}
-.svc-details{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-.svc-details summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;
-  padding-block:8px;list-style:none;cursor:pointer;font-size:var(--fs-5)}
-.svc-details summary::-webkit-details-marker{display:none}
-.svc-details summary span::before{content:"+";font-family:var(--sans);color:var(--muted)}
-.svc-details[open] summary span::before{content:"−"}
-.svc-details[open]>summary{margin-bottom:16px}
-.svc-details[open]{padding-bottom:18px}
 .svc-grid{columns:2;column-gap:56px}
 .svc-grid>.svc-group{break-inside:avoid;margin-bottom:36px}
 .svc-rv{display:grid;gap:14px}
@@ -265,7 +256,6 @@ figcaption a:hover{text-decoration:underline}
   .pi{grid-template-columns:minmax(0,1fr) 160px}
 }
 @media (max-width:620px){
-  .svc-featured{grid-template-columns:1fr;gap:18px}
 }
 
 /* quiet sections (Teaching, Resources): no rules between rows, spacing does the work */

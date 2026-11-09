@@ -195,7 +195,7 @@ def fig_multimodal():
     panel(ax, 4, 61.5, 'Language-guided object retrieval')
 
     tw, th = 40.0, 17.5
-    cells = [(6, 104), (50, 104), (6, 78.5), (50, 78.5)]
+    cells = [(6, 104), (50, 104), (50, 78.5), (6, 78.5)]          # image, video, audio (bottom right), text (bottom left)
 
     def frame(x_, y_, label):
         ax.add_patch(Rectangle((x_, y_), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))

@@ -209,24 +209,27 @@ def fig_multimodal():
     heat = np.exp(-(((xx_ - 0.40 * crop.shape[1]) / (0.16 * crop.shape[1])) ** 2 + ((yy_ - 0.38 * crop.shape[0]) / (0.36 * crop.shape[0])) ** 2))
     ax.imshow(np.clip(crop, 0, 1), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
     frame(*cells[0], 'Image')
-    # video: four consecutive frames of one scene (a slow pan)
-    rk = mute(data.rocket())
+    # video: four consecutive frames of the same table scene (a slow push-in on the cup), so all inputs share one scene
     fw = (tw - 3 * 0.8) / 4
-    wts = [0.25, 0.45, 1.0, 0.6]
-    bar = 1.2
-    ch = 400; cw = int(round(ch * fw / th))
+    full = mute(data.coffee().astype(float) / 255)
+    H0, W0 = full.shape[:2]
     for k in range(4):
         fx = cells[1][0] + k * (fw + 0.8)
-        x0_ = 150 + 40 * k
-        crop_v = rk[10:10 + ch, x0_:x0_ + cw]
-        ax.imshow(crop_v, extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
+        z = 1.0 - 0.12 * k                                  # crop shrinks frame by frame
+        ch = int(H0 * 0.92 * z); cw = int(round(ch * fw / th))
+        cx0 = int(0.40 * W0 - cw / 2); cy0 = int(0.40 * H0 - ch / 2)
+        cx0 = max(0, min(W0 - cw, cx0)); cy0 = max(0, min(H0 - ch, cy0))
+        ax.imshow(full[cy0:cy0 + ch, cx0:cx0 + cw], extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
-    # audio: spectrogram
+    # audio: spectrogram of a short sound from the same scene (a cup set down on a saucer), illustrative
     sr = 8000; t = np.arange(0, 1.6, 1 / sr)
-    f0 = 140 + 40 * np.sin(2 * np.pi * 1.1 * t)
-    phase = 2 * np.pi * np.cumsum(f0) / sr
-    sig = sum(np.sin(h * phase) / h for h in range(1, 14)) * (0.55 + 0.45 * np.sin(2 * np.pi * 2.2 * t) ** 2)
+    rng_a = np.random.default_rng(2)
+    sig = 0.004 * rng_a.normal(size=t.size)                 # quiet room tone
+    for t0, amp in ((0.35, 1.0), (0.95, 0.6)):              # two clinks of porcelain: decaying partials
+        m = t >= t0; tt_ = t[m] - t0
+        for f, d in ((1320, 0.18), (2480, 0.12), (3350, 0.08)):
+            sig[m] += amp * np.exp(-tt_ / d) * np.sin(2 * np.pi * f * tt_) / (f / 1320)
     win, hop = 256, 40
     frames_ = np.stack([sig[i_:i_ + win] * np.hanning(win) for i_ in range(0, len(sig) - win, hop)], 1)
     spec = 20 * np.log10(np.abs(np.fft.rfft(frames_, axis=0))[:90] + 1e-3)
@@ -251,8 +254,8 @@ def fig_multimodal():
             space = inv.transform([[sb.x1 - sab.x1 + sab.x0, 0]])[0][0] - inv.transform([[sb.x0, 0]])[0][0]
             sp.remove(); sa.remove()
             cx = bx1 + space
-    words('Is the cup inside', y_ + th - 6.4, {'cup'})
-    words('the blue bowl?', y_ + th - 12.6, {'blue', 'bowl'})
+    words('Is there a spoon', y_ + th - 6.4, set())
+    words('on the saucer?', y_ + th - 12.6, set())
     frame(x_, y_, 'Text')
 
     # ── selective deferral (ultrasound work under review): a model accepts reliable predictions and defers the rest

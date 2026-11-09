@@ -295,26 +295,36 @@ def fig_multimodal():
     ax.text(cR, 103.6, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
 
     # routing: the two inputs merge into the model (left), which routes each case to accept or defer (right).
-    # All connectors are orthogonal, share one weight and one head size, and stop exactly at box edges.
-    LW, LC, HD = 0.8, GREY, 6
-    stub_top, bus_in = 98.4, 96.8                           # clear gap below the input labels
-    for cx_ in (cL, cR):
-        ax.plot([cx_, cx_], [stub_top, bus_in], color=LC, lw=LW, solid_capstyle='butt')
-    ax.plot([cL, cR], [bus_in, bus_in], color=LC, lw=LW, solid_capstyle='butt')
+    # Each connector is one continuous, unsnapped polyline with mitred corners; arrowheads are drawn as triangles
+    # whose tips sit exactly on the box edges, so lines and heads share the same centre line at any zoom.
+    LW, LC = 0.8, GREY
+    AH, AW = 1.5, 0.8                                         # arrowhead length and half-width
+    def wire(pts):
+        xs, ys = zip(*pts)
+        ax.plot(xs, ys, color=LC, lw=LW, solid_capstyle='butt', solid_joinstyle='miter', snap=False, zorder=2)
+    def head(x, y, d):                                        # tip at (x, y); d = 'down' or 'right'
+        if d == 'down':
+            tri = [(x, y), (x - AW, y + AH), (x + AW, y + AH)]
+        else:
+            tri = [(x, y), (x - AH, y + AW), (x - AH, y - AW)]
+        ax.add_patch(Polygon(tri, closed=True, fc=LC, ec='none', snap=False, zorder=2))
+    stub_top, bus_in = 98.4, 96.8
     oh_, gapo = 7.6, 2.0
-    yA = bus_in - 1.6 - oh_ / 2                             # accept box sits just under the merge line
+    yA = bus_in - 1.6 - oh_ / 2
     yD = yA - oh_ - gapo
-    mx_, my_, mw_, mh_ = cL, (yA + yD) / 2, 15.0, 6.0      # model centred on the two outcomes
-    arrow(ax, (mx_, bus_in), (mx_, my_ + mh_ / 2), color=LC, lw=LW, head=HD)
+    mx_, my_, mw_, mh_ = cL, (yA + yD) / 2, 15.0, 6.0
+    m_top = my_ + mh_ / 2
+    wire([(cL, stub_top), (cL, m_top + AH)])                  # compression US straight down into the model
+    wire([(cR, stub_top), (cR, bus_in), (cL, bus_in)])         # ocular B-scan joins it
+    head(cL, m_top, 'down')
     ax.add_patch(FancyBboxPatch((mx_ - mw_ / 2, my_ - mh_ / 2), mw_, mh_, boxstyle='round,pad=0,rounding_size=0.8',
                                 fc=BLUE_L, ec=BLUE, lw=0.7, zorder=3))
     ax.text(mx_, my_, 'Model', fontsize=T_SMALL - 2, color=BLUE, ha='center', va='center', zorder=4)
-    ox0, ow_ = bx0, 2 * b_ + gap_                           # outcome boxes match the B-scan column exactly
-    jx = (mx_ + mw_ / 2 + ox0) / 2                          # junction halfway between model and outcomes
-    ax.plot([mx_ + mw_ / 2, jx], [my_, my_], color=LC, lw=LW, solid_capstyle='butt')
-    ax.plot([jx, jx], [yD, yA], color=LC, lw=LW, solid_capstyle='butt')
-    for yy in (yA, yD):
-        arrow(ax, (jx, yy), (ox0, yy), color=LC, lw=LW, head=HD)
+    ox0, ow_ = bx0, 2 * b_ + gap_
+    jx = (mx_ + mw_ / 2 + ox0) / 2
+    wire([(mx_ + mw_ / 2, my_), (jx, my_)])
+    wire([(ox0 - AH, yA), (jx, yA), (jx, yD), (ox0 - AH, yD)])
+    head(ox0, yA, 'right'); head(ox0, yD, 'right')
     for yy, fc_, ec_, t1, t2, tc in ((yA, AMBER_L, AMBER, 'Accept', 'pre-label', AMBER_D),
                                      (yD, LIGHT, MID, 'Defer', 'expert review', INK)):
         ax.add_patch(FancyBboxPatch((ox0, yy - oh_ / 2), ow_, oh_, boxstyle='round,pad=0,rounding_size=0.8',

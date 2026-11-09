@@ -42,7 +42,7 @@ directions:
 
   - id: reliable
     title: Reliable and Efficient AI Systems
-    summary: Models that hold up under distribution shift and still run on the hardware available at the bedside or in the field. We study test-time adaptation and knowledge distillation toward this goal.
+    summary: Models that hold up under distribution shift and still run on the hardware available at the bedside or in the field. We develop test-time adaptation and knowledge distillation methods toward this goal.
     topics:
       - Reliability under distribution and domain shift, including test-time adaptation
       - Knowledge distillation and compact models for resource-constrained deployment

@@ -306,8 +306,8 @@ def fig_multimodal():
     ax.plot([oL, oR], [bus_out, bus_out], color=LC, lw=LW, solid_capstyle='butt')
     for cx_ in (oL, oR):
         arrow(ax, (cx_, bus_out), (cx_, 83.4), color=LC, lw=LW, head=7)
-    for cx_, fc_, ec_, t1, t2, tc in ((oL, BLUE_L, BLUE, 'Accept', 'pre-label', BLUE),
-                                      (oR, AMBER_L, AMBER, 'Defer', 'expert review', AMBER_D)):
+    for cx_, fc_, ec_, t1, t2, tc in ((oL, AMBER_L, AMBER, 'Accept', 'pre-label', AMBER_D),
+                                      (oR, LIGHT, MID, 'Defer', 'expert review', INK)):
         ax.add_patch(FancyBboxPatch((cx_ - 10.5, 73.6), 21.0, 9.6, boxstyle='round,pad=0,rounding_size=0.9',
                                     fc=fc_, ec=ec_, lw=0.8, zorder=3))
         ax.text(cx_, 79.9, t1, fontsize=T_SMALL - 1.5, color=tc, ha='center', va='center', zorder=4)
@@ -340,9 +340,9 @@ def fig_medical():
     panel(ax, 4, 123, 'Retinal grading')
     panel(ax, 58, 123, 'Retinal layers')
     panel(ax, 110, 123, 'Brain connectivity')
-    panel(axb, 4, 57, 'Human pose')
+    panel(axb, 4, 57, 'Robot 3D mapping')
     panel(axb, 57, 57, 'Endoscope motion')
-    panel(axb, 110, 57, 'Robot 3D mapping')
+    panel(axb, 110, 57, 'Human pose')
     # fundus photograph and the five-level diabetic retinopathy severity scale it is graded on (no grade is claimed)
     ax.imshow(real_fundus(600), extent=(10.5, 44.5, 79, 113), zorder=2)
     arrow(ax, (27.5, 78.0), (27.5, 74.6), head=8, lw=1.0)
@@ -424,7 +424,7 @@ def fig_medical():
     ax.text(mx0 + ms_ / 2, 68.5, 'Connectivity\nmatrix', fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top', linespacing=1.1)
 
     ax = axb
-    # human pose: keypoint skeletons across video frames (left)
+    # human pose: keypoint skeletons across video frames (right)
     def skeleton(phase):
         sw = np.sin(phase)
         hip = np.array([0.0, 0.0]); neck = np.array([0.4, 6.2]); head = neck + [0.5, 2.0]
@@ -440,7 +440,7 @@ def fig_medical():
              ('neck', 'sh_r', BLUE), ('sh_r', 'el_r', BLUE), ('el_r', 'wr_r', BLUE), ('hip', 'hp_l', AMBER), ('hp_l', 'kn_l', AMBER),
              ('kn_l', 'an_l', AMBER), ('hip', 'hp_r', BLUE), ('hp_r', 'kn_r', BLUE), ('kn_r', 'an_r', BLUE)]
     for k, ph in enumerate(np.linspace(-1.0, 1.0, 3)):
-        fx = 6 + k * 15.0
+        fx = 112 + k * 15.0
         ax.add_patch(Rectangle((fx, 14), 13, 31, fc=LIGHT, ec=RULE, lw=0.8, zorder=1))
         P = {kk: vv * 1.3 for kk, vv in skeleton(ph).items()}
         off = np.array([fx + 6.0, 28.0])
@@ -466,12 +466,12 @@ def fig_medical():
     ax.plot([59, 64], [11, 11], color=BLUE, lw=1.8); ax.text(65.2, 11, 'Estimated', fontsize=T_SMALL - 2, color=INK, va='center')
     ax.plot([83, 88], [11, 11], color=MID, lw=1.2, ls=(0, (3.5, 2.5))); ax.text(89.2, 11, 'Reference', fontsize=T_SMALL - 2, color=INK, va='center')
 
-    # robot 3D mapping (right): a frame from the robot camera and the full 3D Gaussian map built from the
+    # robot 3D mapping (left): a frame from the robot camera and the full 3D Gaussian map built from the
     # robot's video (TurtleBot4, Gaussian Splatting SLAM vs. offline SfM; Bay Area Robotics Symposium 2026)
     src = os.path.join(os.path.dirname(__file__), 'sources')
     for k, (fn, lab) in enumerate((('robot-frame.jpg', 'robot camera'), ('robot-gsmap.jpg', '3D Gaussian map'))):
         im_ = plt.imread(os.path.join(src, fn)).astype(float) / 255
-        w_ = 44.0; h_ = 19.0; x_ = 112.0; y_ = 32.0 - k * 21.5
+        w_ = 44.0; h_ = 19.0; x_ = 6.0; y_ = 32.0 - k * 21.5
         r_ = im_.shape[1] / im_.shape[0]
         hh = int(round(im_.shape[1] / (w_ / h_)))
         top = max(0, (im_.shape[0] - hh) // 2)

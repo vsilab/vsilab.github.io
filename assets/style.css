@@ -348,7 +348,7 @@ figcaption a:hover{text-decoration:underline}
 
 /* Research: a small roman numeral for each direction, set in the empty title column */
 .sec.numbered .sec-title{position:relative}
-.sec.numbered .r-num{position:absolute;right:calc(100% + var(--gap));top:.05em;width:var(--title-col);text-align:right;
+.sec.numbered .r-num{position:absolute;right:calc(100% + var(--gap));top:.05em;width:var(--title-col);text-align:center;
   font-size:var(--fs-2);font-weight:400;color:var(--muted);letter-spacing:.04em}
 @media (max-width:1060px){
   .sec.numbered .r-num{position:static;display:block;width:auto;font-size:var(--fs-5);margin-bottom:6px}

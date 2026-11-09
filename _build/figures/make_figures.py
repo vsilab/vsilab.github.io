@@ -277,30 +277,41 @@ def fig_multimodal():
     for k in range(3):
         g_ = plt.imread(os.path.join(src, f'dvt-{3 - k}.png'))
         g_ = g_ if g_.ndim == 2 else g_[..., 0]
-        fx, fy = 106.0 + k * 1.8, 106.0 + k * 1.8
-        ax.imshow(g_, cmap='gray', extent=(fx, fx + 15, fy, fy + 15), zorder=2 + k)
-        ax.add_patch(Rectangle((fx, fy), 15, 15, fc='none', ec='white', lw=0.6, zorder=2 + k))
-    ax.text(114.4, 104.4, 'DVT ultrasound', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
-    # ocular B-scan examination: four views
+        fx, fy = 107.0 + k * 1.6, 106.8 + k * 1.6
+        ax.imshow(g_, cmap='gray', extent=(fx, fx + 14.5, fy, fy + 14.5), zorder=2 + k)
+        ax.add_patch(Rectangle((fx, fy), 14.5, 14.5, fc='none', ec='white', lw=0.6, zorder=2 + k))
+    # ocular B-scan examination: four views of one eye
     for k in range(4):
         g_ = plt.imread(os.path.join(src, f'bscan-{k + 1}.png'))
         g_ = g_ if g_.ndim == 2 else g_[..., 0]
-        fx = 131.0 + (k % 2) * 9.6; fy = 114.4 - (k // 2) * 9.6
-        ax.imshow(g_, cmap='gray', extent=(fx, fx + 9.0, fy, fy + 9.0), zorder=2)
-    ax.text(144.8, 104.4, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
-    # model, then two routes
-    mx_, my_ = 131.0, 94.5
-    arrow(ax, (116.0, 99.6), (mx_ - 4.0, my_ + 2.8), head=7, lw=0.9)
-    arrow(ax, (143.2, 99.6), (mx_ + 4.0, my_ + 2.8), head=7, lw=0.9)
-    ax.add_patch(FancyBboxPatch((mx_ - 7.5, my_ - 2.6), 15, 5.2, boxstyle='round,pad=0,rounding_size=1.0', fc='white', ec=MID, lw=0.8))
-    ax.text(mx_, my_, 'Model', fontsize=T_SMALL - 1.5, color=INK, ha='center', va='center')
-    arrow(ax, (mx_ - 3.0, my_ - 3.0), (118.0, 86.6), head=7, lw=0.9)
-    arrow(ax, (mx_ + 3.0, my_ - 3.0), (144.0, 86.6), head=7, lw=0.9)
-    for cx_, fc_, ec_, t1, t2, tc in ((118.0, BLUE_L, BLUE, 'Accept', 'pre-label', BLUE),
-                                      (144.0, AMBER_L, AMBER, 'Defer', 'expert review', AMBER_D)):
-        ax.add_patch(FancyBboxPatch((cx_ - 11.0, 76.0), 22.0, 10.0, boxstyle='round,pad=0,rounding_size=1.0', fc=fc_, ec=ec_, lw=0.8))
-        ax.text(cx_, 82.6, t1, fontsize=T_SMALL - 0.5, color=tc, ha='center', va='center')
-        ax.text(cx_, 78.6, t2, fontsize=T_SMALL - 3.5, color=GREY, ha='center', va='center')
+        fx = 133.5 + (k % 2) * 9.4; fy = 115.4 - (k // 2) * 9.4
+        ax.imshow(g_, cmap='gray', extent=(fx, fx + 8.8, fy, fy + 8.8), zorder=2)
+    cL, cR = 115.6, 142.4                                   # centres of the two input groups
+    ax.text(cL, 105.2, 'Compression US', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
+    ax.text(cR, 105.2, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
+
+    # orthogonal routing: inputs merge into the model, the model splits into accept and defer
+    LW, LC = 0.8, GREY
+    mx_, my_ = 129.0, 92.2                                  # model box centre
+    bus_in = 99.0
+    for cx_ in (cL, cR):
+        ax.plot([cx_, cx_], [100.6, bus_in], color=LC, lw=LW, solid_capstyle='butt')
+    ax.plot([cL, cR], [bus_in, bus_in], color=LC, lw=LW, solid_capstyle='butt')
+    arrow(ax, (mx_, bus_in), (mx_, my_ + 2.7), color=LC, lw=LW, head=7)
+    ax.add_patch(FancyBboxPatch((mx_ - 8.0, my_ - 2.6), 16.0, 5.2, boxstyle='round,pad=0,rounding_size=0.9',
+                                fc=BLUE_L, ec=BLUE, lw=0.8, zorder=3))
+    ax.text(mx_, my_, 'Model', fontsize=T_SMALL - 1.5, color=BLUE, ha='center', va='center', zorder=4)
+    oL, oR, bus_out = 116.0, 142.0, 86.6
+    ax.plot([mx_, mx_], [my_ - 2.6, bus_out], color=LC, lw=LW, solid_capstyle='butt')
+    ax.plot([oL, oR], [bus_out, bus_out], color=LC, lw=LW, solid_capstyle='butt')
+    for cx_ in (oL, oR):
+        arrow(ax, (cx_, bus_out), (cx_, 83.4), color=LC, lw=LW, head=7)
+    for cx_, fc_, ec_, t1, t2, tc in ((oL, BLUE_L, BLUE, 'Accept', 'pre-label', BLUE),
+                                      (oR, AMBER_L, AMBER, 'Defer', 'expert review', AMBER_D)):
+        ax.add_patch(FancyBboxPatch((cx_ - 10.5, 73.6), 21.0, 9.6, boxstyle='round,pad=0,rounding_size=0.9',
+                                    fc=fc_, ec=ec_, lw=0.8, zorder=3))
+        ax.text(cx_, 79.9, t1, fontsize=T_SMALL - 1.5, color=tc, ha='center', va='center', zorder=4)
+        ax.text(cx_, 76.2, t2, fontsize=T_SMALL - 3.5, color=GREY, ha='center', va='center', zorder=4)
 
     # ── language-guided object retrieval: real-robot sequence (Koh et al., ICRA submission, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,

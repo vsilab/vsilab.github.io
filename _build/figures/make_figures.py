@@ -190,7 +190,7 @@ def surgical_frame(seed, n=200):
 def fig_multimodal():
     from skimage import data, transform
     fig, ax, _ = canvas(lift=0)
-    panel(ax, 4, 132, 'Multimodal inputs and attention')
+    panel(ax, 4, 132, 'Multimodal inputs')
     panel(ax, 104, 132, 'Decision with deferral')
     panel(ax, 4, 61.5, 'Language-guided object retrieval')
 
@@ -201,52 +201,40 @@ def fig_multimodal():
         ax.add_patch(Rectangle((x_, y_), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
         ax.text(x_, y_ - 1.2, label, fontsize=T_SMALL, color=INK, va='top')
 
-    # image: CC0 photograph; attention shown as a spotlight on the cup
+    # image: CC0 photograph
     cof = mute(data.coffee().astype(float) / 255)
     h_ = int(cof.shape[1] * th / tw)
     crop = cof[40:40 + h_]
     yy_, xx_ = np.mgrid[0:crop.shape[0], 0:crop.shape[1]]
     heat = np.exp(-(((xx_ - 0.40 * crop.shape[1]) / (0.16 * crop.shape[1])) ** 2 + ((yy_ - 0.38 * crop.shape[0]) / (0.36 * crop.shape[0])) ** 2))
-    lit = crop * (0.32 + 0.68 * heat[..., None])
-    ax.imshow(np.clip(lit, 0, 1), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
-    ax.contour(np.linspace(cells[0][0], cells[0][0] + tw, crop.shape[1]), np.linspace(cells[0][1] + th, cells[0][1], crop.shape[0]),
-               heat, levels=[0.5], colors=['white'], linewidths=1.0, zorder=3)
+    ax.imshow(np.clip(crop, 0, 1), extent=(cells[0][0], cells[0][0] + tw, cells[0][1], cells[0][1] + th), zorder=2)
     frame(*cells[0], 'Image')
-    # video: four consecutive frames of one scene (a slow pan); bars show per-frame attention
+    # video: four consecutive frames of one scene (a slow pan)
     rk = mute(data.rocket())
     fw = (tw - 3 * 0.8) / 4
     wts = [0.25, 0.45, 1.0, 0.6]
     bar = 1.2
-    ch = 400; cw = int(round(ch * fw / (th - bar)))
+    ch = 400; cw = int(round(ch * fw / th))
     for k in range(4):
         fx = cells[1][0] + k * (fw + 0.8)
         x0_ = 150 + 40 * k
         crop_v = rk[10:10 + ch, x0_:x0_ + cw]
-        ax.imshow(crop_v, extent=(fx, fx + fw, cells[1][1] + bar, cells[1][1] + th), aspect='auto', zorder=2)
-        ax.add_patch(Rectangle((fx, cells[1][1]), fw, bar, fc=LIGHT, ec='none', zorder=2))
-        ax.add_patch(Rectangle((fx, cells[1][1]), fw * wts[k], bar, fc=BLUE, ec='none', zorder=3))
-        if wts[k] == max(wts):
-            ax.add_patch(Rectangle((fx, cells[1][1]), fw, th, fc='none', ec=BLUE, lw=0.9, zorder=7))
+        ax.imshow(crop_v, extent=(fx, fx + fw, cells[1][1], cells[1][1] + th), aspect='auto', zorder=2)
     ax.add_patch(Rectangle((cells[1][0], cells[1][1]), tw, th, fc='none', ec=RULE, lw=0.7, zorder=6))
     ax.text(cells[1][0], cells[1][1] - 1.2, 'Video', fontsize=T_SMALL, color=INK, va='top')
-    # audio: spectrogram; the attended segment stays bright
+    # audio: spectrogram
     sr = 8000; t = np.arange(0, 1.6, 1 / sr)
     f0 = 140 + 40 * np.sin(2 * np.pi * 1.1 * t)
     phase = 2 * np.pi * np.cumsum(f0) / sr
     sig = sum(np.sin(h * phase) / h for h in range(1, 14)) * (0.55 + 0.45 * np.sin(2 * np.pi * 2.2 * t) ** 2)
-    sig = sig * (0.25 + 0.75 * (np.sin(2 * np.pi * 0.8 * t + 0.6) > -0.8))
     win, hop = 256, 40
     frames_ = np.stack([sig[i_:i_ + win] * np.hanning(win) for i_ in range(0, len(sig) - win, hop)], 1)
     spec = 20 * np.log10(np.abs(np.fft.rfft(frames_, axis=0))[:90] + 1e-3)
     spec = np.clip((spec - spec.max() + 60) / 60, 0, 1)
     rgb = LinearSegmentedColormap.from_list('m', ['#f2f3f5', '#a0a6ae', '#33486b', '#111418'])(spec)[..., :3]
-    tt = np.linspace(0, 1, spec.shape[1])
-    on = (tt > 0.55) & (tt < 0.8)
-    rgb[:, ~on] = rgb[:, ~on] * 0.35 + 0.65 * np.array([0.95, 0.953, 0.96])
     ax.imshow(rgb, origin='lower', aspect='auto', extent=(cells[2][0], cells[2][0] + tw, cells[2][1], cells[2][1] + th), zorder=2)
-    ax.add_patch(Rectangle((cells[2][0] + 0.55 * tw, cells[2][1]), 0.25 * tw, th, fc='none', ec='white', lw=1.0, zorder=4))
     frame(*cells[2], 'Audio')
-    # text: the query, with attended words highlighted
+    # text: a language query
     x_, y_ = cells[3]
     ax.add_patch(Rectangle((x_, y_), tw, th, fc='white', ec='none', zorder=1))
     r_ = fig.canvas.get_renderer()
@@ -258,9 +246,6 @@ def fig_multimodal():
             tx = ax.text(cx, y_line, w_, fontsize=T_LABEL, color=INK, va='baseline', style='italic', zorder=4)
             bb = tx.get_window_extent(renderer=r_)
             (bx0, by0), (bx1, by1) = inv.transform([[bb.x0, bb.y0], [bb.x1, bb.y1]])
-            if w_.strip('?') in hi:
-                ax.add_patch(FancyBboxPatch((bx0 - 0.4, by0 - 0.4), bx1 - bx0 + 0.8, by1 - by0 + 0.6,
-                                            boxstyle='round,pad=0,rounding_size=0.8', fc=BLUE_L, ec='none', zorder=3))
             sp = ax.text(0, 0, 'a a', fontsize=T_LABEL, style='italic'); sb = sp.get_window_extent(renderer=r_)
             sa = ax.text(0, 0, 'aa', fontsize=T_LABEL, style='italic'); sab = sa.get_window_extent(renderer=r_)
             space = inv.transform([[sb.x1 - sab.x1 + sab.x0, 0]])[0][0] - inv.transform([[sb.x0, 0]])[0][0]
@@ -325,7 +310,7 @@ def fig_multimodal():
         photo = mute(plt.imread(os.path.join(os.path.dirname(__file__), 'sources', f'retrieval-{k + 1}.png')), keep=0.55)
         ax.imshow(photo, extent=(x_, x_ + pw, py0, py0 + ph), zorder=2, interpolation='antialiased')
         ax.add_patch(Rectangle((x_, py0), pw, ph, fc='none', ec=RULE, lw=0.6, zorder=3))
-        ax.text(x_ + pw / 2, py0 - 1.4, f"{('I', 'II', 'III', 'IV')[k]}. {lab_}", fontsize=T_SMALL, color=INK, ha='center', va='top', fontweight=600)
+        ax.text(x_ + pw / 2, py0 - 1.4, f"{('I', 'II', 'III', 'IV')[k]}. {lab_}", fontsize=T_SMALL, color=INK, ha='center', va='top')
         ax.text(x_ + pw / 2, py0 - 7.0, sub_, fontsize=T_SMALL - 1.5, color=GREY, ha='center', va='top')
         if k < 3:
             arrow(ax, (x_ + pw + 0.25, py0 + ph / 2), (x_ + pw + gap - 0.25, py0 + ph / 2), color=MID, head=8, lw=1.0, z=5)

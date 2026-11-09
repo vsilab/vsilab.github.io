@@ -353,3 +353,6 @@ figcaption a:hover{text-decoration:underline}
 @media (max-width:1060px){
   .sec.numbered .r-num{position:static;display:block;width:auto;font-size:var(--fs-5);margin-bottom:6px}
 }
+
+/* the rule above the join note spans the same measure as the intro paragraph above it */
+.hero p.join{max-width:none;width:min(100%,calc(var(--fs-4) / var(--fs-5) * 64ch))}

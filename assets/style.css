@@ -281,8 +281,8 @@ figcaption a:hover{text-decoration:underline}
 @media (max-width:760px){
   body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   /* Keep the PI's name and portrait together before the full-width biography. */
-  .pi{grid-template-columns:minmax(0,1fr) 96px;gap:14px 20px}
-  .pi-photo{grid-row:1;grid-column:2;width:100%;margin-bottom:0}
+  .pi{grid-template-columns:minmax(0,1fr) 124px;gap:14px 20px}
+  .pi-photo{grid-row:1;grid-column:2;width:100%;margin-bottom:14px}
   .pi-text{display:contents}
   .pi-text>p{grid-column:1/-1;text-wrap:pretty}
   .pi-text>.pi-name{grid-column:1;grid-row:1;align-self:center}

@@ -54,6 +54,7 @@ The overview figures are drawn by `_build/figures/make_figures.py`. They use:
 - Fundus photograph: Mikael Häggström, Wikimedia Commons, CC0 (distributed with scikit-image).
 - Coffee photograph: Rachel Michetti, CC0; rocket launch photograph: SpaceX, public domain (both distributed with scikit-image).
 - Brain template: MNI ICBM152 2009 nonlinear symmetric template, © McConnell Brain Imaging Centre, Montreal Neurological Institute; region coordinates from Seitzman et al. (2018). Both are distributed with nilearn.
+- Ultrasound images: compression ultrasound frames (Lee and Srivastav, DVT selective prediction, under review) and ocular B-scan views (Poonkundran et al., SPIE Medical Imaging 2026 submission), Fig. 1 of each.
 - Robot 3D mapping images: DeBough, Koh, and Lee, "Online Gaussian Splatting SLAM on a TurtleBot4," Bay Area Robotics Symposium 2026 poster, Figs. 1 and 2.
 - Token pruning photograph (Winged Victory of Samothrace, Louvre): Eungjoo Lee.
 - Robot photographs: Koh et al., "Selective Commitment for Language-Guided Object Retrieval under Partial Observability," Fig. 1.

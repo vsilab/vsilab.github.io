@@ -19,7 +19,7 @@ directions:
       - Human-centered perception and decision support
       - Vision-language models for robot perception under partial observability
     figure: overview-multimodal.svg
-    figure_alt: Image, video, audio, and text inputs with the parts the model attends to for a text query highlighted; a decision map that refers, keeps routine care, or defers to a clinician by predicted risk and uncertainty; and a real robot that observes a covered container, removes the cover, re-observes, and grasps the target
+    figure_alt: Example inputs (image, video, audio, text) with attention; a model that reads compression ultrasound (DVT) and ocular B-scan views and either accepts a reliable prediction or defers the case to expert review; and a real robot that removes a cover, looks again, and grasps the target
     papers:
       - "Prediction of Response to Spinal Cord Stimulation Using Machine Learning Based on Radiomics and Patient-Reported Outcomes"
       - "Multimodal Learning for Enhanced Detection in Oral Cancer Screening"

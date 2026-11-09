@@ -270,26 +270,37 @@ def fig_multimodal():
     words('the blue bowl?', y_ + th - 12.6, {'blue', 'bowl'})
     frame(x_, y_, 'Text')
 
-    # ── decision map: refer, routine, or defer by predicted risk and uncertainty (clinical example)
-    x0, x1, y0, y1 = 112, 155, 80, 122
-    thr_r, thr_u = 0.5, 0.55
-    Xr = lambda v: x0 + (x1 - x0) * v
-    Yu = lambda v: y0 + (y1 - y0) * v
-    ax.add_patch(Rectangle((x0, y0), Xr(thr_r) - x0, Yu(thr_u) - y0, fc=LIGHT, ec='none'))
-    ax.add_patch(Rectangle((Xr(thr_r), y0), x1 - Xr(thr_r), Yu(thr_u) - y0, fc=BLUE_L, ec='none'))
-    ax.add_patch(Rectangle((x0, Yu(thr_u)), x1 - x0, y1 - Yu(thr_u), fc=AMBER_L, ec='none'))
-    ax.plot([x0, x0, x1], [y1, y0, y0], color=INK, lw=1.0)
-    ax.text((x0 + x1) / 2, Yu(0.87), 'Defer to clinician', fontsize=T_SMALL, color=AMBER_D, ha='center', va='center')
-    ax.text(Xr(0.25), Yu(0.11), 'Routine', fontsize=T_SMALL, color=GREY, ha='center', va='center')
-    ax.text(Xr(0.75), Yu(0.11), 'Refer', fontsize=T_SMALL, color=BLUE, ha='center', va='center')
-    pts = np.array([[0.12, 0.30], [0.22, 0.42], [0.30, 0.25], [0.38, 0.47], [0.68, 0.36], [0.78, 0.24], [0.86, 0.42],
-                    [0.93, 0.30], [0.44, 0.64], [0.57, 0.70], [0.32, 0.69], [0.68, 0.63]])
-    for (r_, u_) in pts:
-        col = AMBER if u_ >= thr_u else (BLUE if r_ >= thr_r else MID)
-        ax.plot([Xr(r_)], [Yu(u_)], 'o', ms=4.6, mfc=col, mec='white', mew=0.8, zorder=4)
-    ax.text((x0 + x1) / 2, y0 - 2.0, 'Predicted risk', fontsize=T_SMALL, color=GREY, ha='center', va='top')
-    ax.text(x0 - 2.0, (y0 + y1) / 2, 'Uncertainty', fontsize=T_SMALL, color=GREY, ha='right', va='center', rotation=90)
-    ax.text((x0 + x1) / 2, y0 - 7.4, 'clinical example', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top', style='italic')
+    # ── selective deferral (ultrasound work under review): a model accepts reliable predictions and defers the rest
+    #    to expert review. Images: compression ultrasound frames (DVT) and multi-view ocular B-scans, from the papers.
+    src = os.path.join(os.path.dirname(__file__), 'sources')
+    # DVT compression ultrasound clip: three frames, stacked
+    for k in range(3):
+        g_ = plt.imread(os.path.join(src, f'dvt-{3 - k}.png'))
+        g_ = g_ if g_.ndim == 2 else g_[..., 0]
+        fx, fy = 106.0 + k * 1.8, 106.0 + k * 1.8
+        ax.imshow(g_, cmap='gray', extent=(fx, fx + 15, fy, fy + 15), zorder=2 + k)
+        ax.add_patch(Rectangle((fx, fy), 15, 15, fc='none', ec='white', lw=0.6, zorder=2 + k))
+    ax.text(114.4, 104.4, 'DVT ultrasound', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    # ocular B-scan examination: four views
+    for k in range(4):
+        g_ = plt.imread(os.path.join(src, f'bscan-{k + 1}.png'))
+        g_ = g_ if g_.ndim == 2 else g_[..., 0]
+        fx = 131.0 + (k % 2) * 9.6; fy = 114.4 - (k // 2) * 9.6
+        ax.imshow(g_, cmap='gray', extent=(fx, fx + 9.0, fy, fy + 9.0), zorder=2)
+    ax.text(144.8, 104.4, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=GREY, ha='center', va='top')
+    # model, then two routes
+    mx_, my_ = 131.0, 94.5
+    arrow(ax, (116.0, 99.6), (mx_ - 4.0, my_ + 2.8), head=7, lw=0.9)
+    arrow(ax, (143.2, 99.6), (mx_ + 4.0, my_ + 2.8), head=7, lw=0.9)
+    ax.add_patch(FancyBboxPatch((mx_ - 7.5, my_ - 2.6), 15, 5.2, boxstyle='round,pad=0,rounding_size=1.0', fc='white', ec=MID, lw=0.8))
+    ax.text(mx_, my_, 'Model', fontsize=T_SMALL - 1.5, color=INK, ha='center', va='center')
+    arrow(ax, (mx_ - 3.0, my_ - 3.0), (118.0, 86.6), head=7, lw=0.9)
+    arrow(ax, (mx_ + 3.0, my_ - 3.0), (144.0, 86.6), head=7, lw=0.9)
+    for cx_, fc_, ec_, t1, t2, tc in ((118.0, BLUE_L, BLUE, 'Accept', 'pre-label', BLUE),
+                                      (144.0, AMBER_L, AMBER, 'Defer', 'expert review', AMBER_D)):
+        ax.add_patch(FancyBboxPatch((cx_ - 11.0, 76.0), 22.0, 10.0, boxstyle='round,pad=0,rounding_size=1.0', fc=fc_, ec=ec_, lw=0.8))
+        ax.text(cx_, 82.6, t1, fontsize=T_SMALL - 0.5, color=tc, ha='center', va='center')
+        ax.text(cx_, 78.6, t2, fontsize=T_SMALL - 3.5, color=GREY, ha='center', va='center')
 
     # ── language-guided object retrieval: real-robot sequence (Koh et al., ICRA submission, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,

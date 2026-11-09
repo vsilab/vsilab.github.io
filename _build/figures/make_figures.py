@@ -293,44 +293,25 @@ def fig_multimodal():
     cR = bx0 + b_ + gap_ / 2
     ax.text(cL, 103.6, 'Compression US', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
     ax.text(cR, 103.6, 'Ocular B-scan', fontsize=T_SMALL - 2.5, color=INK, ha='center', va='top')
+    bx_l, bx_r = 104.6, bx0 + 2 * b_ + gap_                # full width of the two inputs
 
-    # routing: the two inputs merge into the model (left), which routes each case to accept or defer (right).
-    # Each connector is one continuous, unsnapped polyline with mitred corners; arrowheads are drawn as triangles
-    # whose tips sit exactly on the box edges, so lines and heads share the same centre line at any zoom.
-    LW, LC = 0.8, GREY
-    AH, AW = 1.5, 0.8                                         # arrowhead length and half-width
-    def wire(pts):
-        xs, ys = zip(*pts)
-        ax.plot(xs, ys, color=LC, lw=LW, solid_capstyle='butt', solid_joinstyle='miter', snap=False, zorder=2)
-    def head(x, y, d):                                        # tip at (x, y); d = 'down' or 'right'
-        if d == 'down':
-            tri = [(x, y), (x - AW, y + AH), (x + AW, y + AH)]
-        else:
-            tri = [(x, y), (x - AH, y + AW), (x - AH, y - AW)]
-        ax.add_patch(Polygon(tri, closed=True, fc=LC, ec='none', snap=False, zorder=2))
-    stub_top, bus_in = 98.4, 96.8
-    oh_, gapo = 7.6, 2.0
-    yA = bus_in - 1.6 - oh_ / 2
-    yD = yA - oh_ - gapo
-    mx_, my_, mw_, mh_ = cL, (yA + yD) / 2, 15.0, 6.0
-    m_top = my_ + mh_ / 2
-    wire([(cL, stub_top), (cL, m_top + AH)])                  # compression US straight down into the model
-    wire([(cR, stub_top), (cR, bus_in), (cL, bus_in)])         # ocular B-scan joins it
-    head(cL, m_top, 'down')
-    ax.add_patch(FancyBboxPatch((mx_ - mw_ / 2, my_ - mh_ / 2), mw_, mh_, boxstyle='round,pad=0,rounding_size=0.8',
-                                fc=BLUE_L, ec=BLUE, lw=0.7, zorder=3))
-    ax.text(mx_, my_, 'Model', fontsize=T_SMALL - 2, color=BLUE, ha='center', va='center', zorder=4)
-    ox0, ow_ = bx0, 2 * b_ + gap_
-    jx = (mx_ + mw_ / 2 + ox0) / 2
-    wire([(mx_ + mw_ / 2, my_), (jx, my_)])
-    wire([(ox0 - AH, yA), (jx, yA), (jx, yD), (ox0 - AH, yD)])
-    head(ox0, yA, 'right'); head(ox0, yD, 'right')
-    for yy, fc_, ec_, t1, t2, tc in ((yA, AMBER_L, AMBER, 'Accept', 'pre-label', AMBER_D),
-                                     (yD, LIGHT, MID, 'Defer', 'expert review', INK)):
-        ax.add_patch(FancyBboxPatch((ox0, yy - oh_ / 2), ow_, oh_, boxstyle='round,pad=0,rounding_size=0.8',
-                                    fc=fc_, ec=ec_, lw=0.7, zorder=3))
-        ax.text(ox0 + ow_ / 2, yy + 1.45, t1, fontsize=T_SMALL - 2, color=tc, ha='center', va='center', zorder=4)
-        ax.text(ox0 + ow_ / 2, yy - 1.85, t2, fontsize=T_SMALL - 4.5, color=GREY, ha='center', va='center', zorder=4)
+    # selective prediction as a quiet gauge (no boxes or arrows): each case gets a model confidence; cases below
+    # the reliability threshold are deferred to expert review, the rest are accepted as pre-labels. Conceptual.
+    gx0, gx1, gy = bx_l, bx_r, 89.0
+    thr = gx0 + 0.42 * (gx1 - gx0)
+    ax.plot([gx0, thr], [gy, gy], color=MID, lw=0.9, solid_capstyle='butt')
+    ax.plot([thr, gx1], [gy, gy], color=AMBER, lw=1.6, solid_capstyle='butt')
+    ax.plot([thr, thr], [gy - 2.4, gy + 2.4], color=INK, lw=0.7)
+    xs_ = np.concatenate([np.linspace(gx0 + 3.0, thr - 3.0, 3), np.linspace(thr + 3.2, gx1 - 2.0, 5)])
+    for x_ in xs_:
+        acc = x_ > thr
+        ax.plot([x_], [gy + 2.2], 'o', ms=3.0, mfc=AMBER if acc else 'white', mec=AMBER if acc else MID, mew=0.8, zorder=4)
+    ax.text(thr, gy + 4.6, 'reliability threshold', fontsize=T_SMALL - 4.5, color=GREY, ha='center', va='bottom', style='italic')
+    ax.text(gx0, gy - 2.6, 'Defer', fontsize=T_SMALL - 2, color=INK, ha='left', va='top')
+    ax.text(gx0, gy - 6.4, 'expert review', fontsize=T_SMALL - 4.5, color=GREY, ha='left', va='top')
+    ax.text(gx1, gy - 2.6, 'Accept', fontsize=T_SMALL - 2, color=AMBER_D, ha='right', va='top')
+    ax.text(gx1, gy - 6.4, 'pre-label', fontsize=T_SMALL - 4.5, color=GREY, ha='right', va='top')
+    ax.text((gx0 + gx1) / 2, gy - 10.6, 'model confidence', fontsize=T_SMALL - 4.5, color=GREY, ha='center', va='top', style='italic')
 
     # ── language-guided object retrieval: real-robot sequence (Koh et al., ICRA submission, Fig. 1)
     ax.text(4, 54.5, '“Pick up the target inside the covered container.”', fontsize=T_SMALL, color=INK,

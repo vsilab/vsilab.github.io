@@ -163,7 +163,7 @@ def page_home():
 
 def page_research():
     out = [page_head('Research', 'Our work follows three connected directions. Each is listed below with related papers.')]
-    for d in RESEARCH['directions']:
+    for n, d in enumerate(RESEARCH['directions']):
         topics = ''.join(f'<li>{e(t)}</li>' for t in d['topics'])
         papers = ''
         for t in d.get('papers', []):
@@ -174,9 +174,10 @@ def page_research():
             ttl = ext(p['url'], e(p['title'])) if p.get('url') else e(p['title'])
             status = ', to appear' if p.get('status') == 'to-appear' else ''
             papers += f'<li>{ttl}<span>{venue_year(p)}{status}</span></li>'
-        out.append(section(e(d['title']),
+        numeral = ('I', 'II', 'III', 'IV', 'V', 'VI')[n]
+        out.append(section(f'<span class="r-num" aria-hidden="true">{numeral}</span>{e(d["title"])}',
             f'<div class="r-text"><p class="lead">{e(d["summary"])}</p><ul class="topics">{topics}</ul>'
-            f'<h3 class="minor">Related papers</h3><ul class="r-papers">{papers}</ul></div>', d['id'], 'stack'))
+            f'<h3 class="minor">Related papers</h3><ul class="r-papers">{papers}</ul></div>', d['id'], 'stack numbered'))
     collab = ''.join(f'<li>{e(c)}</li>' for c in RESEARCH.get('collaborations', []))
     if collab:
         out.append(section('Collaborations', f'<p>Our clinical and academic partners include:</p><ul class="plain">{collab}</ul>', 'collaborations', 'stack'))

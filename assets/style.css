@@ -339,3 +339,9 @@ figcaption a:hover{text-decoration:underline}
 .pi{grid-template-columns:minmax(0,1fr) 184px}
 @media (max-width:1060px){.pi{grid-template-columns:minmax(0,1fr) 160px}}
 @media (max-width:760px){.mark{width:27px;height:31px}.brand{gap:12px}.pi{grid-template-columns:1fr}.pi-photo{width:150px}}
+
+/* quieter details: paper links read as small labels, and the mobile menu is plain text */
+.pub-links{font-family:var(--sans);font-size:11px;letter-spacing:.08em;text-transform:uppercase;gap:4px 20px;margin-top:5px}
+.pub-links a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:1px;transition:color .2s,border-color .2s}
+.pub-links a:hover{color:var(--ink);border-bottom-color:var(--ink)}
+.menu{border:0;padding:8px 0}

@@ -28,6 +28,8 @@ NAV = [('index', 'Home'), ('research', 'Research'), ('publications', 'Publicatio
        ('people', 'People'), ('teaching', 'Teaching'), ('resources', 'Resources')]
 PUB_SECTIONS = [('chapter', 'Book Chapters'), ('journal', 'Journal Articles'), ('conference', 'Conference Papers'),
                 ('workshop', 'Workshop Papers'), ('abstract', 'Abstracts'), ('report', 'Technical Reports')]
+CHIP_LABEL = {'chapter': 'Chapters', 'journal': 'Journals', 'conference': 'Conferences', 'workshop': 'Workshops',
+              'abstract': 'Abstracts', 'report': 'Reports'}   # short filter labels so the row fits on one line
 ROLES = [('phd', 'Ph.D. Students'), ('ms', 'M.S. Students'), ('postbac', 'Post-Baccalaureate Researchers'),
          ('undergrad', 'Undergraduate Researchers'), ('collaborator', 'Affiliated Collaborators')]
 ALUMNI_GROUPS = [('phd', 'Ph.D.'), ('ms', 'M.S.'), ('undergrad', 'Undergraduate'), ('visitor', 'Visitors')]
@@ -188,7 +190,7 @@ def page_publications():
         if not items:
             continue
         items.sort(key=lambda p: -int(p['year']))
-        chips.append(f'<button type="button" class="chip" data-cat="{key}" aria-pressed="false">{e(label)}</button>')
+        chips.append(f'<button type="button" class="chip" data-cat="{key}" aria-pressed="false">{e(CHIP_LABEL.get(key, label))}</button>')
         groups.append(section(e(label), f'<ol class="pubs">{"".join(pub_item(p) for p in items)}</ol>', key, 'pub-group'))
     head = (f'<section class="page-head"><h1>Publications</h1><p>Titles link to the published version or preprint where one is available. '
             f'A complete record is on {ext(SITE["pi"]["scholar"], "Google Scholar")}.</p>'

@@ -489,11 +489,16 @@ def fig_medical():
 # ───────────────────────── figure 3: reliable and efficient AI ─────────────────────────
 def fig_reliable():
     fig, axb, ax = canvas()
-    # right half of the bottom row: same units, shifted so drawing code can use 0-based x positions
-    axr = fig.add_axes([0, 0, 1, 1]); axr.set_xlim(-80.5, 79.5); axr.set_ylim(0, 140); axr.axis('off'); axr.patch.set_alpha(0)
+    # bottom row: test-time adaptation on the left, distribution shift on the right. Each half has its own axes in
+    # the same units, shifted so its drawing code keeps 0-based x positions.
+    def half(x0):
+        a = fig.add_axes([0, 0, 1, 1]); a.set_xlim(x0, x0 + 160); a.set_ylim(0, 140); a.axis('off'); a.patch.set_alpha(0)
+        return a
+    axs = half(-79.0)          # distribution shift, right half
+    axr = half(0.0)            # test-time adaptation, left half
     panel(ax, 4, 123, 'Compact models for real time')
-    panel(axb, 4, 59, 'Distribution shift')
-    panel(axr, 5.5, 59, 'Test-time adaptation')
+    panel(axr, 4, 59, 'Test-time adaptation')
+    panel(axs, 4, 59, 'Distribution shift')
 
     # ── compact models for real time (top): two routes the lab uses, drawn as concepts (no measured values)
     #    distillation: multi-head teacher to single-head student (Lightweight TransUNet)
@@ -578,8 +583,8 @@ def fig_reliable():
     ax.text(kx0 + (cols * (kw + gap) - gap) / 2, cy0 - 14.6, 'kept tokens', fontsize=T_SMALL - 2.5, color=BLUE, ha='center', va='top')
     sub(119.0, 'Token pruning', 'fewer image tokens')
 
-    # ── distribution shift (bottom left)
-    ax = axb
+    # ── distribution shift (bottom right)
+    ax = axs
     x = np.linspace(-4, 7, 400)
     X = lambda v: 6 + (v + 4) / 11 * 74
     Y = lambda v: 18 + v * 27
@@ -593,7 +598,7 @@ def fig_reliable():
     ax.text(X(5.3), Y(0.55), 'Deployment\ndata', fontsize=T_SMALL - 1, color=AMBER_D, ha='center', linespacing=1.1)
     ax.text(X(1.5), 15.6, 'Feature space', fontsize=T_SMALL - 1, color=GREY, ha='center', va='top')
 
-    # ── test-time adaptation (bottom right)
+    # ── test-time adaptation (bottom left)
     ax = axr
     # one outdoor scene (public-domain photo shipped with scikit-image) under three weather conditions
     from skimage import data as skdata, transform as sktf

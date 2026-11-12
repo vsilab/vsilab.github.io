@@ -359,5 +359,5 @@ figcaption a:hover{text-decoration:underline}
   .sec.numbered .r-num{position:static;display:block;width:auto;font-size:var(--fs-5);margin-bottom:6px}
 }
 
-/* home intro and join note span the same width as the section bodies below */
-.hero p,.hero .join{max-width:none;width:auto}
+/* home intro and join note: wider than the 64ch body measure, a little short of the full section width */
+.hero p,.hero .join{max-width:760px;width:auto}

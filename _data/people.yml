@@ -42,10 +42,6 @@ members:
     role: ms
     program: Information Science
     photo: samarla-krishna.jpg
-  - name: Wonhee Koh
-    role: ms
-    program: Electrical, Computing, and Software Engineering
-    photo: wonhee-koh.jpg
 
   - name: Minh Le
     role: postbac

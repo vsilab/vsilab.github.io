@@ -380,3 +380,5 @@ figcaption a:hover{text-decoration:underline}
   .nav{width:100%;flex-wrap:wrap;gap:2px 22px;padding:4px 0 14px}
   .js .nav:not(.open){display:none}
 }
+/* reserve the scrollbar's width on every page, so short pages (Teaching, Resources) don't sit a few pixels right of long ones */
+html{scrollbar-gutter:stable}

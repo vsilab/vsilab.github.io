@@ -117,12 +117,21 @@ def photo(file, name, cls='portrait'):
     ini = ''.join(w[0] for w in name.replace(',', '').split()[:2])
     return f'<div class="{cls} ph"><span>{e(ini)}</span></div>'
 
+def brand_lines():
+    """Full lab name, always. Two spans so narrow screens can set it on two lines."""
+    words = SITE['lab_name'].split(' ')
+    cut = words.index('and') + 1 if 'and' in words else len(words) // 2
+    return (f'<span class="bn-1">{e(" ".join(words[:cut]))}</span> '
+            f'<span class="bn-2">{e(" ".join(words[cut:]))}</span>')
+
 def header(active):
     items = ''.join(f'<a href="{href(k)}" data-nav="{k}"{" aria-current=\"page\"" if k == active else ""}>{e(n)}</a>'
                     for k, n in NAV)
     return (f'<header class="masthead"><div class="masthead-in">'
             f'<a class="brand" href="{href("index")}"><span class="mark" role="img" aria-label="VSI"></span>'
-            f'<span class="brand-name"><span class="bn-long">{e(SITE["lab_name"])}</span><span class="bn-short">VSI Lab</span></span></a>'
+            f'<span class="brand-name">{brand_lines()}</span>'
+            f'<span class="seal-rule" aria-hidden="true"></span>'
+            f'<span class="seal" role="img" aria-label="이응주" style="-webkit-mask-image:url(assets/seal.svg?v={ver("seal.svg")});mask-image:url(assets/seal.svg?v={ver("seal.svg")})"></span></a>'
             f'<button class="menu" type="button" aria-expanded="false" aria-controls="nav">Menu</button>'
             f'<nav id="nav" class="nav" aria-label="Main">{items}</nav></div></header>')
 
